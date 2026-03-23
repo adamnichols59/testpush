@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9GNH24NL8Q"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-9GNH24NL8Q');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Creature Care</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
@@ -64,21 +72,41 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 @keyframes spAnim{0%{transform:translate(-50%,-50%) scale(.4);opacity:1}100%{transform:translate(-50%,-50%) scale(2);opacity:0}}
 .heart{position:fixed;pointer-events:none;z-index:50;animation:heartUp 1.1s ease forwards}
 @keyframes heartUp{0%{transform:translateY(0) scale(.5);opacity:1}100%{transform:translateY(-80px) scale(1.4);opacity:0}}
-#accPick{position:absolute;bottom:168px;left:50%;transform:translateX(-50%);z-index:35;
-  background:rgba(10,5,30,.95);border:2px solid var(--yellow);border-radius:18px;
-  padding:12px 16px;display:none;flex-direction:column;align-items:center;gap:8px;backdrop-filter:blur(8px)}
+#accPick{
+  position:fixed;bottom:148px;left:0;right:0;
+  z-index:35;background:rgba(8,4,24,.97);border-top:2px solid var(--yellow);
+  border-radius:20px 20px 0 0;padding:12px 12px 18px;display:none;
+  flex-direction:column;align-items:center;gap:10px;backdrop-filter:blur(12px);
+  max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
 #accPick.show{display:flex}
-.acc-title{font-family:'Baloo 2',cursive;font-size:.65rem;color:var(--yellow);font-weight:800}
-.acc-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:260px}
-.acc-opt{font-size:1.9rem;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:all .15s}
-.acc-opt.on{border-color:var(--yellow);background:rgba(255,224,64,.15)}
-.acc-opt:active{transform:scale(.88)}
+.acc-title-row{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 2px}
+.acc-title{font-family:'Baloo 2',cursive;font-size:.72rem;color:var(--yellow);font-weight:800}
+.btn-clear-all{font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:800;
+  background:rgba(255,60,60,.2);border:1.5px solid rgba(255,80,80,.5);
+  color:#ff8888;border-radius:999px;padding:4px 12px;cursor:pointer}
+.acc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.acc-opt{
+  cursor:pointer;border-radius:12px;border:2px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:8px 4px 6px;transition:all .18s;position:relative;
+}
+.acc-opt.on{
+  border-color:var(--yellow);background:rgba(255,224,64,.15);
+  box-shadow:0 0 12px rgba(255,224,64,.25);
+}
+.acc-opt.on::after{content:'✓';position:absolute;top:3px;right:5px;
+  font-size:.5rem;font-weight:900;color:var(--yellow)}
+.acc-opt:active{transform:scale(.9)}
+.acc-opt svg{display:block}
+.acc-opt-label{font-size:.4rem;font-weight:800;color:#8899cc;text-align:center;
+  line-height:1.3;padding:0 2px;}
+.acc-opt.on .acc-opt-label{color:var(--yellow)}
 .zzz{position:absolute;top:-20px;right:-25px;font-size:1.2rem;z-index:15;
   animation:zzzFloat 1.8s ease-in-out infinite alternate;pointer-events:none}
 @keyframes zzzFloat{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-10px) rotate(8deg)}}
-.acc-on{position:absolute;top:-25px;left:50%;transform:translateX(-50%);font-size:2rem;z-index:15;
-  pointer-events:none;animation:accFloat 2.2s ease-in-out infinite}
-@keyframes accFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-7px)}}
+/* Accessories are now inline SVG - no floating div needed */
 .part{position:absolute;pointer-events:none;z-index:3;font-size:.85rem;opacity:.7;animation:partFloat linear infinite}
 @keyframes partFloat{0%{transform:translateY(0) rotate(0deg);opacity:.7}100%{transform:translateY(-50px) rotate(30deg);opacity:0}}
 </style>
@@ -106,8 +134,11 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
   <div id="stage"></div>
   <div id="speech"></div>
   <div id="accPick">
-    <div class="acc-title">Choose an accessory ✨</div>
-    <div class="acc-row" id="accRow"></div>
+    <div class="acc-title-row">
+      <div class="acc-title">✨ Accessories</div>
+      <button class="btn-clear-all" onclick="removeAllAcc()">Remove All</button>
+    </div>
+    <div class="acc-grid" id="accRow"></div>
   </div>
   <div class="tray">
     <div class="tray-lbl">DRAG A TOOL TO YOUR CREATURE</div>
@@ -221,7 +252,176 @@ const CD = {
 // Archetype fallback (empty - all creatures now have own builders)
 const ARCHETYPE = {};
 
-const ACCESSORIES=['🎀','🎩','👑','🌸','⭐','🎊','🎓','💎','🌈','🌺'];
+// Per-creature accessories — SVG snippets injected directly onto the creature
+// Each entry: {id, label, svg(color) function returning SVG to inject}
+const CREATURE_ACCESSORIES = {
+
+  Fluffkin:[
+    {id:'flower_crown',label:'Flower Crown',
+     preview:`<circle cx="30" cy="32" r="9" fill="#ff6eb4"/><circle cx="30" cy="32" r="5" fill="#ffe040"/><circle cx="14" cy="36" r="7" fill="#ff5252"/><circle cx="14" cy="36" r="3.5" fill="#ffe040"/><circle cx="46" cy="36" r="7" fill="#9b5fd4"/><circle cx="46" cy="36" r="3.5" fill="#ffe040"/><circle cx="22" cy="22" r="6" fill="#4dcf8a"/><circle cx="22" cy="22" r="3" fill="#ffe040"/><circle cx="38" cy="22" r="6" fill="#ffb3d9"/><circle cx="38" cy="22" r="3" fill="#ffe040"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_flower_crown"><circle cx="76" cy="62" r="8" fill="#ff6eb4"/><circle cx="76" cy="62" r="4" fill="#ffe040"/><circle cx="88" cy="57" r="7" fill="#ff5252"/><circle cx="88" cy="57" r="3.5" fill="#ffe040"/><circle cx="100" cy="55" r="9" fill="#ffe040"/><circle cx="100" cy="55" r="4.5" fill="#ff6eb4"/><circle cx="112" cy="57" r="7" fill="#4dcf8a"/><circle cx="112" cy="57" r="3.5" fill="#ffe040"/><circle cx="124" cy="62" r="8" fill="#9b5fd4"/><circle cx="124" cy="62" r="4" fill="#ffe040"/></g>`},
+    {id:'bow_tie',label:'Bow Tie',
+     preview:`<polygon points="12,18 30,28 12,38" fill="#ff5252"/><polygon points="48,18 30,28 48,38" fill="#ff5252"/><circle cx="30" cy="28" r="7" fill="#ff8888"/><circle cx="30" cy="28" r="3.5" fill="#ff5252"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_bow_tie"><polygon points="82,188 100,198 82,208" fill="#ff5252"/><polygon points="118,188 100,198 118,208" fill="#ff5252"/><circle cx="100" cy="198" r="7" fill="#ff8888"/><circle cx="100" cy="198" r="3.5" fill="#ff5252"/></g>`},
+    {id:'pink_ribbon',label:'Head Ribbon',
+     preview:`<path d="M 12 30 Q 30 20 48 30" fill="none" stroke="#ff7eb3" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="26" r="9" fill="#ff7eb3"/><path d="M 22 26 Q 30 16 38 26 Q 30 36 22 26 Z" fill="#ffb3d9"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_pink_ribbon"><path d="M 86 62 Q 100 54 114 62" fill="none" stroke="#ff7eb3" stroke-width="4" stroke-linecap="round"/><circle cx="100" cy="59" r="8" fill="#ff7eb3"/><path d="M 93 59 Q 100 51 107 59 Q 100 67 93 59 Z" fill="#ffb3d9"/></g>`},
+    {id:'bunny_glasses',label:'Glasses',
+     preview:`<rect x="6" y="20" width="20" height="14" rx="7" fill="rgba(255,224,64,.2)" stroke="#ffe040" stroke-width="2.5"/><rect x="34" y="20" width="20" height="14" rx="7" fill="rgba(255,224,64,.2)" stroke="#ffe040" stroke-width="2.5"/><line x1="26" y1="27" x2="34" y2="27" stroke="#ffe040" stroke-width="2"/><line x1="6" y1="27" x2="2" y2="25" stroke="#ffe040" stroke-width="2"/><line x1="54" y1="27" x2="58" y2="25" stroke="#ffe040" stroke-width="2"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_bunny_glasses"><rect x="70" y="110" width="26" height="18" rx="9" fill="rgba(255,224,64,.15)" stroke="#ffe040" stroke-width="2"/><rect x="104" y="110" width="26" height="18" rx="9" fill="rgba(255,224,64,.15)" stroke="#ffe040" stroke-width="2"/><line x1="96" y1="119" x2="104" y2="119" stroke="#ffe040" stroke-width="2"/><line x1="70" y1="119" x2="64" y2="116" stroke="#ffe040" stroke-width="1.5"/><line x1="130" y1="119" x2="136" y2="116" stroke="#ffe040" stroke-width="1.5"/></g>`},
+    {id:'star_collar',label:'Star Collar',
+     preview:`<path d="M 8 32 Q 30 42 52 32" fill="none" stroke="#ffe040" stroke-width="4" stroke-linecap="round"/><polygon points="30,40 27,30 30,24 33,30" fill="#ffe040"/><circle cx="16" cy="37" r="4" fill="#ff5252"/><circle cx="44" cy="37" r="4" fill="#9b5fd4"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_star_collar"><path d="M 70 188 Q 100 200 130 188" fill="none" stroke="#ffe040" stroke-width="5" stroke-linecap="round"/><path d="M 70 188 Q 100 200 130 188" fill="none" stroke="#ffee88" stroke-width="2" stroke-linecap="round"/><polygon points="100,196 96,210 100,216 104,210" fill="#ffe040"/><circle cx="82" cy="195" r="5" fill="#ff5252"/><circle cx="118" cy="195" r="5" fill="#9b5fd4"/></g>`},
+    {id:'carrot_bag',label:'Carrot Bag',
+     preview:`<rect x="16" y="14" width="28" height="34" rx="4" fill="#8B5E3C" stroke="#6a4420" stroke-width="1.5"/><path d="M 20 14 Q 30 6 40 14" fill="none" stroke="#8B5E3C" stroke-width="2"/><ellipse cx="30" cy="28" rx="9" ry="12" fill="#ff8844" stroke="#cc5522" stroke-width="1"/><path d="M 26 18 L 30 14 L 34 18" fill="none" stroke="#4dcf8a" stroke-width="2"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_carrot_bag"><rect x="148" y="185" width="28" height="34" rx="5" fill="#8B5E3C" stroke="#6a4420" stroke-width="1.5"/><path d="M 152 185 Q 162 175 172 185" fill="none" stroke="#8B5E3C" stroke-width="2.5"/><ellipse cx="162" cy="202" rx="10" ry="12" fill="#ff8844" stroke="#cc5522" stroke-width="1"/><path d="M 158 194 L 162 190 L 166 194" fill="none" stroke="#4dcf8a" stroke-width="2"/></g>`},
+    {id:'daisy_chain',label:'Daisy Chain',
+     preview:`<path d="M 6 36 Q 30 44 54 36" fill="none" stroke="rgba(180,220,180,.5)" stroke-width="1"/><circle cx="10" cy="36" r="5" fill="white" stroke="#ccc" stroke-width="1"/><circle cx="10" cy="36" r="2.5" fill="#ffe040"/><circle cx="21" cy="34" r="5" fill="white" stroke="#ccc" stroke-width="1"/><circle cx="21" cy="34" r="2.5" fill="#ffe040"/><circle cx="30" cy="32" r="5" fill="white" stroke="#ccc" stroke-width="1"/><circle cx="30" cy="32" r="2.5" fill="#ffe040"/><circle cx="39" cy="34" r="5" fill="white" stroke="#ccc" stroke-width="1"/><circle cx="39" cy="34" r="2.5" fill="#ffe040"/><circle cx="50" cy="36" r="5" fill="white" stroke="#ccc" stroke-width="1"/><circle cx="50" cy="36" r="2.5" fill="#ffe040"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_daisy_chain"><circle cx="68" cy="192" r="6" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="68" cy="192" r="3" fill="#ffe040"/><circle cx="81" cy="196" r="6" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="81" cy="196" r="3" fill="#ffe040"/><circle cx="94" cy="198" r="6" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="94" cy="198" r="3" fill="#ffe040"/><circle cx="107" cy="199" r="6" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="107" cy="199" r="3" fill="#ffe040"/><circle cx="120" cy="198" r="6" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="120" cy="198" r="3" fill="#ffe040"/><circle cx="133" cy="196" r="6" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="133" cy="196" r="3" fill="#ffe040"/><circle cx="146" cy="192" r="6" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="146" cy="192" r="3" fill="#ffe040"/></g>`},
+    {id:'fairy_wings',label:'Fairy Wings',
+     preview:`<path d="M 30 28 Q 6 16 4 28 Q 6 42 30 38 Z" fill="rgba(200,180,255,.55)" stroke="#9b5fd4" stroke-width="1.5"/><path d="M 30 28 Q 54 16 56 28 Q 54 42 30 38 Z" fill="rgba(200,180,255,.55)" stroke="#9b5fd4" stroke-width="1.5"/><path d="M 10 26 Q 18 22 24 26" fill="none" stroke="rgba(180,140,255,.4)" stroke-width="1"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_fairy_wings"><path d="M 100 178 Q 60 152 55 174 Q 60 200 100 190 Z" fill="rgba(200,180,255,.45)" stroke="#9b5fd4" stroke-width="1.5"/><path d="M 100 178 Q 140 152 145 174 Q 140 200 100 190 Z" fill="rgba(200,180,255,.45)" stroke="#9b5fd4" stroke-width="1.5"/><path d="M 68 162 Q 78 156 88 162" fill="none" stroke="rgba(180,140,255,.4)" stroke-width="1.2"/><path d="M 112 162 Q 122 156 132 162" fill="none" stroke="rgba(180,140,255,.4)" stroke-width="1.2"/></g>`},
+    {id:'clover_pin',label:'Lucky Clover',
+     preview:`<circle cx="30" cy="22" r="9" fill="#4dcf8a"/><circle cx="20" cy="30" r="9" fill="#4dcf8a"/><circle cx="40" cy="30" r="9" fill="#4dcf8a"/><circle cx="30" cy="30" r="7" fill="#4dcf8a"/><line x1="30" y1="36" x2="30" y2="50" stroke="#2a9c5e" stroke-width="3" stroke-linecap="round"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_clover_pin"><circle cx="92" cy="148" r="7" fill="#4dcf8a"/><circle cx="84" cy="156" r="7" fill="#4dcf8a"/><circle cx="100" cy="156" r="7" fill="#4dcf8a"/><circle cx="92" cy="156" r="5" fill="#4dcf8a"/><line x1="92" y1="160" x2="92" y2="170" stroke="#2a9c5e" stroke-width="2" stroke-linecap="round"/></g>`},
+    {id:'heart_wand',label:'Heart Wand',
+     preview:`<line x1="14" y1="50" x2="36" y2="16" stroke="#ff7eb3" stroke-width="3" stroke-linecap="round"/><path d="M 36 16 Q 31 8 36 12 Q 41 8 46 12 Q 48 18 42 23 Q 36 26 30 20 Z" fill="#ff5252"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_heart_wand"><line x1="140" y1="235" x2="164" y2="175" stroke="#ff7eb3" stroke-width="3.5" stroke-linecap="round"/><path d="M 164 175 Q 158 165 164 169 Q 170 165 176 169 Q 178 177 170 183 Q 164 186 158 180 Z" fill="#ff5252" stroke="#cc2244" stroke-width="1"/></g>`},
+  ],
+
+  Sparklox:[
+    {id:'gold_collar',label:'Gold Collar',
+     preview:`<path d="M 8 30 Q 30 42 52 30" fill="none" stroke="#ddaa00" stroke-width="7" stroke-linecap="round"/><path d="M 8 30 Q 30 42 52 30" fill="none" stroke="#ffe040" stroke-width="3.5" stroke-linecap="round"/><polygon points="30,40 26,52 30,58 34,52" fill="#ddaa00"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_gold_collar"><path d="M 72 188 Q 110 200 148 188" fill="none" stroke="#ddaa00" stroke-width="6" stroke-linecap="round"/><path d="M 72 188 Q 110 200 148 188" fill="none" stroke="#ffe040" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="195" r="5" fill="#ffe040" stroke="#aa8800" stroke-width="1"/><circle cx="110" cy="198" r="6" fill="#ffe040" stroke="#aa8800" stroke-width="1"/><circle cx="130" cy="195" r="5" fill="#ffe040" stroke="#aa8800" stroke-width="1"/><polygon points="110,202 106,214 110,220 114,214" fill="#ddaa00"/></g>`},
+    {id:'feather_plume',label:'Plume',
+     preview:`<path d="M 38 52 Q 26 28 30 8 Q 37 18 38 34 Q 42 20 46 10 Q 48 24 40 48 Z" fill="#ff6eb4"/><path d="M 38 50 Q 30 30 32 12" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><circle cx="30" cy="10" r="5" fill="#ffe040"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_feather_plume" transform="rotate(-15,142,72)"><path d="M 142 108 Q 130 80 134 52 Q 142 38 150 55 Q 154 74 142 108 Z" fill="#ff6eb4" stroke="#cc4488" stroke-width="1"/><path d="M 142 108 Q 136 82 138 55" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><circle cx="134" cy="52" r="6" fill="#ffe040"/></g>`},
+    {id:'red_scarf',label:'Red Scarf',
+     preview:`<path d="M 6 22 Q 30 34 54 22 Q 50 33 30 42 Q 10 33 6 22 Z" fill="#ff5252"/><path d="M 6 22 Q 30 31 54 22" fill="none" stroke="#cc2222" stroke-width="1.5"/><rect x="44" y="22" width="14" height="26" rx="3" fill="#ff5252" transform="rotate(8,51,35)"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_red_scarf"><path d="M 68 185 Q 110 196 152 185 Q 148 194 110 204 Q 72 194 68 185 Z" fill="#ff5252"/><path d="M 68 185 Q 110 193 152 185" fill="none" stroke="#cc2222" stroke-width="1.5"/><rect x="148" y="184" width="14" height="30" rx="3" fill="#ff5252" transform="rotate(8,155,199)"/></g>`},
+    {id:'explorer_hat',label:'Explorer Hat',
+     preview:`<ellipse cx="30" cy="40" rx="26" ry="9" fill="#8B5E3C" stroke="#6a4420" stroke-width="1.5"/><path d="M 10 40 Q 12 20 30 16 Q 48 20 50 40 Z" fill="#cc9944" stroke="#8B5E3C" stroke-width="1.5"/><path d="M 14 30 Q 30 26 46 30" fill="none" stroke="rgba(140,90,0,.35)" stroke-width="1.5"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_explorer_hat"><ellipse cx="110" cy="90" rx="44" ry="10" fill="#8B5E3C" stroke="#6a4420" stroke-width="1.5"/><path d="M 74 90 Q 76 62 110 56 Q 144 62 146 90 Z" fill="#cc9944" stroke="#8B5E3C" stroke-width="1.5"/><path d="M 78 76 Q 110 70 142 76" fill="none" stroke="rgba(140,90,0,.3)" stroke-width="1.5"/></g>`},
+    {id:'gem_tiara',label:'Gem Tiara',
+     preview:`<path d="M 6 34 Q 30 22 54 34" fill="none" stroke="#ffe040" stroke-width="2.5" stroke-linecap="round"/><polygon points="30,34 26,18 34,18" fill="#ffe040"/><circle cx="30" cy="16" r="8" fill="#ff5252" stroke="#cc2222" stroke-width="1"/><circle cx="12" cy="30" r="5" fill="#4dcf8a"/><circle cx="48" cy="30" r="5" fill="#9b5fd4"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_gem_tiara"><path d="M 72 108 Q 110 96 148 108" fill="none" stroke="#ffe040" stroke-width="2.5" stroke-linecap="round"/><polygon points="110,108 106,90 114,90" fill="#ffe040"/><circle cx="110" cy="87" r="9" fill="#ff5252" stroke="#cc2222" stroke-width="1.5"/><circle cx="88" cy="104" r="6" fill="#4dcf8a" stroke="#2a9c5e" stroke-width="1"/><circle cx="132" cy="104" r="6" fill="#9b5fd4" stroke="#6622aa" stroke-width="1"/></g>`},
+    {id:'fox_cape',label:'Cape',
+     preview:`<path d="M 4 22 Q 0 40 6 56 Q 18 48 22 34 Q 14 42 4 22 Z" fill="#9b5fd4" stroke="#6622aa" stroke-width="1.5"/><ellipse cx="13" cy="22" rx="9" ry="6" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_fox_cape"><path d="M 52 168 Q 42 194 50 222 Q 72 212 82 190 Q 74 180 52 168 Z" fill="#9b5fd4" stroke="#6622aa" stroke-width="1.5"/><ellipse cx="58" cy="168" rx="10" ry="7" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/></g>`},
+    {id:'star_earrings',label:'Star Earrings',
+     preview:`<polygon points="13,22 15,12 17,22 8,17 22,17" fill="#ffe040" stroke="#ccaa00" stroke-width="1"/><line x1="13" y1="22" x2="13" y2="30" stroke="#ccaa00" stroke-width="1.5"/><circle cx="13" cy="32" r="4" fill="#ff5252"/><polygon points="47,22 49,12 51,22 42,17 56,17" fill="#ffe040" stroke="#ccaa00" stroke-width="1"/><line x1="47" y1="22" x2="47" y2="30" stroke="#ccaa00" stroke-width="1.5"/><circle cx="47" cy="32" r="4" fill="#ff5252"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_star_earrings"><polygon points="64,136 66,126 68,136 58,131 74,131" fill="#ffe040"/><line x1="64" y1="136" x2="64" y2="146" stroke="#ccaa00" stroke-width="2"/><circle cx="64" cy="149" r="4" fill="#ff5252"/><polygon points="156,136 158,126 160,136 150,131 166,131" fill="#ffe040"/><line x1="156" y1="136" x2="156" y2="146" stroke="#ccaa00" stroke-width="2"/><circle cx="156" cy="149" r="4" fill="#ff5252"/></g>`},
+    {id:'bone_necklace',label:'Bone Necklace',
+     preview:`<path d="M 6 30 Q 30 40 54 30" fill="none" stroke="#ddd" stroke-width="2"/><rect x="8" y="26" width="8" height="12" rx="3" fill="white" stroke="#bbb" stroke-width="1"/><rect x="21" y="25" width="8" height="12" rx="3" fill="white" stroke="#bbb" stroke-width="1"/><rect x="34" y="25" width="8" height="12" rx="3" fill="white" stroke="#bbb" stroke-width="1"/><rect x="47" y="26" width="8" height="12" rx="3" fill="white" stroke="#bbb" stroke-width="1"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_bone_necklace"><path d="M 68 188 Q 110 200 152 188" fill="none" stroke="#ddd" stroke-width="2"/><rect x="72" y="185" width="10" height="14" rx="3" fill="white" stroke="#bbb" stroke-width="1"/><rect x="88" y="183" width="10" height="14" rx="3" fill="white" stroke="#bbb" stroke-width="1"/><rect x="104" y="182" width="10" height="14" rx="3" fill="white" stroke="#bbb" stroke-width="1"/><rect x="120" y="183" width="10" height="14" rx="3" fill="white" stroke="#bbb" stroke-width="1"/><rect x="136" y="185" width="10" height="14" rx="3" fill="white" stroke="#bbb" stroke-width="1"/></g>`},
+    {id:'tail_bow',label:'Tail Bow',
+     preview:`<polygon points="20,18 30,28 20,38" fill="#ff5252"/><polygon points="40,18 30,28 40,38" fill="#ff5252"/><circle cx="30" cy="28" r="7" fill="#ff8888"/><circle cx="30" cy="28" r="3.5" fill="#ff5252"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_tail_bow"><polygon points="28,196 42,204 28,212" fill="#ff5252"/><polygon points="56,196 42,204 56,212" fill="#ff5252"/><circle cx="42" cy="204" r="6" fill="#ff8888"/><circle cx="42" cy="204" r="3" fill="#ff5252"/></g>`},
+    {id:'fox_mask',label:'Fox Mask',
+     preview:`<ellipse cx="30" cy="32" rx="22" ry="16" fill="#ffe066" stroke="#cc9900" stroke-width="1.5"/><ellipse cx="14" cy="22" rx="7" ry="11" fill="#ffe066" stroke="#cc9900" stroke-width="1.5"/><ellipse cx="46" cy="22" rx="7" ry="11" fill="#ffe066" stroke="#cc9900" stroke-width="1.5"/><ellipse cx="20" cy="34" rx="7" ry="6" fill="#ff8844"/><ellipse cx="40" cy="34" rx="7" ry="6" fill="#ff8844"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_fox_mask"><ellipse cx="110" cy="138" rx="40" ry="28" fill="#ffe066" stroke="#cc9900" stroke-width="1.5" opacity=".9"/><ellipse cx="82" cy="118" rx="10" ry="18" fill="#ffe066" stroke="#cc9900" stroke-width="1.5"/><ellipse cx="138" cy="118" rx="10" ry="18" fill="#ffe066" stroke="#cc9900" stroke-width="1.5"/><ellipse cx="94" cy="140" rx="11" ry="9" fill="#ff8844"/><ellipse cx="126" cy="140" rx="11" ry="9" fill="#ff8844"/></g>`},
+  ],
+
+  Puddlum:[
+    {id:'sailor_hat',label:'Sailor Hat',
+     preview:`<ellipse cx="30" cy="38" rx="24" ry="8" fill="white" stroke="#2244aa" stroke-width="2"/><rect x="8" y="20" width="44" height="20" rx="4" fill="white" stroke="#2244aa" stroke-width="2"/><rect x="8" y="20" width="44" height="9" rx="3" fill="#2244aa"/><circle cx="30" cy="10" r="6" fill="#ff5252"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_sailor_hat"><ellipse cx="115" cy="58" rx="44" ry="12" fill="white" stroke="#2244aa" stroke-width="2.5"/><rect x="80" y="38" width="70" height="22" rx="4" fill="white" stroke="#2244aa" stroke-width="2"/><rect x="80" y="38" width="70" height="8" rx="2" fill="#2244aa"/><line x1="115" y1="38" x2="115" y2="32" stroke="#ff5252" stroke-width="2"/><circle cx="115" cy="30" r="5" fill="#ff5252"/></g>`},
+    {id:'pearl_necklace',label:'Pearls',
+     preview:`<circle cx="8" cy="30" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="18" cy="28" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="28" cy="26" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="38" cy="28" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="48" cy="30" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_pearl_necklace"><circle cx="78" cy="130" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="90" cy="126" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="102" cy="124" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="114" cy="123" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="126" cy="124" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="138" cy="126" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/><circle cx="150" cy="130" r="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/></g>`},
+    {id:'fish_bow',label:'Fish Bow',
+     preview:`<ellipse cx="22" cy="30" rx="16" ry="9" fill="#4dcf8a" stroke="#2a9c5e" stroke-width="1.5"/><polygon points="38,30 52,22 52,38" fill="#4dcf8a" stroke="#2a9c5e" stroke-width="1"/><circle cx="24" cy="27" r="4" fill="rgba(255,255,255,.5)"/><circle cx="22" cy="30" r="4" fill="#ffe040" stroke="#cc9900" stroke-width="1"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_fish_bow"><ellipse cx="100" cy="54" rx="22" ry="10" fill="#4dcf8a" stroke="#2a9c5e" stroke-width="1.5"/><polygon points="122,54 138,44 138,64" fill="#4dcf8a" stroke="#2a9c5e" stroke-width="1"/><circle cx="104" cy="50" r="4" fill="rgba(255,255,255,.5)"/><circle cx="100" cy="54" r="5" fill="#ffe040" stroke="#cc9900" stroke-width="1"/></g>`},
+    {id:'wave_crown',label:'Wave Crown',
+     preview:`<path d="M 4 26 Q 12 14 20 26 Q 28 14 36 26 Q 44 14 52 26" fill="none" stroke="#4dcf8a" stroke-width="4" stroke-linecap="round"/><path d="M 4 32 Q 12 20 20 32 Q 28 20 36 32 Q 44 20 52 32" fill="none" stroke="#b3f0ff" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_wave_crown"><path d="M 72 52 Q 82 38 92 52 Q 102 38 115 52 Q 128 38 138 52 Q 148 38 158 52" fill="none" stroke="#4dcf8a" stroke-width="5" stroke-linecap="round"/><path d="M 72 60 Q 82 46 92 60 Q 102 46 115 60 Q 128 46 138 60 Q 148 46 158 60" fill="none" stroke="#b3f0ff" stroke-width="3" stroke-linecap="round" opacity=".65"/></g>`},
+    {id:'seashell_clip',label:'Shell Clip',
+     preview:`<path d="M 30 12 Q 12 16 10 30 Q 12 46 30 48 Q 48 46 50 30 Q 48 16 30 12 Z" fill="#ffb3cc" stroke="#cc6688" stroke-width="1.5"/><path d="M 30 12 L 30 48" fill="none" stroke="#cc6688" stroke-width="1.2" opacity=".5"/><path d="M 10 30 L 50 30" fill="none" stroke="#cc6688" stroke-width="1.2" opacity=".5"/><circle cx="26" cy="16" r="3" fill="rgba(255,255,255,.5)"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_seashell_clip"><path d="M 100 46 Q 76 52 74 68 Q 76 88 100 90 Q 124 88 126 68 Q 124 52 100 46 Z" fill="#ffb3cc" stroke="#cc6688" stroke-width="1.5"/><path d="M 100 46 L 100 90" fill="none" stroke="#cc6688" stroke-width="1.2" opacity=".5"/><path d="M 74 68 L 126 68" fill="none" stroke="#cc6688" stroke-width="1.2" opacity=".5"/></g>`},
+    {id:'bubble_tiara',label:'Bubble Tiara',
+     preview:`<circle cx="14" cy="30" r="10" fill="rgba(180,240,255,.6)" stroke="#b3f0ff" stroke-width="2"/><circle cx="30" cy="22" r="13" fill="rgba(180,240,255,.6)" stroke="#b3f0ff" stroke-width="2"/><circle cx="46" cy="30" r="10" fill="rgba(180,240,255,.6)" stroke="#b3f0ff" stroke-width="2"/><circle cx="12" cy="26" r="4" fill="white" opacity=".55"/><circle cx="27" cy="18" r="5" fill="white" opacity=".55"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_bubble_tiara"><circle cx="86" cy="58" r="12" fill="rgba(180,240,255,.55)" stroke="#b3f0ff" stroke-width="2"/><circle cx="115" cy="50" r="16" fill="rgba(180,240,255,.55)" stroke="#b3f0ff" stroke-width="2"/><circle cx="144" cy="58" r="12" fill="rgba(180,240,255,.55)" stroke="#b3f0ff" stroke-width="2"/><circle cx="83" cy="54" r="5" fill="white" opacity=".55"/><circle cx="112" cy="46" r="6" fill="white" opacity=".55"/></g>`},
+    {id:'anchor',label:'Anchor',
+     preview:`<line x1="30" y1="10" x2="30" y2="50" stroke="#2244aa" stroke-width="3"/><ellipse cx="30" cy="12" rx="12" ry="4" fill="none" stroke="#2244aa" stroke-width="2.5"/><path d="M 18 46 Q 10 36 18 28" fill="none" stroke="#2244aa" stroke-width="2.5" stroke-linecap="round"/><path d="M 42 46 Q 50 36 42 28" fill="none" stroke="#2244aa" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="46" x2="44" y2="46" stroke="#2244aa" stroke-width="2.5"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_anchor" opacity=".85"><line x1="115" y1="155" x2="115" y2="200" stroke="#2244aa" stroke-width="3"/><ellipse cx="115" cy="157" rx="14" ry="5" fill="none" stroke="#2244aa" stroke-width="2.5"/><path d="M 101 196 Q 92 184 101 172" fill="none" stroke="#2244aa" stroke-width="2.5" stroke-linecap="round"/><path d="M 129 196 Q 138 184 129 172" fill="none" stroke="#2244aa" stroke-width="2.5" stroke-linecap="round"/><line x1="99" y1="196" x2="131" y2="196" stroke="#2244aa" stroke-width="2.5"/></g>`},
+    {id:'flipper_bows',label:'Flipper Bows',
+     preview:`<polygon points="6,18 18,28 6,38" fill="#ff7eb3"/><polygon points="30,18 18,28 30,38" fill="#ff7eb3"/><circle cx="18" cy="28" r="6" fill="#ffb3d9"/><circle cx="18" cy="28" r="3" fill="#ff7eb3"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_flipper_bows"><polygon points="26,162 38,172 26,182" fill="#ff7eb3"/><polygon points="50,162 38,172 50,182" fill="#ff7eb3"/><circle cx="38" cy="172" r="6" fill="#ffb3d9"/><circle cx="38" cy="172" r="3" fill="#ff7eb3"/><polygon points="180,162 192,172 180,182" fill="#ff7eb3"/><polygon points="204,162 192,172 204,182" fill="#ff7eb3"/><circle cx="192" cy="172" r="6" fill="#ffb3d9"/><circle cx="192" cy="172" r="3" fill="#ff7eb3"/></g>`},
+    {id:'captain_coat',label:'Captain Coat',
+     preview:`<rect x="2" y="18" width="24" height="38" rx="3" fill="#2244aa" stroke="#1133aa" stroke-width="1.5"/><line x1="14" y1="18" x2="14" y2="56" stroke="#ffe040" stroke-width="2"/><circle cx="14" cy="26" r="3" fill="#ffe040"/><circle cx="14" cy="36" r="3" fill="#ffe040"/><circle cx="14" cy="46" r="3" fill="#ffe040"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_captain_coat"><path d="M 56 190 Q 48 218 58 246 Q 76 236 84 210 Q 78 198 56 190 Z" fill="#2244aa" stroke="#1133aa" stroke-width="1.5"/><line x1="62" y1="192" x2="72" y2="240" stroke="#ffe040" stroke-width="2"/><circle cx="65" cy="204" r="3.5" fill="#ffe040"/><circle cx="68" cy="220" r="3.5" fill="#ffe040"/></g>`},
+    {id:'fish_hat',label:'Fish Hat',
+     preview:`<ellipse cx="30" cy="30" rx="24" ry="14" fill="#a0d8ff" stroke="#4488cc" stroke-width="1.5"/><path d="M 6 30 Q 0 22 0 30 Q 0 38 6 30 Z" fill="#a0d8ff" stroke="#4488cc" stroke-width="1"/><circle cx="38" cy="24" r="6" fill="white" opacity=".45"/><path d="M 12 36 Q 22 40 32 37" fill="none" stroke="#2266aa" stroke-width="1.2" opacity=".5"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_fish_hat"><ellipse cx="115" cy="54" rx="38" ry="22" fill="#a0d8ff" stroke="#4488cc" stroke-width="2"/><path d="M 77 54 Q 58 40 58 54 Q 58 68 77 54 Z" fill="#a0d8ff" stroke="#4488cc" stroke-width="1.5"/><circle cx="130" cy="46" r="8" fill="white" opacity=".4"/></g>`},
+  ],
+
+  Driftail:[
+    {id:'dragon_crown',label:'Dragon Crown',
+     preview:`<path d="M 10 40 L 6 18 L 18 28 L 30 10 L 42 28 L 54 18 L 50 40 Z" fill="#ddaa00" stroke="#aa7700" stroke-width="1.5"/><path d="M 13 40 L 9 21 L 20 30 L 30 13 L 40 30 L 51 21 L 47 40 Z" fill="#ffe040"/><circle cx="30" cy="12" r="8" fill="#ff5252"/><circle cx="18" cy="29" r="5" fill="#4dcf8a"/><circle cx="42" cy="29" r="5" fill="#9b5fd4"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_dragon_crown"><path d="M 88 68 L 84 44 L 96 56 L 120 38 L 144 56 L 156 44 L 152 68 Z" fill="#ddaa00" stroke="#aa7700" stroke-width="1.5"/><path d="M 92 68 L 88 48 L 98 58 L 120 42 L 142 58 L 152 48 L 148 68 Z" fill="#ffe040"/><circle cx="120" cy="42" r="8" fill="#ff5252"/><circle cx="96" cy="58" r="5" fill="#4dcf8a"/><circle cx="144" cy="58" r="5" fill="#9b5fd4"/></g>`},
+    {id:'gem_collar',label:'Gem Collar',
+     preview:`<path d="M 6 28 Q 30 40 54 28" fill="none" stroke="#4488bb" stroke-width="6" stroke-linecap="round"/><path d="M 6 28 Q 30 40 54 28" fill="none" stroke="#88ccff" stroke-width="3" stroke-linecap="round"/><polygon points="30,38 26,50 30,56 34,50" fill="#88ccff"/><circle cx="14" cy="35" r="5" fill="#b3e0ff"/><circle cx="46" cy="35" r="5" fill="#b3e0ff"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_gem_collar"><path d="M 76 200 Q 120 214 164 200" fill="none" stroke="#4488bb" stroke-width="5" stroke-linecap="round"/><path d="M 76 200 Q 120 214 164 200" fill="none" stroke="#88ccff" stroke-width="2.5" stroke-linecap="round"/><polygon points="120,208 115,222 120,228 125,222" fill="#88ccff" stroke="#4488bb" stroke-width="1"/><circle cx="96" cy="207" r="5" fill="#b3e0ff"/><circle cx="144" cy="207" r="5" fill="#b3e0ff"/></g>`},
+    {id:'fire_crown',label:'Fire Crown',
+     preview:`<path d="M 14 40 Q 10 22 18 10 Q 22 20 20 36" fill="#ff6600"/><path d="M 20 38 Q 18 18 28 8 Q 32 20 30 36" fill="#ff4400"/><path d="M 30 36 Q 30 14 40 6 Q 44 18 42 36" fill="#ffaa00"/><path d="M 40 38 Q 40 18 46 10 Q 50 22 48 38" fill="#ff6600"/><path d="M 22 38 Q 28 18 36 8 Q 40 20 36 36" fill="#ffdd00" opacity=".6"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_fire_crown"><path d="M 96 72 Q 92 52 100 40 Q 106 52 104 68" fill="#ff6600"/><path d="M 100 40 Q 108 28 116 40 Q 118 54 114 68" fill="#ff4400"/><path d="M 114 68 Q 120 50 128 40 Q 132 52 130 70" fill="#ffaa00"/><path d="M 98 70 Q 104 44 114 36 Q 122 46 116 68" fill="#ffdd00" opacity=".7"/></g>`},
+    {id:'scale_armor',label:'Scale Armor',
+     preview:`<path d="M 8 22 Q 30 32 52 22 Q 52 44 30 48 Q 8 44 8 22 Z" fill="#4488bb" stroke="#2266aa" stroke-width="1.5"/><path d="M 10 32 Q 30 40 50 32" fill="none" stroke="#2266aa" stroke-width="1.5" opacity=".5"/><path d="M 12 42 Q 30 48 48 42" fill="none" stroke="#2266aa" stroke-width="1.2" opacity=".4"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_scale_armor"><path d="M 82 178 Q 120 192 158 178 Q 158 215 120 222 Q 82 215 82 178 Z" fill="#4488bb" stroke="#2266aa" stroke-width="1.5"/><path d="M 84 188 Q 120 200 156 188" fill="none" stroke="#2266aa" stroke-width="1.5" opacity=".5"/><path d="M 86 202 Q 120 214 154 202" fill="none" stroke="#2266aa" stroke-width="1.5" opacity=".4"/></g>`},
+    {id:'wing_bands',label:'Wing Bands',
+     preview:`<ellipse cx="16" cy="30" rx="12" ry="7" fill="none" stroke="#ffe040" stroke-width="3"/><ellipse cx="16" cy="30" rx="12" ry="7" fill="none" stroke="#ffee88" stroke-width="1.5" opacity=".6"/><ellipse cx="44" cy="30" rx="12" ry="7" fill="none" stroke="#ffe040" stroke-width="3"/><ellipse cx="44" cy="30" rx="12" ry="7" fill="none" stroke="#ffee88" stroke-width="1.5" opacity=".6"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_wing_bands"><ellipse cx="52" cy="130" rx="14" ry="8" fill="none" stroke="#ffe040" stroke-width="3" transform="rotate(-30,52,130)"/><ellipse cx="52" cy="130" rx="14" ry="8" fill="none" stroke="#ffee88" stroke-width="1.5" opacity=".6" transform="rotate(-30,52,130)"/><ellipse cx="188" cy="130" rx="14" ry="8" fill="none" stroke="#ffe040" stroke-width="3" transform="rotate(30,188,130)"/><ellipse cx="188" cy="130" rx="14" ry="8" fill="none" stroke="#ffee88" stroke-width="1.5" opacity=".6" transform="rotate(30,188,130)"/></g>`},
+    {id:'horn_rings',label:'Horn Rings',
+     preview:`<line x1="18" y1="8" x2="18" y2="52" stroke="#5a7a9a" stroke-width="5" stroke-linecap="round"/><ellipse cx="18" cy="18" rx="10" ry="3.5" fill="none" stroke="#ffe040" stroke-width="2.5"/><ellipse cx="18" cy="30" rx="8" ry="3" fill="none" stroke="#ff5252" stroke-width="2"/><ellipse cx="18" cy="42" rx="5" ry="2.5" fill="none" stroke="#4dcf8a" stroke-width="2"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_horn_rings"><ellipse cx="100" cy="53" rx="12" ry="4" fill="none" stroke="#ffe040" stroke-width="2.5"/><ellipse cx="100" cy="62" rx="9" ry="3.5" fill="none" stroke="#ff5252" stroke-width="2"/><ellipse cx="100" cy="70" rx="6" ry="3" fill="none" stroke="#4dcf8a" stroke-width="2"/><ellipse cx="132" cy="53" rx="12" ry="4" fill="none" stroke="#ffe040" stroke-width="2.5"/><ellipse cx="132" cy="62" rx="9" ry="3.5" fill="none" stroke="#ff5252" stroke-width="2"/></g>`},
+    {id:'lava_crown',label:'Lava Crown',
+     preview:`<path d="M 6 40 L 4 22 L 14 30 L 30 12 L 46 30 L 56 22 L 54 40 Z" fill="#cc3300" stroke="#aa2200" stroke-width="1.5"/><path d="M 8 40 L 7 24 L 16 32 L 30 15 L 44 32 L 53 24 L 52 40 Z" fill="#ff6600"/><circle cx="30" cy="14" r="7" fill="#ffaa00"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_lava_crown"><path d="M 86 70 L 82 46 L 96 58 L 120 38 L 144 58 L 158 46 L 154 70 Z" fill="#cc3300" stroke="#aa2200" stroke-width="1.5"/><path d="M 90 70 L 86 50 L 98 60 L 120 42 L 142 60 L 154 50 L 150 70 Z" fill="#ff6600"/><circle cx="120" cy="40" r="9" fill="#ffaa00"/></g>`},
+    {id:'treasure_pile',label:'Gold Pile',
+     preview:`<circle cx="20" cy="44" r="8" fill="#ffe040" stroke="#ddaa00" stroke-width="1"/><circle cx="32" cy="42" r="9" fill="#ffe040" stroke="#ddaa00" stroke-width="1"/><circle cx="12" cy="42" r="7" fill="#ddaa00"/><circle cx="42" cy="44" r="7" fill="#ddaa00"/><polygon points="32,30 27,40 37,40" fill="#ff5252" stroke="#cc2222" stroke-width="1"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_treasure_pile"><circle cx="105" cy="252" r="10" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/><circle cx="122" cy="250" r="12" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/><circle cx="92" cy="252" r="9" fill="#ddaa00"/><circle cx="136" cy="253" r="9" fill="#ddaa00"/><polygon points="122,238 116,248 128,248" fill="#ff5252" stroke="#cc2222" stroke-width="1"/></g>`},
+    {id:'crystal_spikes',label:'Crystal Spikes',
+     preview:`<polygon points="10" fill="#88ccff"/><polygon points="10,42 7,22 13,22" fill="#88ccff" stroke="#4488bb" stroke-width="1"/><polygon points="20,40 17,18 23,18" fill="#b3e0ff" stroke="#4488bb" stroke-width="1"/><polygon points="30,38 27,14 33,14" fill="#88ccff" stroke="#4488bb" stroke-width="1"/><polygon points="40,40 37,18 43,18" fill="#b3e0ff" stroke="#4488bb" stroke-width="1"/><polygon points="50,42 47,22 53,22" fill="#88ccff" stroke="#4488bb" stroke-width="1"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_crystal_spikes"><polygon points="86,72 80,48 92,48" fill="#88ccff" stroke="#4488bb" stroke-width="1.5"/><polygon points="100,68 94,42 106,42" fill="#b3e0ff" stroke="#4488bb" stroke-width="1.5"/><polygon points="120,65 114,38 126,38" fill="#88ccff" stroke="#4488bb" stroke-width="1.5"/><polygon points="140,68 134,42 146,42" fill="#b3e0ff" stroke="#4488bb" stroke-width="1.5"/><polygon points="154,72 148,48 160,48" fill="#88ccff" stroke="#4488bb" stroke-width="1.5"/></g>`},
+    {id:'battle_paint',label:'War Paint',
+     preview:`<line x1="14" y1="14" x2="22" y2="42" stroke="#ff4400" stroke-width="3" stroke-linecap="round" opacity=".75"/><line x1="18" y1="12" x2="24" y2="40" stroke="#ff6600" stroke-width="1.5" stroke-linecap="round" opacity=".5"/><line x1="36" y1="14" x2="44" y2="42" stroke="#ff4400" stroke-width="3" stroke-linecap="round" opacity=".75"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_battle_paint" opacity=".8"><line x1="105" y1="108" x2="115" y2="148" stroke="#ff4400" stroke-width="3" stroke-linecap="round"/><line x1="110" y1="106" x2="118" y2="146" stroke="#ff6600" stroke-width="1.8" stroke-linecap="round" opacity=".6"/><line x1="130" y1="108" x2="138" y2="148" stroke="#ff4400" stroke-width="3" stroke-linecap="round"/></g>`},
+  ],
+
+  Lunabelle:[
+    {id:'grad_cap',label:'Grad Cap',
+     preview:`<rect x="16" y="30" width="28" height="12" rx="2" fill="#1a0a2e" stroke="#ffe040" stroke-width="1.5"/><polygon points="30,14 48,26 30,38 12,26" fill="#1a0a2e" stroke="#ffe040" stroke-width="1.5"/><polygon points="30,16 46,27 30,36 14,27" fill="#2a1a4e"/><line x1="46" y1="26" x2="54" y2="38" stroke="#ffe040" stroke-width="1.5"/><circle cx="54" cy="40" r="4" fill="#ffe040"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_grad_cap"><rect x="84" y="64" width="52" height="12" rx="3" fill="#1a0a2e" stroke="#ffe040" stroke-width="1.5"/><polygon points="110,48 140,60 110,72 80,60" fill="#1a0a2e" stroke="#ffe040" stroke-width="1.5"/><polygon points="110,50 138,61 110,70 82,61" fill="#2a1a4e"/><line x1="138" y1="61" x2="148" y2="74" stroke="#ffe040" stroke-width="2"/><circle cx="148" cy="76" r="5" fill="#ffe040"/></g>`},
+    {id:'moon_pendant',label:'Moon Pendant',
+     preview:`<path d="M 8 28 Q 30 38 52 28" fill="none" stroke="#cdb3ff" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="34" x2="30" y2="46" stroke="#cdb3ff" stroke-width="2"/><path d="M 23 52 Q 19 42 23 36 Q 34 36 36 44 Q 32 54 23 52 Z" fill="#ffe040" stroke="#ccaa00" stroke-width="1"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_moon_pendant"><path d="M 78 188 Q 110 200 142 188" fill="none" stroke="#cdb3ff" stroke-width="2.5" stroke-linecap="round"/><line x1="110" y1="196" x2="110" y2="210" stroke="#cdb3ff" stroke-width="2"/><path d="M 104 218 Q 100 210 104 204 Q 114 204 116 212 Q 112 220 104 218 Z" fill="#ffe040" stroke="#ccaa00" stroke-width="1"/></g>`},
+    {id:'star_glasses',label:'Star Glasses',
+     preview:`<polygon points="15,26 18,14 21,26 10,20 26,20" fill="#ffe040" stroke="#ccaa00" stroke-width="1"/><polygon points="45,26 48,14 51,26 40,20 56,20" fill="#ffe040" stroke="#ccaa00" stroke-width="1"/><line x1="26" y1="20" x2="40" y2="20" stroke="#cdb3ff" stroke-width="2"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_star_glasses"><polygon points="88,126 92,114 96,126 84,118 100,118" fill="#ffe040" stroke="#ccaa00" stroke-width="1"/><polygon points="132,126 136,114 140,126 128,118 144,118" fill="#ffe040" stroke="#ccaa00" stroke-width="1"/><line x1="100" y1="120" x2="128" y2="120" stroke="#cdb3ff" stroke-width="2"/></g>`},
+    {id:'star_crown',label:'Star Crown',
+     preview:`<path d="M 6 38 L 4 20 L 16 28 L 30 10 L 44 28 L 56 20 L 54 38 Z" fill="#1a0a2e" stroke="#ffe040" stroke-width="1.5"/><circle cx="30" cy="11" r="6" fill="#ffe040"/><circle cx="14" cy="27" r="4" fill="#cdb3ff"/><circle cx="46" cy="27" r="4" fill="#cdb3ff"/><ellipse cx="30" cy="38" rx="24" ry="6" fill="#1a0a2e" stroke="#ffe040" stroke-width="1.5"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_star_crown"><path d="M 76 80 L 70 55 L 88 68 L 110 45 L 132 68 L 150 55 L 144 80 Z" fill="#1a0a2e" stroke="#ffe040" stroke-width="2"/><circle cx="110" cy="47" r="9" fill="#ffe040"/><circle cx="86" cy="68" r="6" fill="#cdb3ff"/><circle cx="134" cy="68" r="6" fill="#cdb3ff"/><ellipse cx="110" cy="80" rx="36" ry="7" fill="#1a0a2e" stroke="#ffe040" stroke-width="1.5"/></g>`},
+    {id:'book_satchel',label:'Book Bag',
+     preview:`<rect x="10" y="16" width="30" height="38" rx="3" fill="#8B5E3C" stroke="#6a4420" stroke-width="1.5"/><rect x="12" y="20" width="26" height="16" rx="2" fill="#cc9944"/><line x1="12" y1="28" x2="38" y2="28" stroke="#8B5E3C" stroke-width="1"/><circle cx="25" cy="42" r="4" fill="#ffe040"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_book_satchel"><rect x="148" y="188" width="32" height="42" rx="4" fill="#8B5E3C" stroke="#6a4420" stroke-width="1.5"/><path d="M 150 188 Q 164 180 178 188" fill="none" stroke="#8B5E3C" stroke-width="2"/><rect x="151" y="194" width="28" height="18" rx="2" fill="#cc9944"/><line x1="151" y1="204" x2="179" y2="204" stroke="#8B5E3C" stroke-width="1"/><circle cx="164" cy="216" r="4" fill="#ffe040"/></g>`},
+    {id:'halo_ring',label:'Halo',
+     preview:`<ellipse cx="30" cy="16" rx="24" ry="8" fill="none" stroke="#ffe040" stroke-width="4"/><ellipse cx="30" cy="16" rx="24" ry="8" fill="none" stroke="#ffee88" stroke-width="2" opacity=".6"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_halo_ring"><ellipse cx="110" cy="46" rx="38" ry="11" fill="none" stroke="#ffe040" stroke-width="4.5"/><ellipse cx="110" cy="46" rx="38" ry="11" fill="none" stroke="#ffee88" stroke-width="2" opacity=".6"/></g>`},
+    {id:'feather_wings',label:'Feather Wings',
+     preview:`<path d="M 30 28 Q 6 18 4 28 Q 6 42 30 38 Z" fill="rgba(200,180,255,.55)" stroke="#9b5fd4" stroke-width="1.5"/><path d="M 30 28 Q 54 18 56 28 Q 54 42 30 38 Z" fill="rgba(200,180,255,.55)" stroke="#9b5fd4" stroke-width="1.5"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_feather_wings"><path d="M 110 200 Q 68 172 62 194 Q 68 220 110 212 Z" fill="rgba(200,180,255,.5)" stroke="#9b5fd4" stroke-width="1.5"/><path d="M 110 200 Q 152 172 158 194 Q 152 220 110 212 Z" fill="rgba(200,180,255,.5)" stroke="#9b5fd4" stroke-width="1.5"/></g>`},
+    {id:'telescope',label:'Telescope',
+     preview:`<rect x="8" y="24" width="32" height="12" rx="3" fill="#8B5E3C" stroke="#6a4420" stroke-width="1.5"/><rect x="36" y="26" width="16" height="9" rx="2" fill="#aaa" stroke="#888" stroke-width="1"/><circle cx="10" cy="30" r="8" fill="rgba(100,180,255,.35)" stroke="#4488bb" stroke-width="1.5"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_telescope"><rect x="112" y="192" width="50" height="14" rx="4" fill="#8B5E3C" stroke="#6a4420" stroke-width="1.5" transform="rotate(-25,137,199)"/><rect x="156" y="190" width="20" height="10" rx="3" fill="#aaa" stroke="#888" stroke-width="1" transform="rotate(-25,166,195)"/><circle cx="118" cy="204" r="10" fill="rgba(100,180,255,.3)" stroke="#4488bb" stroke-width="2" transform="rotate(-25,118,204)"/></g>`},
+    {id:'star_scarf',label:'Star Scarf',
+     preview:`<path d="M 4 22 Q 30 34 56 22 Q 52 34 30 44 Q 8 34 4 22 Z" fill="#1a0a2e" stroke="#cdb3ff" stroke-width="1"/><polygon points="16,27 14,20 18,20" fill="#ffe040"/><polygon points="28,25 26,18 30,18" fill="#cdb3ff"/><polygon points="40,25 38,18 42,18" fill="#ffe040"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_star_scarf"><path d="M 65 185 Q 110 198 155 185 Q 150 196 110 206 Q 70 196 65 185 Z" fill="#1a0a2e" stroke="#cdb3ff" stroke-width="1"/><polygon points="82,190 79,182 86,182" fill="#ffe040"/><polygon points="98,188 95,180 102,180" fill="#cdb3ff"/><polygon points="116,188 113,180 120,180" fill="#ffe040"/><polygon points="132,190 129,182 136,182" fill="#cdb3ff"/></g>`},
+    {id:'night_cape',label:'Night Cape',
+     preview:`<path d="M 2 16 Q 0 34 6 50 Q 18 44 22 28 Q 14 36 2 16 Z" fill="#1a0a2e" stroke="#cdb3ff" stroke-width="1.5"/><circle cx="6" cy="24" r="3" fill="#ffe040"/><circle cx="12" cy="32" r="2.5" fill="#cdb3ff"/><circle cx="7" cy="42" r="2.5" fill="#ffe040"/>`,
+     svg:(c)=>`<g class="acc-item" id="acc_night_cape"><path d="M 52 178 Q 42 206 50 234 Q 72 224 80 198 Q 74 188 52 178 Z" fill="#1a0a2e" stroke="#cdb3ff" stroke-width="1.5"/><circle cx="58" cy="190" r="3.5" fill="#ffe040"/><circle cx="62" cy="205" r="3" fill="#cdb3ff"/><circle cx="58" cy="220" r="3" fill="#ffe040"/></g>`},
+  ],
+
+};
 
 // ═══════════════════════════════════════════
 //  SVG CREATURE BUILDERS
@@ -1904,6 +2104,9 @@ function initCreature(name,color,word,happy){
   document.getElementById('loreStats').innerHTML=stats.map(s=>`<div class="stat-row"><div class="stat-name">${s.n}</div><div class="stat-bar"><div class="stat-bar-fill" style="width:${s.v}%;background:${s.c}"></div></div><div class="stat-val">${s.v}</div></div>`).join('');
   document.getElementById('loreFoot').innerHTML=`🏠 ${data.habitat} &nbsp;•&nbsp; 🌡 ${data.climate}<br>🍽 Loves ${data.food}`;
 
+  // Clear any old accessories
+  appState.acc = null;
+  appState.accSet = new Set();
   updateHappy();buildTools();buildAccPicker();startParts();startAnim(name);
 }
 
@@ -2029,22 +2232,125 @@ function updateHappy(){const f=document.getElementById('hFill');if(f) f.style.wi
 function addSleepZ(){removeSleepZ();const s=document.getElementById('stage');const el=document.createElement('div');el.className='zzz';el.id='zzz';el.textContent='💤';s.appendChild(el);}
 function removeSleepZ(){const el=document.getElementById('zzz');if(el)el.remove();}
 
+// ── GENERIC ACCESSORIES (fallback for creatures without custom set) ──
+const GENERIC_ACCESSORIES = [
+  {id:'party_hat',label:'Party Hat',
+   preview:`<polygon points="30,8 14,46 46,46" fill="#ff6eb4" stroke="#cc4488" stroke-width="1.5"/><ellipse cx="30" cy="46" rx="16" ry="5" fill="#ff9eb5" stroke="#cc4488" stroke-width="1"/><line x1="30" y1="8" x2="30" y2="2" stroke="#ffe040" stroke-width="2"/><circle cx="30" cy="1" r="4" fill="#ffe040"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_party_hat"><polygon points="110,38 86,90 134,90" fill="#ff6eb4" stroke="#cc4488" stroke-width="2"/><ellipse cx="110" cy="90" rx="24" ry="7" fill="#ff9eb5" stroke="#cc4488" stroke-width="1.5"/><line x1="110" y1="38" x2="110" y2="28" stroke="#ffe040" stroke-width="2.5"/><circle cx="110" cy="26" r="6" fill="#ffe040"/></g>`},
+  {id:'rainbow_bow',label:'Rainbow Bow',
+   preview:`<polygon points="14,20 30,30 14,40" fill="#ff5252"/><polygon points="46,20 30,30 46,40" fill="#4dcf8a"/><circle cx="30" cy="30" r="7" fill="#ffe040"/><circle cx="30" cy="30" r="3.5" fill="#ff7eb3"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_rainbow_bow"><polygon points="84,182 110,196 84,210" fill="#ff5252"/><polygon points="136,182 110,196 136,210" fill="#4dcf8a"/><circle cx="110" cy="196" r="10" fill="#ffe040"/><circle cx="110" cy="196" r="5" fill="#ff7eb3"/></g>`},
+  {id:'halo',label:'Halo',
+   preview:`<ellipse cx="30" cy="20" rx="22" ry="7" fill="none" stroke="#ffe040" stroke-width="3.5"/><ellipse cx="30" cy="20" rx="22" ry="7" fill="none" stroke="#ffee88" stroke-width="1.5" opacity=".6"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_halo"><ellipse cx="110" cy="44" rx="42" ry="12" fill="none" stroke="#ffe040" stroke-width="4.5"/><ellipse cx="110" cy="44" rx="42" ry="12" fill="none" stroke="#ffee88" stroke-width="2" opacity=".6"/></g>`},
+  {id:'heart_eyes_acc',label:'Heart Eyes',
+   preview:`<path d="M 18 20 Q 14 14 18 18 Q 22 14 26 18 Q 28 24 22 28 Q 18 30 14 26 Z" fill="#ff5252"/><path d="M 42 20 Q 38 14 42 18 Q 46 14 50 18 Q 52 24 46 28 Q 42 30 38 26 Z" fill="#ff5252"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_heart_eyes_acc"><path d="M 96 108 Q 88 98 96 104 Q 104 98 112 104 Q 115 112 106 118 Q 98 121 90 115 Z" fill="#ff5252"/><path d="M 128 108 Q 120 98 128 104 Q 136 98 144 104 Q 147 112 138 118 Q 130 121 122 115 Z" fill="#ff5252"/></g>`},
+  {id:'gem_necklace',label:'Gem Necklace',
+   preview:`<path d="M 8 28 Q 30 38 52 28" fill="none" stroke="#9b5fd4" stroke-width="2.5" stroke-linecap="round"/><polygon points="30,36 25,48 30,54 35,48" fill="#9b5fd4"/><circle cx="30" cy="38" r="5" fill="#c89aff" stroke="#9b5fd4" stroke-width="1"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_gem_necklace"><path d="M 68 188 Q 110 202 152 188" fill="none" stroke="#9b5fd4" stroke-width="3" stroke-linecap="round"/><polygon points="110,198 104,215 110,222 116,215" fill="#9b5fd4"/><circle cx="110" cy="200" r="8" fill="#c89aff" stroke="#9b5fd4" stroke-width="1.5"/></g>`},
+  {id:'flower_crown_gen',label:'Flower Crown',
+   preview:`<circle cx="30" cy="30" r="9" fill="#ff6eb4"/><circle cx="30" cy="30" r="5" fill="#ffe040"/><circle cx="14" cy="34" r="7" fill="#ff5252"/><circle cx="14" cy="34" r="3.5" fill="#ffe040"/><circle cx="46" cy="34" r="7" fill="#9b5fd4"/><circle cx="46" cy="34" r="3.5" fill="#ffe040"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_flower_crown_gen"><circle cx="82" cy="62" r="8" fill="#ff6eb4"/><circle cx="82" cy="62" r="4" fill="#ffe040"/><circle cx="96" cy="56" r="7" fill="#ff5252"/><circle cx="96" cy="56" r="3.5" fill="#ffe040"/><circle cx="110" cy="54" r="9" fill="#ffe040"/><circle cx="110" cy="54" r="4.5" fill="#ff6eb4"/><circle cx="124" cy="56" r="7" fill="#4dcf8a"/><circle cx="124" cy="56" r="3.5" fill="#ffe040"/><circle cx="138" cy="62" r="8" fill="#9b5fd4"/><circle cx="138" cy="62" r="4" fill="#ffe040"/></g>`},
+  {id:'star_sticker',label:'Star Sticker',
+   preview:`<polygon points="30,8 34,22 48,22 37,31 41,45 30,36 19,45 23,31 12,22 26,22" fill="#ffe040" stroke="#ccaa00" stroke-width="1.5"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_star_sticker"><polygon points="156,100 160,114 174,114 163,123 167,137 156,128 145,137 149,123 138,114 152,114" fill="#ffe040" stroke="#ccaa00" stroke-width="1.5"/></g>`},
+  {id:'tiny_crown',label:'Mini Crown',
+   preview:`<path d="M 10 36 L 8 18 L 20 28 L 30 14 L 40 28 L 52 18 L 50 36 Z" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/><ellipse cx="30" cy="36" rx="20" ry="5" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/><circle cx="30" cy="15" r="4" fill="#ff5252"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_tiny_crown"><path d="M 82 72 L 78 52 L 94 64 L 110 46 L 126 64 L 142 52 L 138 72 Z" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/><ellipse cx="110" cy="72" rx="30" ry="7" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/><circle cx="110" cy="48" r="6" fill="#ff5252"/></g>`},
+  {id:'cape_gen',label:'Cape',
+   preview:`<path d="M 4 16 Q 2 32 8 46 Q 18 40 22 26 Q 16 34 4 16 Z" fill="#9b5fd4" stroke="#6622aa" stroke-width="1.5"/><ellipse cx="13" cy="16" rx="9" ry="6" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_cape_gen"><path d="M 54 172 Q 44 200 52 228 Q 74 218 82 192 Q 76 182 54 172 Z" fill="#9b5fd4" stroke="#6622aa" stroke-width="1.5"/><ellipse cx="60" cy="172" rx="10" ry="7" fill="#ffe040" stroke="#ddaa00" stroke-width="1.5"/></g>`},
+  {id:'sparkle_dust',label:'Sparkles',
+   preview:`<circle cx="14" cy="16" r="4" fill="#ffe040" opacity=".9"/><circle cx="42" cy="12" r="5" fill="#ff7eb3" opacity=".9"/><circle cx="26" cy="34" r="6" fill="#9b5fd4" opacity=".9"/><circle cx="48" cy="40" r="4" fill="#4dcf8a" opacity=".9"/>`,
+   svg:(c)=>`<g class="acc-item" id="acc_sparkle_dust"><circle cx="68" cy="100" r="6" fill="#ffe040" opacity=".85"/><circle cx="155" cy="95" r="7" fill="#ff7eb3" opacity=".85"/><circle cx="72" cy="165" r="6" fill="#9b5fd4" opacity=".85"/><circle cx="150" cy="170" r="6" fill="#4dcf8a" opacity=".85"/><circle cx="110" cy="78" r="5" fill="#ff5252" opacity=".8"/></g>`},
+];
+
+function getCreatureAccs(){
+  const name = appState.name;
+  if(CREATURE_ACCESSORIES[name]) return CREATURE_ACCESSORIES[name];
+  return GENERIC_ACCESSORIES;
+}
+
+
 // ── ACC ──
 function buildAccPicker(){
-  const row=document.getElementById('accRow');row.innerHTML='';
-  ACCESSORIES.forEach(a=>{
-    const el=document.createElement('div');el.className='acc-opt'+(appState.acc===a?' on':'');
-    el.textContent=a;el.onclick=()=>applyAcc(a);row.appendChild(el);
+  const row = document.getElementById('accRow');
+  row.innerHTML = '';
+  const accs = getCreatureAccs();
+  accs.forEach(a => {
+    const btn = document.createElement('div');
+    const isOn = appState.accSet && appState.accSet.has(a.id);
+    btn.className = 'acc-opt' + (isOn ? ' on' : '');
+    btn.title = a.label;
+    btn.innerHTML = `
+      <svg viewBox="0 0 60 60" width="62" height="62" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">
+        <rect width="60" height="60" rx="8" fill="rgba(255,255,255,.05)"/>
+        <g transform="scale(1) translate(0,0)">${a.preview}</g>
+      </svg>
+      <div class="acc-opt-label">${a.label}</div>`;
+    btn.onclick = () => toggleAccItem(a);
+    row.appendChild(btn);
   });
+  // Remove all button
+  const rem = document.createElement('div');
+  rem.className = 'acc-opt';
+  rem.style.gridColumn = 'span 4';
+  rem.innerHTML = `<div style="display:flex;align-items:center;gap:6px;padding:4px 12px">
+    <span style="font-size:.9rem">🗑️</span>
+    <span style="font-family:'Baloo 2',cursive;font-size:.6rem;font-weight:800;color:#ff8888">Remove All Accessories</span>
+  </div>`;
+  rem.onclick = () => removeAllAcc();
+  row.appendChild(rem);
 }
-function toggleAcc(){document.getElementById('accPick').classList.toggle('show');}
-function applyAcc(a){
-  appState.acc=a;document.getElementById('accPick').classList.remove('show');
-  document.querySelectorAll('.acc-on').forEach(e=>e.remove());
-  const s=document.getElementById('stage');const el=document.createElement('div');el.className='acc-on';el.textContent=a;s.appendChild(el);
-  speak(appState.lore.moods.acc||"I love it! 🥰");hearts('🎉',6);playCareSound('acc');
-  appState.happy=Math.min(100,appState.happy+10);updateHappy();buildAccPicker();
+
+function toggleAcc(){ document.getElementById('accPick').classList.toggle('show'); }
+
+function toggleAccItem(accDef){
+  if(!appState.accSet) appState.accSet = new Set();
+  const cSvg = document.getElementById('cSvg');
+  if(!cSvg) return;
+
+  if(appState.accSet.has(accDef.id)){
+    // Remove this accessory
+    appState.accSet.delete(accDef.id);
+    const existing = document.getElementById('acc_' + accDef.id);
+    if(existing) existing.remove();
+    // Also try class-based removal for items without proper id
+    cSvg.querySelectorAll('[id="acc_'+accDef.id+'"]').forEach(e=>e.remove());
+  } else {
+    // Add this accessory
+    appState.accSet.add(accDef.id);
+    const svgStr = accDef.svg(appState.color || '#ffb3d9');
+    const ns = 'http://www.w3.org/2000/svg';
+    const tmp = document.createElementNS(ns, 'g');
+    tmp.innerHTML = svgStr;
+    // Move all children into the SVG
+    const child = tmp.firstElementChild;
+    if(child) cSvg.appendChild(child);
+    // Speak and react
+    speak(appState.lore ? appState.lore.moods.acc || "I love it! 🥰" : "Looking great! 🥰");
+    hearts('🎉', 4);
+    playCareSound('acc');
+    appState.happy = Math.min(100, appState.happy + 5);
+    updateHappy();
+  }
+  buildAccPicker();
 }
+
+function removeAllAcc(){
+  if(!appState.accSet) return;
+  const cSvg = document.getElementById('cSvg');
+  if(cSvg) cSvg.querySelectorAll('.acc-item, [id^="acc_"]').forEach(e => e.remove());
+  appState.accSet = new Set();
+  speak("Back to natural look! 😊");
+  buildAccPicker();
+}
+
+// Keep appState.acc for compatibility but use accSet for stacking
+function applyAcc(accDef){ toggleAccItem(accDef); }
+function removeAcc(){ removeAllAcc(); }
+
 
 // ── PARTICLES ──
 let partIv=null;

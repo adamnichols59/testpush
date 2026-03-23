@@ -2,11 +2,51 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9GNH24NL8Q"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-9GNH24NL8Q');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Bella's Spelling Adventure</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+/* Streak chip */
+#streakEl{background:rgba(255,100,0,.22);border:1.5px solid rgba(255,130,50,.6);
+  border-radius:999px;padding:3px 10px;font-size:.7rem;font-weight:800;color:#ffaa44;
+  display:flex;align-items:center;gap:4px;}
+@keyframes streakPop{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes streakBurstAnim{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:0}
+  30%{opacity:1}
+  60%{transform:translate(-50%,-50%) scale(1.1);opacity:1}
+  85%{transform:translate(-50%,-50%) scale(1);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1.2);opacity:0}
+}
+
+/* Nickname */
+.nickname-wrap{display:flex;gap:8px;align-items:center;margin-top:10px;justify-content:center}
+.nickname-inp{font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:800;
+  background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);
+  border-radius:999px;padding:7px 14px;color:white;text-align:center;width:180px;outline:none;}
+.nickname-inp::placeholder{color:rgba(255,255,255,.35)}
+.btn-nickname{font-family:'Baloo 2',cursive;font-size:.62rem;font-weight:800;
+  background:#0f3460;border:2px solid var(--yellow);color:var(--yellow);
+  border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap;}
+.nickname-saved{font-size:.62rem;font-weight:800;color:#4dcf8a;margin-top:4px;text-align:center;}
+.title-badge{font-family:'Nunito',sans-serif;font-size:.55rem;font-weight:800;
+  background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);
+  border-radius:999px;padding:4px 10px;color:#aac4ff;}
+.splash-dot{width:11px;height:11px;border-radius:50%;background:#ffe040;
+  animation:splashBounce .7s ease-in-out infinite alternate;}
+@keyframes splashBounce{from{transform:translateY(0) scale(1)}to{transform:translateY(-16px) scale(.75)}}
+@keyframes splashTap{from{opacity:.4;transform:scale(.95)}to{opacity:1;transform:scale(1.05)}}
+@keyframes splashSpin{0%{transform:scale(0) rotate(-180deg);opacity:0}60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
 html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'Nunito',sans-serif}
 
 :root{
@@ -90,7 +130,9 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
   display:flex;flex-direction:column;align-items:center;gap:6px;
   animation:floatY 2.5s ease-in-out infinite;
 }
-@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}
+@keyframes floatY2{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(2deg)}}
+50%{transform:translateY(-10px)}}
 .spell-creature-name{font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;
   color:var(--yellow);background:rgba(0,0,0,.5);padding:3px 12px;border-radius:999px;border:1.5px solid var(--yellow)}
 .spell-encounter-tag{font-family:'Baloo 2',cursive;font-size:.7rem;color:#aac4ff;
@@ -99,19 +141,19 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 /* Definition */
 .def-card{
   width:100%;background:#0a1030;border:2px solid #2244aa;border-radius:14px;
-  padding:12px 16px;font-size:.95rem;font-weight:700;color:#aac4ff;text-align:center;line-height:1.5;
+  padding:14px 18px;font-size:1.05rem;font-weight:700;color:#aac4ff;text-align:center;line-height:1.6;
 }
 
 /* Blanks — interactive letter tiles */
 .blanks-row{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;cursor:text}
 .blank{
-  width:40px;height:50px;
+  width:44px;height:56px;
   border:2.5px solid rgba(255,224,64,.4);
   border-bottom:3px solid var(--yellow);
   border-radius:8px;
   background:rgba(255,224,64,.07);
   display:flex;align-items:center;justify-content:center;
-  font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;
+  font-family:'Baloo 2',cursive;font-size:1.35rem;font-weight:800;
   color:var(--yellow);transition:all .2s;position:relative;
 }
 .blank.active-cursor::after{
@@ -526,10 +568,36 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 <canvas id="cvs"></canvas>
 
 <!-- ═══════════════════════ TITLE ═══════════════════════ -->
+<!-- SPLASH OVERLAY - tap anywhere to dismiss -->
+<div id="splashOverlay" onclick="dismissSplash()" style="position:fixed;inset:0;z-index:999;
+  background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  transition:opacity .6s ease;cursor:pointer;">
+  <div style="font-size:3.5rem;animation:splashSpin 1.5s ease-out forwards">✨</div>
+  <div style="font-family:'Baloo 2',cursive;font-size:clamp(1.8rem,8vw,2.8rem);font-weight:800;
+    color:#ffe040;text-align:center;text-shadow:0 0 30px rgba(255,224,64,.5);line-height:1.2">
+    Bella's Spelling<br>Adventure!
+  </div>
+  <div style="display:flex;gap:10px;margin-top:8px">
+    <div class="splash-dot" style="animation-delay:0s"></div>
+    <div class="splash-dot" style="animation-delay:.25s"></div>
+    <div class="splash-dot" style="animation-delay:.5s"></div>
+  </div>
+  <div style="font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:800;
+    color:rgba(170,196,255,.6);margin-top:12px;animation:splashTap 1.2s ease-in-out infinite alternate">
+    Tap to start ✨
+  </div>
+</div>
+
 <div class="screen" id="sTitle">
   <div class="title-creatures" id="titleCreatures"></div>
   <h1 class="title-h1">Bella's Spelling<br>Adventure!</h1>
-  <p class="title-sub">Unit 5 · Week 1 · Compound Words</p>
+  <p class="title-sub">Compound Words</p>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:4px">
+    <span class="title-badge">🐾 20 Creatures to Catch</span>
+    <span class="title-badge">🗺️ 5 Locations</span>
+    <span class="title-badge">🏆 Prize Challenge</span>
+  </div>
   <button class="btn-start" onclick="startGame()">✨ Let's Go! ✨</button>
 </div>
 
@@ -543,6 +611,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
     <div class="spell-topbar-right">
       <div class="hchip">⭐ <span id="scoreEl">0</span></div>
       <div class="hchip" id="heartsEl">❤️❤️❤️</div>
+      <div class="hchip" id="streakEl" style="display:none">🔥 <span id="streakNum">0</span></div>
       <div class="hchip" id="wordNumEl">1/20</div>
       <button class="btn-dex" onclick="openDex()" title="My Pokédex">📖</button>
       <button onclick="toggleSound()" id="sndBtn" style="background:none;border:none;font-size:1.1rem;cursor:pointer">🔈</button>
@@ -664,6 +733,11 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
     <div class="catch-word" id="catchWordEl"></div>
     <div class="catch-pts" id="catchPtsEl"></div>
     <div class="catch-msg" id="catchMsgEl"></div>
+    <div class="nickname-wrap" id="nicknameWrap">
+      <input id="nicknameInp" class="nickname-inp" maxlength="12" placeholder="Give a nickname! (optional)" autocomplete="off" spellcheck="false" style="font-size:16px"/>
+      <button class="btn-nickname" onclick="saveNickname()">💾 Save</button>
+    </div>
+    <div id="nicknameSaved" class="nickname-saved" style="display:none">✅ Saved!</div>
     <button class="btn-continue" onclick="afterCatch()">Continue ▶</button>
   </div>
 </div>
@@ -759,6 +833,7 @@ function drawOwl(c){return svg(90,100,`<ellipse cx="45" cy="68" rx="26" ry="24" 
 let wordOrder=[],wordIdx=0,score=0,hearts=3;
 let hintUsed=false,attempts=0,isPerfect=true;
 let caught=[],speaking=false,soundEnabled=true;
+let streak=0,bestStreak=0;
 let throwReady=false,throwLocked=false;
 let audioCtx=null,bgmGain=null,sfxGain=null,bgmPlaying=false,bgmNodes=[],bgmSched=null;
 
@@ -828,13 +903,41 @@ function initKeyboardHandler() {
 // ═══════════════════════════════════════════════════════════
 function initTitle(){
   const row=document.getElementById('titleCreatures');
-  [4,0,10].forEach((i,j)=>{
-    const c=CREATURES[i];
+  row.style.cssText='display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:340px;margin:0 auto 8px';
+  // Pick 6 varied creatures to show on title
+  const picks=[0,4,2,14,10,17];
+  const anims=['floatY','floatY2','floatY'];
+  picks.forEach((i,j)=>{
+    const c=CREATURES[i%CREATURES.length];
+    const wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:3px';
+    // Creature SVG
     const d=document.createElement('div');
-    d.style.cssText=`width:72px;height:72px;animation:floatY 2.2s ease-in-out infinite;animation-delay:${j*.3}s`;
+    const size=j===2||j===3?80:64; // middle two bigger
+    d.style.cssText=`width:${size}px;height:${size}px;
+      animation:${anims[j%3]} ${2+j*.18}s ease-in-out infinite;
+      animation-delay:${j*.22}s;
+      filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));`;
     d.innerHTML=c.fn(c.color);
-    row.appendChild(d);
+    // Name label
+    const lbl=document.createElement('div');
+    lbl.style.cssText="font-family:'Nunito',sans-serif;font-size:.42rem;font-weight:800;color:rgba(170,196,255,.7);text-align:center";
+    lbl.textContent=c.name;
+    wrap.appendChild(d);
+    wrap.appendChild(lbl);
+    row.appendChild(wrap);
   });
+  // Also populate splash overlay creatures if present
+  const splash=document.getElementById('splashCreatures');
+  if(splash){
+    [0,4,10].forEach((i,j)=>{
+      const c=CREATURES[i];
+      const d=document.createElement('div');
+      d.style.cssText=`width:60px;height:60px;animation:floatY ${2+j*.2}s ease-in-out infinite;animation-delay:${j*.3}s`;
+      d.innerHTML=c.fn(c.color);
+      splash.appendChild(d);
+    });
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -842,10 +945,93 @@ function initTitle(){
 // ═══════════════════════════════════════════════════════════
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 
+
+// ════════════════════════════════════════════
+//  SPLASH SCREEN
+// ════════════════════════════════════════════
+function dismissSplash(){
+  const overlay = document.getElementById('splashOverlay');
+  if(!overlay) return;
+  overlay.style.opacity='0';
+  overlay.style.pointerEvents='none';
+  setTimeout(()=>{ overlay.style.display='none'; }, 650);
+}
+
+function initSplash(){
+  const overlay = document.getElementById('splashOverlay');
+  if(!overlay) return;
+  // Auto-dismiss after 2.5s even if not tapped
+  setTimeout(dismissSplash, 2500);
+  // Also dismiss on any touch/click anywhere as backup
+  document.addEventListener('touchstart', dismissSplash, {once:true});
+}
+
+// ════════════════════════════════════════════
+//  STREAK HUD
+// ════════════════════════════════════════════
+function updateStreakHUD(){
+  const el  = document.getElementById('streakEl');
+  const num = document.getElementById('streakNum');
+  if(!el||!num) return;
+  if(streak>=2){
+    num.textContent = streak;
+    el.style.display = 'flex';
+    el.style.animation = 'none';
+    void el.offsetWidth; // reflow
+    el.style.animation = 'streakPop .4s cubic-bezier(.17,.67,.35,1.5)';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function showStreakBurst(n){
+  const msgs = {
+    2:'2 in a row! 🔥', 3:'On fire! 🔥🔥', 4:'Amazing! 🔥🔥🔥',
+    5:'UNSTOPPABLE! ⚡', 6:'LEGENDARY! 🌟', 7:'YOU ARE A SPELLING STAR! ⭐',
+    8:'INCREDIBLE! 💫', 9:'GENIUS! 🧠', 10:'PERFECT STREAK! 👑'
+  };
+  const msg = msgs[Math.min(n,10)] || (n + ' in a row! 🔥');
+  const el = document.createElement('div');
+  el.style.cssText = `position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(0);
+    z-index:500;font-family:'Baloo 2',cursive;font-size:clamp(1.2rem,5vw,2rem);
+    font-weight:800;color:#ffe040;text-align:center;
+    text-shadow:0 0 20px rgba(255,224,64,.8), 0 2px 4px rgba(0,0,0,.8);
+    pointer-events:none;white-space:nowrap;
+    animation:streakBurstAnim .9s cubic-bezier(.17,.67,.35,1.5) forwards;`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1000);
+}
+
+// ════════════════════════════════════════════
+//  NICKNAME
+// ════════════════════════════════════════════
+let currentNicknames = {}; // name -> nickname
+
+function saveNickname(){
+  const inp = document.getElementById('nicknameInp');
+  const saved = document.getElementById('nicknameSaved');
+  if(!inp) return;
+  const val = inp.value.trim();
+  if(!val) return;
+  const w = wordOrder[wordIdx];
+  const cr = CREATURES[wordIdx % CREATURES.length];
+  currentNicknames[cr.name] = val;
+  // Update caught array entry
+  const entry = caught.find(c=>c.name===cr.name);
+  if(entry) entry.nickname = val;
+  inp.disabled = true;
+  if(saved){ saved.style.display='block'; setTimeout(()=>saved.style.display='none',2000); }
+}
+
+function getNickname(crName){
+  return currentNicknames[crName] || crName;
+}
+
 function startGame(){
   unlockAudio(); // iOS requires audio unlock on direct user gesture
   wordOrder=shuffle([...WORDS]);
-  wordIdx=0;score=0;hearts=3;caught=[];isPerfect=true;
+  wordIdx=0;score=0;hearts=3;caught=[];isPerfect=true;streak=0;bestStreak=0;
   initAudio();startBGM();
   initKeyboardHandler();
   buildMapNodes();
@@ -1009,8 +1195,16 @@ function checkSpell(){
   if(val===w.w){
     inp.disabled=true;
     sfxCorrect();
+    // Update streak
+    streak++;
+    if(streak>bestStreak) bestStreak=streak;
+    updateStreakHUD();
+    // Show streak burst if on a roll
+    if(streak>=2) showStreakBurst(streak);
+    // Small confetti on correct
+    confettiBurst(10);
     // Transition to throw screen after brief pause
-    setTimeout(()=>goToThrow(),600);
+    setTimeout(()=>goToThrow(),700);
   } else {
     setTimeout(()=>{
       // Reset blank classes back to filled after shake
@@ -1021,6 +1215,7 @@ function checkSpell(){
       }
     },500);
     sfxWrong();
+    streak=0; updateStreakHUD();
     if(attempts===1){
       isPerfect=false;useHint();setTimeout(sayWord,400);
     } else {
@@ -1422,8 +1617,19 @@ function showCatch(throwBonus=0){
   document.getElementById('catchCreatureEl').innerHTML=`<div style="width:88px;height:88px;margin:auto">${cr.fn(cr.color)}</div>`;
   document.getElementById('catchWordEl').textContent=w.w.toUpperCase();
   document.getElementById('catchPtsEl').textContent='+'+pts+' points!';
-  document.getElementById('catchMsgEl').textContent=cr.name+' is now yours! 🎉';
+  const CATCH_MSGS=[
+    'is now yours! 🎉','joined your team! ⭐','loves you already! 💕',
+    'thinks you are AMAZING! 🌟','is SO happy! 🥰','chose YOU! ✨',
+    'can\'t wait for adventures! 🎒','is your new best friend! 💖'
+  ];
+  const catchMsg=CATCH_MSGS[Math.floor(Math.random()*CATCH_MSGS.length)];
+  document.getElementById('catchMsgEl').textContent=cr.name+' '+catchMsg;
   document.getElementById('oCatch').classList.add('show');
+  // Reset nickname input
+  const ni=document.getElementById('nicknameInp');
+  const ns=document.getElementById('nicknameSaved');
+  if(ni){ni.value='';ni.disabled=false;}
+  if(ns) ns.style.display='none';
   updateHUD();
 }
 
@@ -1463,6 +1669,13 @@ function endGame(){
 function showWin(){
   goTo('sWin');
   setTimeout(sfxVictory,300);
+  // Show best streak
+  if(bestStreak>=2){
+    const bsEl=document.getElementById('winStreakEl');
+    const bsNum=document.getElementById('winBestStreak');
+    if(bsEl&&bsNum){ bsNum.textContent=bestStreak; bsEl.style.display='block'; }
+  }
+  confettiBurst(30);
   const dex=document.getElementById('dexGrid');
   dex.innerHTML='';
   caught.forEach(c=>{
@@ -1470,7 +1683,8 @@ function showWin(){
     const el=document.createElement('div');
     el.className='dex-card';
     el.style.cursor='pointer';
-    el.innerHTML=`<div style="width:52px;height:52px">${c.fn(c.color)}</div><div class="dex-word">${c.word}</div><div style="font-size:.55rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
+    const nick = c.nickname ? `<div style="font-size:.5rem;color:#ffe040;font-weight:800;margin-top:1px">"${c.nickname}"</div>` : '';
+    el.innerHTML=`<div style="width:52px;height:52px">${c.fn(c.color)}</div><div class="dex-word">${c.word}</div>${nick}<div style="font-size:.5rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
     el.onclick=()=>openCare(crIdx,c);
     dex.appendChild(el);
   });
