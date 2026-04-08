@@ -13,36 +13,21 @@
 
 <!-- Firebase -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCuuUtfqRCjaVffIVj_8ey_6kBmGXPxIro",
-    authDomain: "bella-spelling.firebaseapp.com",
-    projectId: "bella-spelling",
-    storageBucket: "bella-spelling.firebasestorage.app",
-    messagingSenderId: "109241910702",
-    appId: "1:109241910702:web:425b48cf1e24408568343f"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // ── FIREBASE HELPERS ──
-  window.fbDb = db;
-  window.fbDoc = doc;
-  window.fbGetDoc = getDoc;
-  window.fbSetDoc = setDoc;
-  window.fbUpdateDoc = updateDoc;
-  window.fbCollection = collection;
-  window.fbGetDocs = getDocs;
-  window.fbQuery = query;
-  window.fbOrderBy = orderBy;
-  window.fbLimit = limit;
-
-  // Signal that Firebase is ready
-  window.firebaseReady = true;
-  document.dispatchEvent(new Event('firebaseReady'));
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,getDocs,query,orderBy,limit} 
+  from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+const fbCfg={
+  apiKey:"AIzaSyCuuUtfqRCjaVffIVj_8ey_6kBmGXPxIro",
+  authDomain:"bella-spelling.firebaseapp.com",
+  projectId:"bella-spelling",
+  storageBucket:"bella-spelling.firebasestorage.app",
+  messagingSenderId:"109241910702",
+  appId:"1:109241910702:web:425b48cf1e24408568343f"
+};
+const fbApp=initializeApp(fbCfg);
+const fbDb=getFirestore(fbApp);
+window._fb={db:fbDb,doc,getDoc,setDoc,updateDoc,collection,getDocs,query,orderBy,limit,ready:true};
+document.dispatchEvent(new Event('fbReady'));
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -77,18 +62,10 @@
 .title-badge{font-family:'Nunito',sans-serif;font-size:.55rem;font-weight:800;
   background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);
   border-radius:999px;padding:4px 10px;color:#aac4ff;}
-.pin-key{
-  font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;
-  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.15);
-  border-radius:12px;padding:14px 8px;color:white;cursor:pointer;transition:all .15s;
-}
-.pin-key:active{background:rgba(255,224,64,.25);}
-.pin-dot{
-  width:18px;height:18px;border-radius:50%;
-  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);
-  transition:all .2s;
-}
+.pin-dot{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);transition:all .2s;}
 .pin-dot.filled{background:#ffe040;border-color:#ffe040;box-shadow:0 0 8px rgba(255,224,64,.5)}
+.pin-key{font-family:Baloo 2,cursive;font-size:1.3rem;font-weight:800;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.15);border-radius:12px;padding:14px 8px;color:white;cursor:pointer;transition:background .15s;}
+.pin-key:active{background:rgba(255,224,64,.25);}
 .splash-dot{width:11px;height:11px;border-radius:50%;background:#ffe040;
   animation:splashBounce .7s ease-in-out infinite alternate;}
 @keyframes splashBounce{from{transform:translateY(0) scale(1)}to{transform:translateY(-16px) scale(.75)}}
@@ -616,81 +593,29 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 
 <!-- ═══════════════════════ TITLE ═══════════════════════ -->
 <!-- LOGIN SCREEN -->
-<div id="sLogin" style="position:fixed;inset:0;z-index:1000;
-  background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:16px;padding:24px;font-family:'Nunito',sans-serif;">
-
+<div id="sLogin" style="position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;">
   <div style="font-size:2.8rem">🐾</div>
-  <div style="font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;
-    color:#ffe040;text-align:center;line-height:1.2">
-    Bella's Spelling<br>Adventure!
-  </div>
-
-  <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);
-    border-radius:20px;padding:24px;width:100%;max-width:320px;
-    display:flex;flex-direction:column;gap:12px">
-
-    <div id="loginMsg" style="font-size:.7rem;font-weight:800;color:#aac4ff;
-      text-align:center;min-height:18px"></div>
-
-    <input id="loginUsername" type="text" maxlength="20" autocomplete="off"
-      spellcheck="false" placeholder="Your name (e.g. BellaM)"
-      style="font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
-        background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);
-        border-radius:12px;padding:12px 16px;color:white;width:100%;
-        outline:none;box-sizing:border-box"/>
-
-    <div style="font-size:.55rem;color:rgba(170,196,255,.6);text-align:center;margin-top:-8px">
-      Suggestion: use your first name + last initial (e.g. BellaM)
-    </div>
-
+  <div style="font-family:Baloo 2,cursive;font-size:1.6rem;font-weight:800;color:#ffe040;text-align:center;line-height:1.2">Bella's Spelling<br>Adventure!</div>
+  <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
+    <div id="loginMsg" style="font-size:.7rem;font-weight:800;color:#aac4ff;text-align:center;min-height:18px"></div>
+    <input id="loginUsername" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Your name (e.g. BellaM)"
+      style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 16px;color:white;width:100%;outline:none;box-sizing:border-box"/>
+    <div style="font-size:.55rem;color:rgba(170,196,255,.6);text-align:center;margin-top:-8px">Suggestion: first name + last initial (e.g. BellaM)</div>
     <div style="display:flex;gap:8px;justify-content:center">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
     </div>
-    <div style="font-size:.58rem;color:rgba(170,196,255,.6);text-align:center" id="pinHint">
-      Enter your 4-digit PIN
-    </div>
-
-    <!-- PIN Keypad - IDs instead of inline handlers -->
+    <div style="font-size:.58rem;color:rgba(170,196,255,.6);text-align:center" id="pinHint">Enter your 4-digit PIN</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px">
-      <button class="pin-key" id="pk1">1</button>
-      <button class="pin-key" id="pk2">2</button>
-      <button class="pin-key" id="pk3">3</button>
-      <button class="pin-key" id="pk4">4</button>
-      <button class="pin-key" id="pk5">5</button>
-      <button class="pin-key" id="pk6">6</button>
-      <button class="pin-key" id="pk7">7</button>
-      <button class="pin-key" id="pk8">8</button>
-      <button class="pin-key" id="pk9">9</button>
-      <button class="pin-key" style="visibility:hidden">-</button>
-      <button class="pin-key" id="pk0">0</button>
-      <button class="pin-key" id="pkDel">⌫</button>
+      <button class="pin-key" id="pk1">1</button><button class="pin-key" id="pk2">2</button><button class="pin-key" id="pk3">3</button>
+      <button class="pin-key" id="pk4">4</button><button class="pin-key" id="pk5">5</button><button class="pin-key" id="pk6">6</button>
+      <button class="pin-key" id="pk7">7</button><button class="pin-key" id="pk8">8</button><button class="pin-key" id="pk9">9</button>
+      <button class="pin-key" style="visibility:hidden">-</button><button class="pin-key" id="pk0">0</button><button class="pin-key" id="pkDel">&#9003;</button>
     </div>
-
-    <button id="loginBtn" style="font-family:'Baloo 2',cursive;font-size:.9rem;
-      font-weight:800;background:linear-gradient(135deg,#9b5fd4,#4dcf8a);
-      border:none;border-radius:12px;padding:14px;color:white;cursor:pointer;
-      margin-top:4px;width:100%;">
-      ✨ Let's Go!
-    </button>
-
-    <div style="text-align:center">
-      <button id="switchBtn" style="font-family:'Nunito',sans-serif;font-size:.6rem;
-        font-weight:800;color:#aac4ff;background:none;border:none;cursor:pointer;
-        text-decoration:underline">
-        New here? Create an account
-      </button>
-    </div>
+    <button id="loginBtn" style="font-family:Baloo 2,cursive;font-size:.9rem;font-weight:800;background:linear-gradient(135deg,#9b5fd4,#4dcf8a);border:none;border-radius:12px;padding:14px;color:white;cursor:pointer;margin-top:4px;width:100%">&#10024; Let's Go!</button>
+    <div style="text-align:center"><button id="switchBtn" style="font-family:Nunito,sans-serif;font-size:.6rem;font-weight:800;color:#aac4ff;background:none;border:none;cursor:pointer;text-decoration:underline">New here? Create an account</button></div>
   </div>
-
-  <button id="guestBtn" style="font-family:'Nunito',sans-serif;font-size:.58rem;
-    font-weight:800;color:rgba(170,196,255,.5);background:none;border:none;cursor:pointer">
-    Play without saving progress
-  </button>
+  <button id="guestBtn" style="font-family:Nunito,sans-serif;font-size:.58rem;font-weight:800;color:rgba(170,196,255,.5);background:none;border:none;cursor:pointer">Play without saving progress</button>
 </div>
 
 <!-- SPLASH OVERLAY - tap anywhere to dismiss -->
@@ -841,12 +766,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 <!-- ═══════════════════════ WIN ═══════════════════════ -->
 <div class="screen off" id="sWin">
   <div class="win-title">🏆 Journey Complete!</div>
-  <!-- Top 3 Leaderboard -->
-  <div style="width:100%;max-width:300px;margin:0 auto">
-    <div style="font-family:'Baloo 2',cursive;font-size:.65rem;font-weight:800;
-      color:#ffe040;text-align:center;margin-bottom:8px">🏆 Top Spellers</div>
-    <div id="leaderboardTop3"></div>
-  </div>
+  <div id="leaderboardTop3" style="width:100%;max-width:300px;margin:0 auto"></div>
   <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:#aac4ff;text-align:center;line-height:1.8">You caught all the creatures, Bella!<br>You are AMAZING! ⭐</div>
   <div class="dex-grid" id="dexGrid"></div>
   <div class="win-stats" id="winStats"></div>
@@ -1079,188 +999,6 @@ function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.fl
 
 
 // ════════════════════════════════════════════
-//  LOGIN & FIREBASE SYSTEM
-// ════════════════════════════════════════════
-let currentUser = null;
-let pinEntry = '';
-let isSignupMode = false;
-const WEEK_KEY = 'week_apr_2026';
-
-function setLoginMsg(msg, color='#ff8888'){
-  const el = document.getElementById('loginMsg');
-  if(el){ el.textContent=msg; el.style.color=color; }
-}
-
-function updatePinDots(){
-  for(let i=0;i<4;i++){
-    const d=document.getElementById('pd'+i);
-    if(d) d.className='pin-dot'+(i<pinEntry.length?' filled':'');
-  }
-}
-
-function handlePinPress(val){
-  if(val==='⌫'){ pinEntry=pinEntry.slice(0,-1); }
-  else if(pinEntry.length<4){ pinEntry+=val; }
-  updatePinDots();
-}
-
-function toggleSignup(){
-  isSignupMode=!isSignupMode;
-  const btn=document.getElementById('switchBtn');
-  const hint=document.getElementById('pinHint');
-  const loginBtn=document.getElementById('loginBtn');
-  if(isSignupMode){
-    if(btn) btn.textContent='Already have an account? Log in';
-    if(hint) hint.textContent="Choose a 4-digit PIN you'll remember";
-    if(loginBtn) loginBtn.textContent='🌟 Create Account';
-  } else {
-    if(btn) btn.textContent='New here? Create an account';
-    if(hint) hint.textContent='Enter your 4-digit PIN';
-    if(loginBtn) loginBtn.textContent='✨ Let's Go!';
-  }
-  pinEntry='';
-  updatePinDots();
-  setLoginMsg('');
-}
-
-function playAsGuest(){
-  currentUser={username:'Guest',isGuest:true};
-  hideLogin();
-}
-
-function hideLogin(){
-  const el=document.getElementById('sLogin');
-  if(el){ el.style.opacity='0'; el.style.transition='opacity .5s';
-    setTimeout(()=>el.style.display='none',500); }
-}
-
-async function doLogin(){
-  const username=(document.getElementById('loginUsername')||{}).value||'';
-  const name=username.trim();
-  if(!name){ setLoginMsg('Please enter your name! 👆','#ffaa44'); return; }
-  if(pinEntry.length!==4){ setLoginMsg('Please enter your 4-digit PIN! 👆','#ffaa44'); return; }
-
-  setLoginMsg('Loading…','#aac4ff');
-
-  if(!window.firebaseReady||!window.fbDb){
-    playAsGuest(); return;
-  }
-
-  try {
-    const db=window.fbDb;
-    const userRef=window.fbDoc(db,'students',name.toLowerCase());
-    const snap=await window.fbGetDoc(userRef);
-
-    if(isSignupMode){
-      if(snap.exists()){ setLoginMsg('That name is taken! Try adding your last initial.','#ff8888'); return; }
-      await window.fbSetDoc(userRef,{
-        username:name, pin:pinEntry, createdAt:Date.now(),
-        totalScore:0, totalCreatures:0, bestStreak:0, weeks:{}
-      });
-      setLoginMsg('Welcome '+name+'! 🎉','#4dcf8a');
-      setTimeout(()=>loginSuccess(name),800);
-    } else {
-      if(!snap.exists()){ setLoginMsg('Name not found. New here? Create an account!','#ff8888'); return; }
-      const data=snap.data();
-      if(data.pin!==pinEntry){
-        setLoginMsg('Wrong PIN. Try again!','#ff8888');
-        pinEntry=''; updatePinDots(); return;
-      }
-      setLoginMsg('Welcome back, '+name+'! 🎉','#4dcf8a');
-      setTimeout(()=>loginSuccess(name),600);
-    }
-  } catch(e){
-    console.error('Firebase error:',e);
-    setLoginMsg('Connection error. Playing as guest.','#ffaa44');
-    setTimeout(playAsGuest,1000);
-  }
-}
-
-function loginSuccess(username){
-  currentUser={username,isGuest:false};
-  const el=document.getElementById('playerNameEl');
-  if(el) el.textContent='👤 '+username;
-  hideLogin();
-  loadUserProgress();
-}
-
-async function saveProgress(){
-  if(!currentUser||currentUser.isGuest||!window.firebaseReady) return;
-  try {
-    const db=window.fbDb;
-    const userRef=window.fbDoc(db,'students',currentUser.username.toLowerCase());
-    await window.fbUpdateDoc(userRef,{
-      totalScore:score, totalCreatures:caught.length, bestStreak:bestStreak,
-      [`weeks.${WEEK_KEY}`]:{score,caught:caught.length,wordsDone:wordIdx,lastPlayed:Date.now()}
-    });
-  } catch(e){ console.error('Save error:',e); }
-}
-
-async function loadUserProgress(){
-  if(!currentUser||currentUser.isGuest||!window.firebaseReady) return;
-  try {
-    const db=window.fbDb;
-    const snap=await window.fbGetDoc(window.fbDoc(db,'students',currentUser.username.toLowerCase()));
-    if(!snap.exists()) return;
-    const data=snap.data();
-    if(data.bestStreak) bestStreak=data.bestStreak;
-  } catch(e){ console.error('Load error:',e); }
-}
-
-function autoSave(){ saveProgress(); }
-
-async function loadLeaderboard(){
-  const el=document.getElementById('leaderboardTop3');
-  if(!el) return;
-  if(!window.firebaseReady){ el.innerHTML='<div style="color:#aac4ff;font-size:.6rem">Sign in to see leaderboard</div>'; return; }
-  try {
-    const db=window.fbDb;
-    const q=window.fbQuery(window.fbCollection(db,'students'),window.fbOrderBy('totalScore','desc'),window.fbLimit(3));
-    const snap=await window.fbGetDocs(q);
-    const medals=['🥇','🥈','🥉'];
-    let html=''; let i=0;
-    snap.forEach(doc=>{
-      const d=doc.data();
-      html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;
-        background:rgba(255,255,255,.08);border-radius:10px;margin-bottom:6px">
-        <span style="font-size:1.2rem">${medals[i]}</span>
-        <span style="font-family:'Baloo 2',cursive;font-weight:800;color:#ffe040;flex:1">${d.username}</span>
-        <span style="font-size:.65rem;font-weight:800;color:#aac4ff">⭐ ${d.totalScore||0}</span>
-      </div>`;
-      i++;
-    });
-    el.innerHTML=html||'<div style="color:#aac4ff;font-size:.6rem">No scores yet!</div>';
-  } catch(e){ el.innerHTML='<div style="color:#aac4ff;font-size:.6rem">Leaderboard unavailable</div>'; }
-}
-
-// Wire up all login buttons after DOM loads
-window.addEventListener('load', function(){
-  // PIN keys
-  ['1','2','3','4','5','6','7','8','9','0'].forEach(n=>{
-    const btn=document.getElementById('pk'+n);
-    if(btn) btn.addEventListener('click',()=>handlePinPress(n));
-  });
-  const delBtn=document.getElementById('pkDel');
-  if(delBtn) delBtn.addEventListener('click',()=>handlePinPress('⌫'));
-
-  // Login button
-  const loginBtn=document.getElementById('loginBtn');
-  if(loginBtn) loginBtn.addEventListener('click', doLogin);
-
-  // Switch / create account
-  const switchBtn=document.getElementById('switchBtn');
-  if(switchBtn) switchBtn.addEventListener('click', toggleSignup);
-
-  // Guest
-  const guestBtn=document.getElementById('guestBtn');
-  if(guestBtn) guestBtn.addEventListener('click', playAsGuest);
-
-  // Username input
-  const inp=document.getElementById('loginUsername');
-  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-});
-
-// ════════════════════════════════════════════
 //  SPLASH SCREEN
 // ════════════════════════════════════════════
 function dismissSplash(){
@@ -1274,8 +1012,10 @@ function dismissSplash(){
 function initSplash(){
   const overlay = document.getElementById('splashOverlay');
   if(!overlay) return;
-  // Auto-dismiss after 2.5s
+  // Auto-dismiss after 2.5s even if not tapped
   setTimeout(dismissSplash, 2500);
+  // Also dismiss on any touch/click anywhere as backup
+  document.addEventListener('touchstart', dismissSplash, {once:true});
 }
 
 // ════════════════════════════════════════════
@@ -1339,6 +1079,67 @@ function saveNickname(){
 function getNickname(crName){
   return currentNicknames[crName] || crName;
 }
+
+// ── LOGIN SYSTEM ──
+var _pinEntry='';
+var _isSignup=false;
+var _currentUser=null;
+var WEEK_KEY='week_apr_2026';
+
+function _setMsg(m,c){var e=document.getElementById('loginMsg');if(e){e.textContent=m;e.style.color=c||'#aac4ff';}}
+function _updateDots(){for(var i=0;i<4;i++){var d=document.getElementById('pd'+i);if(d)d.className='pin-dot'+(_pinEntry.length>i?' filled':'');}}
+function _pinPress(v){if(v==='DEL'){_pinEntry=_pinEntry.slice(0,-1);}else if(_pinEntry.length<4){_pinEntry+=v;}_updateDots();}
+function _hideLogin(){var e=document.getElementById('sLogin');if(e){e.style.opacity='0';e.style.transition='opacity .5s';setTimeout(function(){e.style.display='none';},500);}}
+function _guestPlay(){_currentUser={username:'Guest',isGuest:true};_hideLogin();}
+function _toggleSignup(){
+  _isSignup=!_isSignup;_pinEntry='';_updateDots();_setMsg('');
+  var b=document.getElementById('switchBtn');var h=document.getElementById('pinHint');var l=document.getElementById('loginBtn');
+  if(_isSignup){if(b)b.textContent='Already have an account? Log in';if(h)h.textContent='Choose a PIN you will remember';if(l)l.textContent='Create Account';}
+  else{if(b)b.textContent='New here? Create an account';if(h)h.textContent='Enter your 4-digit PIN';if(l)l.innerHTML='&#10024; Let's Go!';}
+}
+function _doLogin(){
+  var name=(document.getElementById('loginUsername')||{}).value||'';
+  name=name.trim();
+  if(!name){_setMsg('Please enter your name!','#ffaa44');return;}
+  if(_pinEntry.length!==4){_setMsg('Please enter your 4-digit PIN!','#ffaa44');return;}
+  _setMsg('Loading...','#aac4ff');
+  var fb=window._fb;
+  if(!fb||!fb.ready){_guestPlay();return;}
+  var id=name.toLowerCase();
+  fb.getDoc(fb.doc(fb.db,'students',id)).then(function(snap){
+    if(_isSignup){
+      if(snap.exists()){_setMsg('Name taken! Try adding your last initial.','#ff8888');return;}
+      return fb.setDoc(fb.doc(fb.db,'students',id),{username:name,pin:_pinEntry,createdAt:Date.now(),totalScore:0,totalCreatures:0,bestStreak:0,weeks:{}})
+        .then(function(){_setMsg('Welcome '+name+'!','#4dcf8a');setTimeout(function(){_loginOk(name);},800);});
+    } else {
+      if(!snap.exists()){_setMsg('Name not found. New here?','#ff8888');return;}
+      if(snap.data().pin!==_pinEntry){_setMsg('Wrong PIN!','#ff8888');_pinEntry='';_updateDots();return;}
+      _setMsg('Welcome back '+name+'!','#4dcf8a');setTimeout(function(){_loginOk(name);},600);
+    }
+  }).catch(function(e){console.error(e);_setMsg('Error. Playing as guest.','#ffaa44');setTimeout(_guestPlay,1000);});
+}
+function _loginOk(name){
+  _currentUser={username:name,isGuest:false};
+  _hideLogin();
+}
+function _autoSave(){
+  if(!_currentUser||_currentUser.isGuest||!window._fb||!window._fb.ready)return;
+  var upd={totalScore:score,totalCreatures:caught.length,bestStreak:bestStreak};
+  upd['weeks.'+WEEK_KEY]={score:score,caught:caught.length,wordsDone:wordIdx,lastPlayed:Date.now()};
+  window._fb.updateDoc(window._fb.doc(window._fb.db,'students',_currentUser.username.toLowerCase()),upd)
+    .catch(function(e){console.error('save:',e);});
+}
+
+// Wire up login buttons on load
+window.addEventListener('load',function(){
+  var keys=['1','2','3','4','5','6','7','8','9','0'];
+  keys.forEach(function(k){var b=document.getElementById('pk'+k);if(b)b.addEventListener('click',function(){_pinPress(k);});});
+  var del=document.getElementById('pkDel');if(del)del.addEventListener('click',function(){_pinPress('DEL');});
+  var lb=document.getElementById('loginBtn');if(lb)lb.addEventListener('click',_doLogin);
+  var sb=document.getElementById('switchBtn');if(sb)sb.addEventListener('click',_toggleSignup);
+  var gb=document.getElementById('guestBtn');if(gb)gb.addEventListener('click',_guestPlay);
+  var ui=document.getElementById('loginUsername');if(ui)ui.addEventListener('keydown',function(e){if(e.key==='Enter')_doLogin();});
+});
 
 function startGame(){
   unlockAudio(); // iOS requires audio unlock on direct user gesture
@@ -1946,7 +1747,7 @@ function showCatch(throwBonus=0){
 }
 
 function afterCatch(){
-  autoSave();
+  _autoSave();
   stopRing();
   document.getElementById('oCatch').classList.remove('show');
   wordIdx++;
@@ -1982,8 +1783,6 @@ function endGame(){
 function showWin(){
   goTo('sWin');
   setTimeout(sfxVictory,300);
-  autoSave();
-  loadLeaderboard();
   // Show best streak
   if(bestStreak>=2){
     const bsEl=document.getElementById('winStreakEl');
