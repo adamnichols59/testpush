@@ -62,7 +62,7 @@ Your best streak is shown on the win screen!
 
 **Compound Words**
 
-`airplane` · `daytime` · `birthday` · `daylight` · `hairdo` · `somebody` · `birdhouse` · `barefoot` · `headlight` · `sometime` · `someone` · `newspaper` · `sidewalks` · `basketball` · `stagecoach` · `placed` · `office` · `giant` · `handwriting` · `windshield`
+`names` · `named` · `naming` · `hopes` · `hoped` · `hoping` · `dances` · `danced` · `dancing` · `drops` · `dropped` · `dropping` · `wraps` · `wrapped` · `wrapping` · `basketball` · `airplane` · `birthday` · `driving` · `traded`
 
 ---
 
@@ -131,11 +131,37 @@ After completing the game, tap any caught creature to visit their **habitat care
 ```
 index.html          ← the main spelling game
 creature_care.html  ← creature habitat & care screen
+admin.html          ← teacher admin dashboard (password protected)
 README.md           ← you are here
 .nojekyll           ← disables Jekyll processing on GitHub Pages
 ```
 
 ---
+
+## 🔐 Student Login
+
+Students create an account with a **username** and **4-digit PIN** — no email required.
+
+- Suggested username format: first name + last initial (e.g. `BellaM`)
+- Progress saves automatically to the cloud after every catch and on the win screen
+- Works across any device — home, school, phone, tablet
+- Students can also play as a guest without saving
+
+## 🏫 Admin Panel
+
+Teacher access at:
+```
+https://adamnichols59.github.io/PokemonV2Spelling/admin.html
+```
+Password: stored securely in the file
+
+**Admin features:**
+- See all registered students
+- Stats: who played this week, perfect scores, total creatures caught
+- Top 3 leaderboard with gold/silver/bronze podium
+- Filter students by played / not played this week
+- Reset any student's PIN (generates a new random one)
+- Delete student accounts
 
 ## 📱 Tips
 

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spelling Game Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCuuUtfqRCjaVffIVj_8ey_6kBmGXPxIro",
+    authDomain: "bella-spelling.firebaseapp.com",
+    projectId: "bella-spelling",
+    storageBucket: "bella-spelling.firebasestorage.app",
+    messagingSenderId: "109241910702",
+    appId: "1:109241910702:web:425b48cf1e24408568343f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.fbDb = db;
+  window.fbCollection = collection;
+  window.fbGetDocs = getDocs;
+  window.fbDoc = doc;
+  window.fbUpdateDoc = updateDoc;
+  window.fbDeleteDoc = deleteDoc;
+  window.fbQuery = query;
+  window.fbOrderBy = orderBy;
+  window.firebaseReady = true;
+  document.dispatchEvent(new Event('firebaseReady'));
+</script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#0d0221;color:white;min-height:100vh}
+
+/* Login */
+#adminLogin{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;gap:16px;padding:24px}
+.admin-title{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:#ffe040}
+.admin-input{font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;
+  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);
+  border-radius:12px;padding:12px 16px;color:white;width:280px;outline:none}
+.admin-btn{font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;
+  background:linear-gradient(135deg,#9b5fd4,#4dcf8a);border:none;
+  border-radius:12px;padding:12px 32px;color:white;cursor:pointer}
+.admin-btn:hover{opacity:.85}
+.error-msg{color:#ff8888;font-size:.7rem;font-weight:800;min-height:18px}
+
+/* Dashboard */
+#adminDash{display:none;padding:24px;max-width:900px;margin:0 auto}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.dash-title{font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:#ffe040}
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);
+  border-radius:14px;padding:16px;text-align:center}
+.stat-num{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:#ffe040}
+.stat-lbl{font-size:.55rem;font-weight:800;color:#aac4ff;margin-top:4px}
+
+/* Search & filter */
+.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.search-inp{font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;
+  background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);
+  border-radius:10px;padding:8px 14px;color:white;outline:none;width:200px}
+.filter-btn{font-family:'Nunito',sans-serif;font-size:.65rem;font-weight:800;
+  background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);
+  border-radius:999px;padding:6px 14px;color:#aac4ff;cursor:pointer}
+.filter-btn.on{background:rgba(255,224,64,.18);border-color:#ffe040;color:#ffe040}
+
+/* Student table */
+.student-table{width:100%;border-collapse:collapse}
+.student-table th{font-size:.55rem;font-weight:800;color:#aac4ff;
+  text-align:left;padding:8px 12px;border-bottom:2px solid rgba(255,255,255,.1)}
+.student-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);
+  font-size:.68rem;font-weight:800;vertical-align:middle}
+.student-table tr:hover td{background:rgba(255,255,255,.04)}
+.badge{border-radius:999px;padding:3px 10px;font-size:.5rem;font-weight:800}
+.badge-green{background:rgba(77,207,138,.2);color:#4dcf8a;border:1px solid rgba(77,207,138,.4)}
+.badge-yellow{background:rgba(255,224,64,.2);color:#ffe040;border:1px solid rgba(255,224,64,.4)}
+.badge-gray{background:rgba(255,255,255,.08);color:#888;border:1px solid rgba(255,255,255,.15)}
+.action-btn{font-family:'Nunito',sans-serif;font-size:.5rem;font-weight:800;
+  border-radius:8px;padding:4px 10px;cursor:pointer;border:none}
+.btn-reset{background:rgba(255,160,50,.2);color:#ffaa44;border:1px solid rgba(255,160,50,.4)}
+.btn-delete{background:rgba(255,80,80,.2);color:#ff8888;border:1px solid rgba(255,80,80,.4)}
+.btn-reset:hover{background:rgba(255,160,50,.4)}
+.btn-delete:hover{background:rgba(255,80,80,.4)}
+
+/* Leaderboard */
+.section-title{font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;
+  color:#ffe040;margin:20px 0 10px}
+.podium{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.podium-card{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);
+  border-radius:14px;padding:14px 18px;text-align:center;min-width:100px}
+.podium-card.gold{border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.08)}
+.podium-card.silver{border-color:rgba(192,192,192,.5);background:rgba(192,192,192,.06)}
+.podium-card.bronze{border-color:rgba(205,127,50,.5);background:rgba(205,127,50,.06)}
+.podium-medal{font-size:1.8rem}
+.podium-name{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:white;margin-top:4px}
+.podium-score{font-size:.55rem;color:#aac4ff;margin-top:2px}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;
+  align-items:center;justify-content:center;z-index:100;display:none}
+.modal-overlay.show{display:flex}
+.modal{background:#1a0a3e;border:2px solid rgba(255,224,64,.4);border-radius:18px;
+  padding:24px;max-width:340px;width:90%;text-align:center}
+.modal-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#ffe040;margin-bottom:8px}
+.modal-body{font-size:.65rem;color:#aac4ff;margin-bottom:16px;line-height:1.6}
+.modal-actions{display:flex;gap:10px;justify-content:center}
+.modal-new-pin{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;
+  color:#4dcf8a;letter-spacing:8px;margin:12px 0}
+</style>
+</head>
+<body>
+
+<!-- Admin Login -->
+<div id="adminLogin">
+  <div class="admin-title">🔐 Admin Panel</div>
+  <div style="font-size:.7rem;color:#aac4ff">Bella's Spelling Adventure</div>
+  <input id="adminPwInput" type="password" class="admin-input" placeholder="Admin password" 
+    style="font-size:16px" onkeydown="if(event.key==='Enter')checkAdminPw()"/>
+  <button class="admin-btn" onclick="checkAdminPw()">Enter</button>
+  <div class="error-msg" id="adminPwErr"></div>
+</div>
+
+<!-- Dashboard -->
+<div id="adminDash">
+  <div class="dash-header">
+    <div class="dash-title">📊 Class Dashboard</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div id="lastRefresh" style="font-size:.55rem;color:#666"></div>
+      <button class="admin-btn" onclick="loadDashboard()" style="padding:8px 16px;font-size:.65rem">↻ Refresh</button>
+      <button class="admin-btn" onclick="logout()" style="padding:8px 16px;font-size:.65rem;background:#333">Log out</button>
+    </div>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-num" id="statStudents">-</div><div class="stat-lbl">Students</div></div>
+    <div class="stat-card"><div class="stat-num" id="statPlayed">-</div><div class="stat-lbl">Played This Week</div></div>
+    <div class="stat-card"><div class="stat-num" id="statPerfect">-</div><div class="stat-lbl">Perfect Scores</div></div>
+    <div class="stat-card"><div class="stat-num" id="statCreatures">-</div><div class="stat-lbl">Creatures Caught</div></div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="section-title">🏆 Top 3 This Week</div>
+  <div class="podium" id="podium"></div>
+
+  <!-- Student list -->
+  <div class="section-title">👥 All Students</div>
+  <div class="toolbar">
+    <input class="search-inp" id="searchInp" placeholder="🔍 Search by name..." 
+      oninput="filterStudents()" style="font-size:16px"/>
+    <button class="filter-btn" id="filterAll" onclick="setFilter('all')" >All</button>
+    <button class="filter-btn" id="filterPlayed" onclick="setFilter('played')">Played this week</button>
+    <button class="filter-btn" id="filterNotPlayed" onclick="setFilter('notplayed')">Haven't played</button>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="student-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>This Week</th>
+          <th>Score</th>
+          <th>Creatures</th>
+          <th>Best Streak</th>
+          <th>Last Played</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="studentRows"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Reset PIN Modal -->
+<div class="modal-overlay" id="resetModal">
+  <div class="modal">
+    <div class="modal-title">🔑 Reset PIN</div>
+    <div class="modal-body" id="resetModalBody">Reset PIN for this student?</div>
+    <div class="modal-new-pin" id="newPinDisplay"></div>
+    <div class="modal-actions">
+      <button class="admin-btn" onclick="confirmReset()" style="padding:10px 20px;font-size:.7rem">Reset</button>
+      <button class="admin-btn" onclick="closeModal('resetModal')" style="padding:10px 20px;font-size:.7rem;background:#333">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-title">🗑️ Delete Student</div>
+    <div class="modal-body" id="deleteModalBody">Are you sure?</div>
+    <div class="modal-actions">
+      <button class="admin-btn" onclick="confirmDelete()" style="padding:10px 20px;font-size:.7rem;background:rgba(255,80,80,.5)">Delete</button>
+      <button class="admin-btn" onclick="closeModal('deleteModal')" style="padding:10px 20px;font-size:.7rem;background:#333">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PW = 'BellaRox!';
+const WEEK_KEY = 'week_apr_2026';
+let allStudents = [];
+let currentFilter = 'all';
+let pendingAction = null;
+
+function checkAdminPw(){
+  const pw = document.getElementById('adminPwInput').value;
+  if(pw === ADMIN_PW){
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminDash').style.display = 'block';
+    waitForFirebase();
+  } else {
+    document.getElementById('adminPwErr').textContent = 'Wrong password!';
+  }
+}
+
+function waitForFirebase(){
+  if(window.firebaseReady){ loadDashboard(); }
+  else { document.addEventListener('firebaseReady', loadDashboard); }
+}
+
+function logout(){
+  document.getElementById('adminLogin').style.display = 'flex';
+  document.getElementById('adminDash').style.display = 'none';
+  document.getElementById('adminPwInput').value = '';
+}
+
+async function loadDashboard(){
+  try {
+    const db = window.fbDb;
+    const q = window.fbQuery(window.fbCollection(db,'students'), window.fbOrderBy('totalScore','desc'));
+    const snap = await window.fbGetDocs(q);
+    allStudents = [];
+    snap.forEach(d => allStudents.push({id: d.id, ...d.data()}));
+
+    // Stats
+    const playedThisWeek = allStudents.filter(s => s.weeks && s.weeks[WEEK_KEY]);
+    const perfect = allStudents.filter(s => {
+      const w = s.weeks && s.weeks[WEEK_KEY];
+      return w && w.wordsDone >= 20;
+    });
+    const totalCreatures = allStudents.reduce((sum,s)=>sum+(s.totalCreatures||0),0);
+
+    document.getElementById('statStudents').textContent = allStudents.length;
+    document.getElementById('statPlayed').textContent = playedThisWeek.length;
+    document.getElementById('statPerfect').textContent = perfect.length;
+    document.getElementById('statCreatures').textContent = totalCreatures;
+
+    // Podium
+    renderPodium(allStudents.slice(0,3));
+
+    // Table
+    renderStudentTable();
+
+    document.getElementById('lastRefresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch(e){
+    console.error('Dashboard error:', e);
+  }
+}
+
+function renderPodium(top){
+  const medals = [{cl:'gold',icon:'🥇'},{cl:'silver',icon:'🥈'},{cl:'bronze',icon:'🥉'}];
+  const podium = document.getElementById('podium');
+  podium.innerHTML = top.map((s,i)=>{
+    const w = s.weeks && s.weeks[WEEK_KEY];
+    return `<div class="podium-card ${medals[i].cl}">
+      <div class="podium-medal">${medals[i].icon}</div>
+      <div class="podium-name">${s.username}</div>
+      <div class="podium-score">⭐ ${s.totalScore||0} pts &nbsp;|&nbsp; 🐾 ${s.totalCreatures||0}</div>
+      <div class="podium-score" style="margin-top:4px">${w ? '✅ Played this week' : '⬜ Not yet'}</div>
+    </div>`;
+  }).join('') || '<div style="color:#666;font-size:.65rem">No students yet</div>';
+}
+
+function renderStudentTable(){
+  const search = (document.getElementById('searchInp').value||'').toLowerCase();
+  let filtered = allStudents.filter(s => {
+    if(search && !s.username.toLowerCase().includes(search)) return false;
+    if(currentFilter === 'played') return s.weeks && s.weeks[WEEK_KEY];
+    if(currentFilter === 'notplayed') return !s.weeks || !s.weeks[WEEK_KEY];
+    return true;
+  });
+
+  const tbody = document.getElementById('studentRows');
+  tbody.innerHTML = filtered.map(s => {
+    const w = s.weeks && s.weeks[WEEK_KEY];
+    const lastPlayed = s.weeks && Object.values(s.weeks).reduce((latest, wk) => 
+      wk.lastPlayed > latest ? wk.lastPlayed : latest, 0);
+    const lastPlayedStr = lastPlayed ? new Date(lastPlayed).toLocaleDateString() : 'Never';
+    const weekBadge = w 
+      ? `<span class="badge badge-green">✅ Played</span>`
+      : `<span class="badge badge-gray">⬜ Not yet</span>`;
+    return `<tr>
+      <td style="color:white;font-family:'Baloo 2',cursive">${s.username}</td>
+      <td>${weekBadge}</td>
+      <td style="color:#ffe040">⭐ ${s.totalScore||0}</td>
+      <td>🐾 ${s.totalCreatures||0}</td>
+      <td>🔥 ${s.bestStreak||0}</td>
+      <td style="color:#666">${lastPlayedStr}</td>
+      <td style="display:flex;gap:6px">
+        <button class="action-btn btn-reset" onclick="openReset('${s.id}','${s.username}')">Reset PIN</button>
+        <button class="action-btn btn-delete" onclick="openDelete('${s.id}','${s.username}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="7" style="text-align:center;color:#666;padding:20px">No students found</td></tr>`;
+}
+
+function filterStudents(){ renderStudentTable(); }
+
+function setFilter(f){
+  currentFilter = f;
+  ['all','played','notplayed'].forEach(id=>{
+    const btn = document.getElementById('filter'+id.charAt(0).toUpperCase()+id.slice(1));
+    if(btn) btn.className = 'filter-btn' + (id===f?' on':'');
+  });
+  renderStudentTable();
+}
+
+// Reset PIN
+function openReset(id, username){
+  const newPin = String(Math.floor(1000+Math.random()*9000));
+  pendingAction = {type:'reset', id, username, newPin};
+  document.getElementById('resetModalBody').textContent = `Reset PIN for ${username}?`;
+  document.getElementById('newPinDisplay').textContent = newPin;
+  document.getElementById('resetModal').classList.add('show');
+}
+
+async function confirmReset(){
+  if(!pendingAction || pendingAction.type !== 'reset') return;
+  try {
+    const ref = window.fbDoc(window.fbDb, 'students', pendingAction.id);
+    await window.fbUpdateDoc(ref, { pin: pendingAction.newPin });
+    closeModal('resetModal');
+    alert(`PIN for ${pendingAction.username} reset to: ${pendingAction.newPin}
+
+Write this down and give it to the student!`);
+    loadDashboard();
+  } catch(e){ alert('Error: ' + e.message); }
+}
+
+// Delete student
+function openDelete(id, username){
+  pendingAction = {type:'delete', id, username};
+  document.getElementById('deleteModalBody').textContent = 
+    `Delete ${username}? This will remove all their progress permanently.`;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+async function confirmDelete(){
+  if(!pendingAction || pendingAction.type !== 'delete') return;
+  try {
+    await window.fbDeleteDoc(window.fbDoc(window.fbDb, 'students', pendingAction.id));
+    closeModal('deleteModal');
+    loadDashboard();
+  } catch(e){ alert('Error: ' + e.message); }
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+  pendingAction = null;
+}
+
+document.getElementById('adminPwInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') checkAdminPw();
+});
+setFilter('all');
+</script>
+</body>
+</html>
