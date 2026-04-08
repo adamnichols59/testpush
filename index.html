@@ -674,7 +674,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
       style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;
         background:linear-gradient(135deg,#9b5fd4,#4dcf8a);
         border:none;border-radius:12px;padding:14px;color:white;cursor:pointer;
-        margin-top:4px;transition:all .2s;opacity:.5;pointer-events:none">
+        margin-top:4px;transition:all .2s;">
       ✨ Let's Go!
     </button>
 
@@ -1113,8 +1113,7 @@ function checkLoginReady(){
   const btn = document.getElementById('loginBtn');
   if(!btn) return;
   const ready = username.trim().length >= 2 && pinEntry.length === 4;
-  btn.style.opacity = ready ? '1' : '.5';
-  btn.style.pointerEvents = ready ? 'auto' : 'none';
+  btn.style.opacity = ready ? '1' : '.7';
 }
 
 function toggleSignup(){
@@ -1146,7 +1145,8 @@ function setLoginMsg(msg, color='#ff8888'){
 async function doLogin(){
   const username = (document.getElementById('loginUsername')||{}).value||'';
   const name = username.trim();
-  if(!name || pinEntry.length !== 4){ return; }
+  if(!name){ setLoginMsg('Please enter your name!', '#ffaa44'); return; }
+  if(pinEntry.length !== 4){ setLoginMsg('Please enter your 4-digit PIN!', '#ffaa44'); return; }
 
   setLoginMsg('Loading…', '#aac4ff');
 
@@ -1307,10 +1307,8 @@ function dismissSplash(){
 function initSplash(){
   const overlay = document.getElementById('splashOverlay');
   if(!overlay) return;
-  // Auto-dismiss after 2.5s even if not tapped
+  // Auto-dismiss after 2.5s
   setTimeout(dismissSplash, 2500);
-  // Also dismiss on any touch/click anywhere as backup
-  document.addEventListener('touchstart', dismissSplash, {once:true});
 }
 
 // ════════════════════════════════════════════
