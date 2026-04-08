@@ -621,76 +621,74 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:16px;padding:24px;font-family:'Nunito',sans-serif;">
 
-  <!-- Logo -->
-  <div style="font-size:2.8rem;animation:floatY 2s ease-in-out infinite">🐾</div>
+  <div style="font-size:2.8rem">🐾</div>
   <div style="font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;
-    color:#ffe040;text-align:center;text-shadow:0 0 20px rgba(255,224,64,.4);line-height:1.2">
+    color:#ffe040;text-align:center;line-height:1.2">
     Bella's Spelling<br>Adventure!
   </div>
 
-  <!-- Login Panel -->
-  <div id="loginPanel" style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);
-    border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
+  <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);
+    border-radius:20px;padding:24px;width:100%;max-width:320px;
+    display:flex;flex-direction:column;gap:12px">
 
-    <div id="loginMsg" style="font-size:.7rem;font-weight:800;color:#aac4ff;text-align:center;min-height:18px"></div>
+    <div id="loginMsg" style="font-size:.7rem;font-weight:800;color:#aac4ff;
+      text-align:center;min-height:18px"></div>
 
-    <input id="loginUsername" type="text" maxlength="20" autocomplete="off" spellcheck="false"
-      placeholder="Your name (e.g. BellaM)"
-      style="font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;
+    <input id="loginUsername" type="text" maxlength="20" autocomplete="off"
+      spellcheck="false" placeholder="Your name (e.g. BellaM)"
+      style="font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
         background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);
-        border-radius:12px;padding:12px 16px;color:white;width:100%;outline:none;
-        box-sizing:border-box;font-size:16px"/>
+        border-radius:12px;padding:12px 16px;color:white;width:100%;
+        outline:none;box-sizing:border-box"/>
+
     <div style="font-size:.55rem;color:rgba(170,196,255,.6);text-align:center;margin-top:-8px">
       Suggestion: use your first name + last initial (e.g. BellaM)
     </div>
 
-    <div style="display:flex;gap:8px;justify-content:center" id="pinDots">
+    <div style="display:flex;gap:8px;justify-content:center">
       <div class="pin-dot" id="pd0"></div>
       <div class="pin-dot" id="pd1"></div>
       <div class="pin-dot" id="pd2"></div>
       <div class="pin-dot" id="pd3"></div>
     </div>
-    <div style="font-size:.58rem;color:rgba(170,196,255,.6);text-align:center;margin-top:-6px" id="pinHint">
+    <div style="font-size:.58rem;color:rgba(170,196,255,.6);text-align:center" id="pinHint">
       Enter your 4-digit PIN
     </div>
 
-    <!-- PIN Keypad -->
+    <!-- PIN Keypad - IDs instead of inline handlers -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px">
-      <button class="pin-key" onclick="pinPress('1')">1</button>
-      <button class="pin-key" onclick="pinPress('2')">2</button>
-      <button class="pin-key" onclick="pinPress('3')">3</button>
-      <button class="pin-key" onclick="pinPress('4')">4</button>
-      <button class="pin-key" onclick="pinPress('5')">5</button>
-      <button class="pin-key" onclick="pinPress('6')">6</button>
-      <button class="pin-key" onclick="pinPress('7')">7</button>
-      <button class="pin-key" onclick="pinPress('8')">8</button>
-      <button class="pin-key" onclick="pinPress('9')">9</button>
-      <button class="pin-key" style="visibility:hidden">0</button>
-      <button class="pin-key" onclick="pinPress('0')">0</button>
-      <button class="pin-key" onclick="pinPress('⌫')">⌫</button>
+      <button class="pin-key" id="pk1">1</button>
+      <button class="pin-key" id="pk2">2</button>
+      <button class="pin-key" id="pk3">3</button>
+      <button class="pin-key" id="pk4">4</button>
+      <button class="pin-key" id="pk5">5</button>
+      <button class="pin-key" id="pk6">6</button>
+      <button class="pin-key" id="pk7">7</button>
+      <button class="pin-key" id="pk8">8</button>
+      <button class="pin-key" id="pk9">9</button>
+      <button class="pin-key" style="visibility:hidden">-</button>
+      <button class="pin-key" id="pk0">0</button>
+      <button class="pin-key" id="pkDel">⌫</button>
     </div>
 
-    <button id="loginBtn" onclick="doLogin()"
-      style="font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;
-        background:linear-gradient(135deg,#9b5fd4,#4dcf8a);
-        border:none;border-radius:12px;padding:14px;color:white;cursor:pointer;
-        margin-top:4px;transition:all .2s;">
+    <button id="loginBtn" style="font-family:'Baloo 2',cursive;font-size:.9rem;
+      font-weight:800;background:linear-gradient(135deg,#9b5fd4,#4dcf8a);
+      border:none;border-radius:12px;padding:14px;color:white;cursor:pointer;
+      margin-top:4px;width:100%;">
       ✨ Let's Go!
     </button>
 
     <div style="text-align:center">
-      <button onclick="toggleSignup()" id="switchBtn"
-        style="font-family:'Nunito',sans-serif;font-size:.6rem;font-weight:800;
-          color:#aac4ff;background:none;border:none;cursor:pointer;text-decoration:underline">
+      <button id="switchBtn" style="font-family:'Nunito',sans-serif;font-size:.6rem;
+        font-weight:800;color:#aac4ff;background:none;border:none;cursor:pointer;
+        text-decoration:underline">
         New here? Create an account
       </button>
     </div>
   </div>
 
-  <!-- Play without saving option -->
-  <button onclick="playAsGuest()"
-    style="font-family:'Nunito',sans-serif;font-size:.58rem;font-weight:800;
-      color:rgba(170,196,255,.5);background:none;border:none;cursor:pointer">
+  <button id="guestBtn" style="font-family:'Nunito',sans-serif;font-size:.58rem;
+    font-weight:800;color:rgba(170,196,255,.5);background:none;border:none;cursor:pointer">
     Play without saving progress
   </button>
 </div>
@@ -1083,199 +1081,147 @@ function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.fl
 // ════════════════════════════════════════════
 //  LOGIN & FIREBASE SYSTEM
 // ════════════════════════════════════════════
-let currentUser = null; // {username, isGuest}
+let currentUser = null;
 let pinEntry = '';
 let isSignupMode = false;
-const WEEK_KEY = 'week_apr_2026'; // Change this each week to reset word progress
+const WEEK_KEY = 'week_apr_2026';
 
-// ── PIN KEYPAD ──
-function pinPress(val){
-  if(val === '⌫'){
-    pinEntry = pinEntry.slice(0,-1);
-  } else if(val === ''){
-    return;
-  } else if(pinEntry.length < 4){
-    pinEntry += val;
-  }
-  updatePinDots();
-  checkLoginReady();
+function setLoginMsg(msg, color='#ff8888'){
+  const el = document.getElementById('loginMsg');
+  if(el){ el.textContent=msg; el.style.color=color; }
 }
 
 function updatePinDots(){
   for(let i=0;i<4;i++){
-    const d = document.getElementById('pd'+i);
-    if(d) d.className = 'pin-dot' + (i < pinEntry.length ? ' filled' : '');
+    const d=document.getElementById('pd'+i);
+    if(d) d.className='pin-dot'+(i<pinEntry.length?' filled':'');
   }
 }
 
-function checkLoginReady(){
-  const username = (document.getElementById('loginUsername')||{}).value||'';
-  const btn = document.getElementById('loginBtn');
-  if(!btn) return;
-  const ready = username.trim().length >= 2 && pinEntry.length === 4;
-  btn.style.opacity = ready ? '1' : '.7';
-}
-
-function toggleSignup(){
-  isSignupMode = !isSignupMode;
-  const btn = document.getElementById('switchBtn');
-  const hint = document.getElementById('pinHint');
-  const msg = document.getElementById('loginMsg');
-  const loginBtn = document.getElementById('loginBtn');
-  if(isSignupMode){
-    if(btn) btn.textContent = 'Already have an account? Log in';
-    if(hint) hint.textContent = 'Choose a 4-digit PIN you'll remember';
-    if(loginBtn) loginBtn.textContent = '🌟 Create Account';
-    if(msg) msg.textContent = '';
-  } else {
-    if(btn) btn.textContent = 'New here? Create an account';
-    if(hint) hint.textContent = 'Enter your 4-digit PIN';
-    if(loginBtn) loginBtn.textContent = '✨ Let's Go!';
-    if(msg) msg.textContent = '';
-  }
-  pinEntry = '';
+function handlePinPress(val){
+  if(val==='⌫'){ pinEntry=pinEntry.slice(0,-1); }
+  else if(pinEntry.length<4){ pinEntry+=val; }
   updatePinDots();
 }
 
-function setLoginMsg(msg, color='#ff8888'){
-  const el = document.getElementById('loginMsg');
-  if(el){ el.textContent = msg; el.style.color = color; }
-}
-
-async function doLogin(){
-  const username = (document.getElementById('loginUsername')||{}).value||'';
-  const name = username.trim();
-  if(!name){ setLoginMsg('Please enter your name!', '#ffaa44'); return; }
-  if(pinEntry.length !== 4){ setLoginMsg('Please enter your 4-digit PIN!', '#ffaa44'); return; }
-
-  setLoginMsg('Loading…', '#aac4ff');
-
-  if(!window.firebaseReady || !window.fbDb){
-    // Firebase not loaded - play as guest
-    playAsGuest();
-    return;
+function toggleSignup(){
+  isSignupMode=!isSignupMode;
+  const btn=document.getElementById('switchBtn');
+  const hint=document.getElementById('pinHint');
+  const loginBtn=document.getElementById('loginBtn');
+  if(isSignupMode){
+    if(btn) btn.textContent='Already have an account? Log in';
+    if(hint) hint.textContent="Choose a 4-digit PIN you'll remember";
+    if(loginBtn) loginBtn.textContent='🌟 Create Account';
+  } else {
+    if(btn) btn.textContent='New here? Create an account';
+    if(hint) hint.textContent='Enter your 4-digit PIN';
+    if(loginBtn) loginBtn.textContent='✨ Let's Go!';
   }
-
-  try {
-    const db = window.fbDb;
-    const userRef = window.fbDoc(db, 'students', name.toLowerCase());
-    const snap = await window.fbGetDoc(userRef);
-
-    if(isSignupMode){
-      // CREATE ACCOUNT
-      if(snap.exists()){
-        setLoginMsg('That name is taken! Try adding your last initial.', '#ff8888');
-        return;
-      }
-      await window.fbSetDoc(userRef, {
-        username: name,
-        pin: pinEntry,
-        createdAt: Date.now(),
-        totalScore: 0,
-        totalCreatures: 0,
-        bestStreak: 0,
-        weeks: {}
-      });
-      setLoginMsg('Account created! Welcome ' + name + '! 🎉', '#4dcf8a');
-      setTimeout(()=>loginSuccess(name), 800);
-    } else {
-      // LOGIN
-      if(!snap.exists()){
-        setLoginMsg('Name not found. New here? Create an account!', '#ff8888');
-        return;
-      }
-      const data = snap.data();
-      if(data.pin !== pinEntry){
-        setLoginMsg('Wrong PIN. Try again!', '#ff8888');
-        pinEntry = '';
-        updatePinDots();
-        return;
-      }
-      setLoginMsg('Welcome back, ' + name + '! 🎉', '#4dcf8a');
-      setTimeout(()=>loginSuccess(name), 600);
-    }
-  } catch(e){
-    console.error('Firebase error:', e);
-    setLoginMsg('Connection error. Playing as guest.', '#ffaa44');
-    setTimeout(()=>playAsGuest(), 1000);
-  }
-}
-
-function loginSuccess(username){
-  currentUser = { username, isGuest: false };
-  const el = document.getElementById('playerNameEl');
-  if(el) el.textContent = '👤 ' + username;
-  hideLogin();
-  loadUserProgress();
+  pinEntry='';
+  updatePinDots();
+  setLoginMsg('');
 }
 
 function playAsGuest(){
-  currentUser = { username: 'Guest', isGuest: true };
+  currentUser={username:'Guest',isGuest:true};
   hideLogin();
 }
 
 function hideLogin(){
-  const el = document.getElementById('sLogin');
-  if(el){ el.style.opacity='0'; el.style.transition='opacity .5s'; setTimeout(()=>el.style.display='none',500); }
+  const el=document.getElementById('sLogin');
+  if(el){ el.style.opacity='0'; el.style.transition='opacity .5s';
+    setTimeout(()=>el.style.display='none',500); }
 }
 
-// ── SAVE / LOAD PROGRESS ──
-async function saveProgress(){
-  if(!currentUser || currentUser.isGuest || !window.firebaseReady) return;
+async function doLogin(){
+  const username=(document.getElementById('loginUsername')||{}).value||'';
+  const name=username.trim();
+  if(!name){ setLoginMsg('Please enter your name! 👆','#ffaa44'); return; }
+  if(pinEntry.length!==4){ setLoginMsg('Please enter your 4-digit PIN! 👆','#ffaa44'); return; }
+
+  setLoginMsg('Loading…','#aac4ff');
+
+  if(!window.firebaseReady||!window.fbDb){
+    playAsGuest(); return;
+  }
+
   try {
-    const db = window.fbDb;
-    const userRef = window.fbDoc(db, 'students', currentUser.username.toLowerCase());
-    const weekData = {
-      score,
-      caught: caught.length,
-      wordsDone: wordIdx,
-      lastPlayed: Date.now()
-    };
-    await window.fbUpdateDoc(userRef, {
-      totalScore: score,
-      totalCreatures: caught.length,
-      bestStreak: bestStreak,
-      [`weeks.${WEEK_KEY}`]: weekData
+    const db=window.fbDb;
+    const userRef=window.fbDoc(db,'students',name.toLowerCase());
+    const snap=await window.fbGetDoc(userRef);
+
+    if(isSignupMode){
+      if(snap.exists()){ setLoginMsg('That name is taken! Try adding your last initial.','#ff8888'); return; }
+      await window.fbSetDoc(userRef,{
+        username:name, pin:pinEntry, createdAt:Date.now(),
+        totalScore:0, totalCreatures:0, bestStreak:0, weeks:{}
+      });
+      setLoginMsg('Welcome '+name+'! 🎉','#4dcf8a');
+      setTimeout(()=>loginSuccess(name),800);
+    } else {
+      if(!snap.exists()){ setLoginMsg('Name not found. New here? Create an account!','#ff8888'); return; }
+      const data=snap.data();
+      if(data.pin!==pinEntry){
+        setLoginMsg('Wrong PIN. Try again!','#ff8888');
+        pinEntry=''; updatePinDots(); return;
+      }
+      setLoginMsg('Welcome back, '+name+'! 🎉','#4dcf8a');
+      setTimeout(()=>loginSuccess(name),600);
+    }
+  } catch(e){
+    console.error('Firebase error:',e);
+    setLoginMsg('Connection error. Playing as guest.','#ffaa44');
+    setTimeout(playAsGuest,1000);
+  }
+}
+
+function loginSuccess(username){
+  currentUser={username,isGuest:false};
+  const el=document.getElementById('playerNameEl');
+  if(el) el.textContent='👤 '+username;
+  hideLogin();
+  loadUserProgress();
+}
+
+async function saveProgress(){
+  if(!currentUser||currentUser.isGuest||!window.firebaseReady) return;
+  try {
+    const db=window.fbDb;
+    const userRef=window.fbDoc(db,'students',currentUser.username.toLowerCase());
+    await window.fbUpdateDoc(userRef,{
+      totalScore:score, totalCreatures:caught.length, bestStreak:bestStreak,
+      [`weeks.${WEEK_KEY}`]:{score,caught:caught.length,wordsDone:wordIdx,lastPlayed:Date.now()}
     });
-  } catch(e){ console.error('Save error:', e); }
+  } catch(e){ console.error('Save error:',e); }
 }
 
 async function loadUserProgress(){
-  if(!currentUser || currentUser.isGuest || !window.firebaseReady) return;
+  if(!currentUser||currentUser.isGuest||!window.firebaseReady) return;
   try {
-    const db = window.fbDb;
-    const userRef = window.fbDoc(db, 'students', currentUser.username.toLowerCase());
-    const snap = await window.fbGetDoc(userRef);
+    const db=window.fbDb;
+    const snap=await window.fbGetDoc(window.fbDoc(db,'students',currentUser.username.toLowerCase()));
     if(!snap.exists()) return;
-    const data = snap.data();
-    // Load persistent stats
-    if(data.bestStreak) bestStreak = data.bestStreak;
-    // Week progress
-    const weekData = data.weeks && data.weeks[WEEK_KEY];
-    if(weekData){
-      // Could resume from here if we add resume feature later
-    }
-  } catch(e){ console.error('Load error:', e); }
+    const data=snap.data();
+    if(data.bestStreak) bestStreak=data.bestStreak;
+  } catch(e){ console.error('Load error:',e); }
 }
 
-// Auto-save on catch and on win
 function autoSave(){ saveProgress(); }
 
-// ── LEADERBOARD ──
 async function loadLeaderboard(){
-  const el = document.getElementById('leaderboardTop3');
+  const el=document.getElementById('leaderboardTop3');
   if(!el) return;
-  if(!window.firebaseReady){ el.innerHTML = '<div style="color:#aac4ff;font-size:.6rem">Sign in to see leaderboard</div>'; return; }
+  if(!window.firebaseReady){ el.innerHTML='<div style="color:#aac4ff;font-size:.6rem">Sign in to see leaderboard</div>'; return; }
   try {
-    const db = window.fbDb;
-    const q = window.fbQuery(window.fbCollection(db,'students'), window.fbOrderBy('totalScore','desc'), window.fbLimit(3));
-    const snap = await window.fbGetDocs(q);
-    const medals = ['🥇','🥈','🥉'];
-    let html = '';
-    let i = 0;
+    const db=window.fbDb;
+    const q=window.fbQuery(window.fbCollection(db,'students'),window.fbOrderBy('totalScore','desc'),window.fbLimit(3));
+    const snap=await window.fbGetDocs(q);
+    const medals=['🥇','🥈','🥉'];
+    let html=''; let i=0;
     snap.forEach(doc=>{
-      const d = doc.data();
-      html += `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;
+      const d=doc.data();
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;
         background:rgba(255,255,255,.08);border-radius:10px;margin-bottom:6px">
         <span style="font-size:1.2rem">${medals[i]}</span>
         <span style="font-family:'Baloo 2',cursive;font-weight:800;color:#ffe040;flex:1">${d.username}</span>
@@ -1283,14 +1229,35 @@ async function loadLeaderboard(){
       </div>`;
       i++;
     });
-    el.innerHTML = html || '<div style="color:#aac4ff;font-size:.6rem">No scores yet!</div>';
-  } catch(e){ el.innerHTML = '<div style="color:#aac4ff;font-size:.6rem">Leaderboard unavailable</div>'; }
+    el.innerHTML=html||'<div style="color:#aac4ff;font-size:.6rem">No scores yet!</div>';
+  } catch(e){ el.innerHTML='<div style="color:#aac4ff;font-size:.6rem">Leaderboard unavailable</div>'; }
 }
 
-// Add username input listener
-document.addEventListener('DOMContentLoaded', ()=>{
-  const inp = document.getElementById('loginUsername');
-  if(inp) inp.addEventListener('input', checkLoginReady);
+// Wire up all login buttons after DOM loads
+window.addEventListener('load', function(){
+  // PIN keys
+  ['1','2','3','4','5','6','7','8','9','0'].forEach(n=>{
+    const btn=document.getElementById('pk'+n);
+    if(btn) btn.addEventListener('click',()=>handlePinPress(n));
+  });
+  const delBtn=document.getElementById('pkDel');
+  if(delBtn) delBtn.addEventListener('click',()=>handlePinPress('⌫'));
+
+  // Login button
+  const loginBtn=document.getElementById('loginBtn');
+  if(loginBtn) loginBtn.addEventListener('click', doLogin);
+
+  // Switch / create account
+  const switchBtn=document.getElementById('switchBtn');
+  if(switchBtn) switchBtn.addEventListener('click', toggleSignup);
+
+  // Guest
+  const guestBtn=document.getElementById('guestBtn');
+  if(guestBtn) guestBtn.addEventListener('click', playAsGuest);
+
+  // Username input
+  const inp=document.getElementById('loginUsername');
+  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 });
 
 // ════════════════════════════════════════════
