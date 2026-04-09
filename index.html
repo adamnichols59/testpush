@@ -917,7 +917,10 @@ let hintUsed=false,attempts=0,isPerfect=true;
 let caught=[],speaking=false,soundEnabled=true;
 let streak=0,bestStreak=0;
 let wordStats=[]; // per-word analytics
+let _wordStats=[]; // detailed per-word analytics
 let _wordStartTime=0; // word load timestamp
+let _wordTimerActive=false; // timer running flag
+let _sessionStartTime=Date.now(); // session timer
 let throwReady=false,throwLocked=false;
 let audioCtx=null,bgmGain=null,sfxGain=null,bgmPlaying=false,bgmNodes=[],bgmSched=null;
 
@@ -1477,7 +1480,7 @@ function useHint(){
 function skipWord(){
   isPerfect=false;
   const w=wordOrder[wordIdx];
-  if(w) _wordStats.push({word:w.w,attempts:_wordAttempts,hintUsed:_wordHintUsed,
+  if(w) _wordStats.push({word:w.w,attempts:attempts,hintUsed:hintUsed,
     skipped:true,timeMs:Date.now()-_wordStartTime});
   skipToNext();
 }
@@ -1861,8 +1864,8 @@ function showCatch(throwBonus=0){
   const pts=(hintUsed?5:(attempts===1?10:7))+throwBonus;
   score+=pts;
   // Record word analytics
-  _wordStats.push({word:w.w,attempts:_wordAttempts,hintUsed:_wordHintUsed,
-    skipped:false,timeMs:Date.now()-_wordStartTime,firstTry:_wordAttempts===1});
+  _wordStats.push({word:w.w,attempts:attempts,hintUsed:hintUsed,
+    skipped:false,timeMs:Date.now()-_wordStartTime,firstTry:attempts===1});
   caught.push({
     name:cr.name, color:cr.color, fn:cr.fn, word:w.w,
     nickname:'', happiness:50, caughtAt:Date.now(),
