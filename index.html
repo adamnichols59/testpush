@@ -2428,6 +2428,37 @@ function openCareFromWin(creatureIdx){
 //  BOOT
 // ═══════════════════════════════════════════════════════════
 initTitle();
+
+// ── WIRE LOGIN BUTTONS ──
+window.addEventListener('load', function(){
+  ['1','2','3','4','5','6','7','8','9','0'].forEach(function(k){
+    var b=document.getElementById('pk'+k);
+    if(b) b.addEventListener('click', function(){ _pinPress(k); });
+  });
+  var del=document.getElementById('pkDel');
+  if(del) del.addEventListener('click', function(){ _pinPress('DEL'); });
+
+  var lb=document.getElementById('loginBtn');
+  if(lb) lb.addEventListener('click', _doLogin);
+
+  var sb=document.getElementById('switchBtn');
+  if(sb) sb.addEventListener('click', _toggleSignup);
+
+  var gb=document.getElementById('guestBtn');
+  if(gb) gb.addEventListener('click', _guestPlay);
+
+  var ab=document.getElementById('adminBtn');
+  if(ab) ab.addEventListener('click', function(){ window.location.href='admin.html'; });
+
+  var ui=document.getElementById('loginUsername');
+  if(ui) ui.addEventListener('keydown', function(e){ if(e.key==='Enter') _doLogin(); });
+
+  var rb=document.getElementById('resumeBtn');
+  if(rb) rb.addEventListener('click', _resumeGame);
+
+  var fb2=document.getElementById('freshBtn');
+  if(fb2) fb2.addEventListener('click', _freshStart);
+});
 </script>
 
 <!-- ═══════════════════════ POKÉDEX CARE SCREEN ═══════════════════════ -->
