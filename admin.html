@@ -567,221 +567,68 @@ function setFilter(f){
   filterStudents();
 }
 
-function filterStudents(){
-  var search=(document.getElementById('searchInp').value||'').toLowerCase();
-  var rows='';
-  allStudents.filter(function(s){
+function renderStudentsFiltered(search){
+  var filtered=allStudents.filter(function(s){
     if(search&&!s.username.toLowerCase().includes(search))return false;
     var played=s.weeks&&s.weeks[WEEK_KEY];
     if(currentFilter==='played')return played;
     if(currentFilter==='not')return !played;
     return true;
-  }).forEach(function(s){
+  });
+  var rows='';
+  filtered.forEach(function(s){
     var w=s.weeks&&s.weeks[WEEK_KEY];
     var played=!!w;
     var last=w&&w.lastPlayed?new Date(w.lastPlayed).toLocaleDateString():'-';
-    // Avg attempts this week
     var avgAtt='-';
     if(w&&w.wordAnalytics){
       var atts=Object.values(w.wordAnalytics).map(function(wa){return wa.attempts||1;});
       if(atts.length)avgAtt=(atts.reduce(function(a,b){return a+b;},0)/atts.length).toFixed(1);
     }
-    rows+='<tr class="stu-row" onclick="toggleStuDetail(''+s.id+'')">'
-      +'<td style="color:#666;font-size:.6rem">▶</td>'
+    var playedBadge=played
+      ?'<span class="badge badge-easy">&#10003; Played</span>'
+      :'<span class="badge badge-skip">Not yet</span>';
+    rows+='<tr class="stu-row" data-sid="'+s.id+'">'
+      +'<td style="color:#666;font-size:.6rem">&#9658;</td>'
       +'<td style="font-family:Baloo 2,cursive;font-weight:800;color:white">'+s.username+'</td>'
-      +'<td>'+(played?'<span class="badge badge-easy">✅ Played</span>':'<span class="badge badge-skip">⬜ Not yet</span>')+'</td>'
-      +'<td style="color:#ffe040">⭐ '+(s.totalScore||0)+'</td>'
-      +'<td>🐾 '+(s.totalCreatures||0)+'</td>'
-      +'<td>🔥 '+(s.bestStreak||0)+'</td>'
+      +'<td>'+playedBadge+'</td>'
+      +'<td style="color:#ffe040">&#11088; '+(s.totalScore||0)+'</td>'
+      +'<td>&#128062; '+(s.totalCreatures||0)+'</td>'
+      +'<td>&#128293; '+(s.bestStreak||0)+'</td>'
       +'<td style="color:#aac4ff">'+avgAtt+'</td>'
       +'<td style="color:#666">'+last+'</td>'
-      +'<td onclick="event.stopPropagation()" style="display:flex;gap:6px;flex-wrap:wrap">'
-        +'<button class="action-btn btn-reset-pin" onclick="openReset(''+s.id+'',''+s.username+'')">Reset PIN</button>'
-        +'<button class="action-btn btn-del" onclick="openDelete(''+s.id+'',''+s.username+'')">Delete</button>'
+      +'<td>'
+        +'<button class="action-btn btn-reset-pin" data-rid="'+s.id+'" data-rname="'+s.username+'">Reset PIN</button> '
+        +'<button class="action-btn btn-del" data-did="'+s.id+'" data-dname="'+s.username+'">Delete</button>'
       +'</td>'
       +'</tr>'
       +'<tr class="stu-detail" id="detail-'+s.id+'">'
         +'<td colspan="9">'+buildStuDetail(s)+'</td>'
       +'</tr>';
   });
-  document.getElementById('studentRows').innerHTML=rows||'<tr><td colspan="9" style="text-align:center;color:#666;padding:20px">No students found</td></tr>';
-}
-
-function buildStuDetail(s){
-  var w=s.weeks&&s.weeks[WEEK_KEY];
-  if(!w||!w.wordAnalytics){
-    return '<div style="color:#666;font-size:.6rem;padding:8px">No word-level data yet for this week</div>';
-  }
-  var cards=WORDS.map(function(word){
-    var wa=w.wordAnalytics[word];
-    if(!wa)return '<div class="stu-word-card" style="opacity:.35"><div class="stu-word-name">'+word+'</div><div class="stu-word-stat">Not reached</div></div>';
-    var col=diffColor(wa.attempts||1);
-    return '<div class="stu-word-card" style="border-color:'+col+'44">'
-      +'<div class="stu-word-name" style="color:'+col+'">'+word+'</div>'
-      +'<div class="stu-word-stat">'
-        +'Attempts: <b style="color:white">'+(wa.attempts||1)+'</b><br>'
-        +'Hint: '+(wa.hintUsed?'<b style="color:#ffaa44">Yes</b>':'No')+'<br>'
-        +(wa.skipped?'<b style="color:#ff8888">Skipped</b>':'')
-        +'Time: '+(wa.timeMs?fmtTime(wa.timeMs):'-')
-      +'</div>'
-      +'</div>';
-  }).join('');
-  return '<div class="stu-word-grid">'+cards+'</div>';
-}
-
-function toggleStuDetail(id){
-  var el=document.getElementById('detail-'+id);
-  if(el)el.style.display=el.style.display==='table-row'?'none':'table-row';
-}
-
-// ── TRENDS ──
-function renderTrends(){
-  // Score distribution
-  var buckets={'0-49':0,'50-99':0,'100-149':0,'150-199':0,'200+':0};
-  allStudents.forEach(function(s){
-    var sc=s.totalScore||0;
-    if(sc<50)buckets['0-49']++;
-    else if(sc<100)buckets['50-99']++;
-    else if(sc<150)buckets['100-149']++;
-    else if(sc<200)buckets['150-199']++;
-    else buckets['200+']++;
-  });
-  if(charts.score)charts.score.destroy();
-  var ctx1=document.getElementById('scoreChart').getContext('2d');
-  charts.score=new Chart(ctx1,{
-    type:'bar',
-    data:{labels:Object.keys(buckets),datasets:[{label:'Students',data:Object.values(buckets),
-      backgroundColor:'rgba(100,180,255,.7)',borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:'#aac4ff',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},
-        y:{ticks:{color:'#aac4ff',font:{size:10},stepSize:1},grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true}}}
-  });
-
-  // Avg attempts by word
-  var wordStats=getWordStats();
-  var attLabels=[],attData=[],attColors=[];
-  WORDS.forEach(function(w){
-    var ws=wordStats[w];
-    var avg=ws.attempts.length?ws.attempts.reduce(function(a,b){return a+b;},0)/ws.attempts.length:0;
-    attLabels.push(w);attData.push(avg.toFixed(2));attColors.push(diffColor(avg)+'cc');
-  });
-  if(charts.attempts)charts.attempts.destroy();
-  var ctx2=document.getElementById('attemptsChart').getContext('2d');
-  charts.attempts=new Chart(ctx2,{
-    type:'bar',
-    data:{labels:attLabels,datasets:[{label:'Avg Attempts',data:attData,
-      backgroundColor:attColors,borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:'#aac4ff',font:{size:9},maxRotation:45},grid:{color:'rgba(255,255,255,.05)'}},
-        y:{ticks:{color:'#aac4ff',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true}}}
-  });
-
-  // Creatures caught by type
-  var crCounts={};
-  allStudents.forEach(function(s){
-    if(!s.creatureCounts)return;
-    Object.keys(s.creatureCounts).forEach(function(k){
-      crCounts[k]=(crCounts[k]||0)+s.creatureCounts[k];
+  var tbody=document.getElementById('studentRows');
+  tbody.innerHTML=rows||'<tr><td colspan="9" style="text-align:center;color:#666;padding:20px">No students found</td></tr>';
+  // Wire click events via delegation
+  tbody.querySelectorAll('tr.stu-row').forEach(function(tr){
+    tr.addEventListener('click',function(e){
+      if(e.target.tagName==='BUTTON')return;
+      toggleStuDetail(tr.dataset.sid);
     });
   });
-  var crNames=Object.keys(crCounts).sort(function(a,b){return crCounts[b]-crCounts[a];}).slice(0,15);
-  var crPalette=['#ff6eb4','#ffd700','#4dcf8a','#b3f0ff','#9b5fd4','#ff5252','#ffe040',
-    '#4a8fff','#ff8844','#4dcf8a','#ff7eb3','#aac4ff','#ffb3d9','#88ccff','#ffdd88'];
-  if(charts.creatures)charts.creatures.destroy();
-  var ctx3=document.getElementById('creaturesChart').getContext('2d');
-  charts.creatures=new Chart(ctx3,{
-    type:'bar',
-    data:{labels:crNames,datasets:[{label:'Times Caught',
-      data:crNames.map(function(n){return crCounts[n];}),
-      backgroundColor:crPalette,borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:'#aac4ff',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},
-        y:{ticks:{color:'#aac4ff',font:{size:10},stepSize:1},grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true}}}
+  tbody.querySelectorAll('[data-rid]').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      openReset(btn.dataset.rid,btn.dataset.rname);
+    });
+  });
+  tbody.querySelectorAll('[data-did]').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      openDelete(btn.dataset.did,btn.dataset.dname);
+    });
   });
 }
 
-// ── RESET PIN ──
-function openReset(id,name){
-  var pin=String(Math.floor(1000+Math.random()*9000));
-  pendingAction={type:'reset',id,name,pin};
-  document.getElementById('resetBody').textContent='Reset PIN for '+name+'?';
-  document.getElementById('newPinEl').textContent=pin;
-  document.getElementById('resetModal').classList.add('show');
-}
-async function confirmReset(){
-  if(!pendingAction||pendingAction.type!=='reset')return;
-  try{
-    await window._fb.updateDoc(window._fb.doc(window._fb.db,'students',pendingAction.id),{pin:pendingAction.pin});
-    closeModal('resetModal');
-    alert('PIN for '+pendingAction.name+' is now: '+pendingAction.pin+'
-
-Write this down for the student!');
-    loadDashboard();
-  }catch(e){alert('Error: '+e.message);}
-}
-
-// ── DELETE ──
-function openDelete(id,name){
-  pendingAction={type:'delete',id,name};
-  document.getElementById('deleteBody').textContent='Delete '+name+'? This removes all their progress permanently.';
-  document.getElementById('deleteModal').classList.add('show');
-}
-async function confirmDelete(){
-  if(!pendingAction||pendingAction.type!=='delete')return;
-  try{
-    await window._fb.deleteDoc(window._fb.doc(window._fb.db,'students',pendingAction.id));
-    closeModal('deleteModal');
-    loadDashboard();
-  }catch(e){alert('Error: '+e.message);}
-}
-
-function closeModal(id){document.getElementById(id).classList.remove('show');pendingAction=null;}
-
-// ── FILTER STUDENTS ──
-function filterStudents(){
-  var search=(document.getElementById('searchInp').value||'').toLowerCase();
-  renderStudentsFiltered(search);
-}
-function renderStudentsFiltered(search){
-  var rows='';
-  allStudents.filter(function(s){
-    if(search&&!s.username.toLowerCase().includes(search))return false;
-    var played=s.weeks&&s.weeks[WEEK_KEY];
-    if(currentFilter==='played')return played;
-    if(currentFilter==='not')return !played;
-    return true;
-  }).forEach(function(s){
-    var w=s.weeks&&s.weeks[WEEK_KEY];
-    var played=!!w;
-    var last=w&&w.lastPlayed?new Date(w.lastPlayed).toLocaleDateString():'-';
-    var avgAtt='-';
-    if(w&&w.wordAnalytics){
-      var atts=Object.values(w.wordAnalytics).map(function(wa){return wa.attempts||1;});
-      if(atts.length)avgAtt=(atts.reduce(function(a,b){return a+b;},0)/atts.length).toFixed(1);
-    }
-    rows+='<tr class="stu-row" onclick="toggleStuDetail(''+s.id+'')">'
-      +'<td style="color:#666;font-size:.6rem">▶</td>'
-      +'<td style="font-family:Baloo 2,cursive;font-weight:800;color:white">'+s.username+'</td>'
-      +'<td>'+(played?'<span class="badge badge-easy">✅ Played</span>':'<span class="badge badge-skip">⬜ Not yet</span>')+'</td>'
-      +'<td style="color:#ffe040">⭐ '+(s.totalScore||0)+'</td>'
-      +'<td>🐾 '+(s.totalCreatures||0)+'</td>'
-      +'<td>🔥 '+(s.bestStreak||0)+'</td>'
-      +'<td style="color:#aac4ff">'+avgAtt+'</td>'
-      +'<td style="color:#666">'+last+'</td>'
-      +'<td onclick="event.stopPropagation()" style="display:flex;gap:6px;flex-wrap:wrap">'
-        +'<button class="action-btn btn-reset-pin" onclick="openReset(''+s.id+'',''+s.username+'')">Reset PIN</button>'
-        +'<button class="action-btn btn-del" onclick="openDelete(''+s.id+'',''+s.username+'')">Delete</button>'
-      +'</td>'
-      +'</tr>'
-      +'<tr class="stu-detail" id="detail-'+s.id+'">'
-        +'<td colspan="9">'+buildStuDetail(s)+'</td>'
-      +'</tr>';
-  });
-  document.getElementById('studentRows').innerHTML=rows||'<tr><td colspan="9" style="text-align:center;color:#666;padding:20px">No students found</td></tr>';
-}
 
 function renderStudents(){renderStudentsFiltered('');}
 </script>
