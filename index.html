@@ -41,11 +41,22 @@ document.dispatchEvent(new Event('fbReady'));
   border-radius:999px;padding:3px 10px;font-size:.7rem;font-weight:800;color:#ffaa44;
   display:flex;align-items:center;gap:4px;}
 @keyframes streakPop{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
-@keyframes coinBurstAnim{
-  0%{transform:translate(-50%,-50%) translateY(0) scale(0);opacity:0}
-  20%{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1.2)}
-  70%{opacity:1;transform:translate(-50%,-50%) translateY(-30px) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-50%) translateY(-60px) scale(.8)}
+@keyframes coinMsgAnim{
+  0%{transform:translateX(-50%) scale(0);opacity:0}
+  30%{transform:translateX(-50%) scale(1.15);opacity:1}
+  65%{transform:translateX(-50%) scale(1);opacity:1}
+  85%{transform:translateX(-50%) scale(1);opacity:1}
+  100%{transform:translateX(-50%) scale(.9) translateY(-20px);opacity:0}
+}
+@keyframes coinBadgeAnim{
+  0%{transform:translateX(-50%) scale(0);opacity:0}
+  40%{transform:translateX(-50%) scale(1.1);opacity:1}
+  70%{transform:translateX(-50%) scale(1);opacity:1}
+  100%{transform:translateX(-50%) scale(1) translateY(10px);opacity:0}
+}
+@keyframes coinRain{
+  0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
+  100%{transform:translateY(-120px) rotate(360deg) scale(0);opacity:0}
 }
 /* Coin chip */
 #coinChip{background:rgba(255,224,64,.18);border:1.5px solid rgba(255,224,64,.5);
@@ -1372,15 +1383,57 @@ function earnCoins(amount, reason){
 }
 
 function showCoinBurst(amount, reason){
+  // Main coin message
   var el=document.createElement('div');
-  el.style.cssText='position:fixed;top:35%;left:50%;transform:translate(-50%,-50%);'
-    +'z-index:500;font-family:Baloo 2,cursive;font-size:1.1rem;font-weight:800;'
-    +'color:#ffe040;text-shadow:0 0 12px rgba(255,224,64,.8),0 2px 4px rgba(0,0,0,.8);'
+  var msgs={
+    'First Try!':['PERFECT! ⭐','AMAZING! 🌟','BRILLIANT! 💫','NAILED IT! 🎯','SUPERSTAR! ⭐'],
+    'Streak Bonus!':['STREAK BONUS! 🔥','ON FIRE! 🔥','UNSTOPPABLE! ⚡'],
+    'Perfect!':['PERFECT GAME! 🏆','ALL 20! 🌟'],
+    'Daily Bonus!':['WELCOME BACK! 🌸']
+  };
+  var msgList=msgs[reason]||['GREAT JOB! ✨'];
+  var msg=msgList[Math.floor(Math.random()*msgList.length)];
+
+  el.style.cssText='position:fixed;top:28%;left:50%;'
+    +'z-index:600;font-family:Baloo 2,cursive;font-weight:800;'
+    +'color:#ffe040;text-shadow:0 0 20px rgba(255,224,64,.9),0 3px 6px rgba(0,0,0,.9);'
     +'pointer-events:none;text-align:center;white-space:nowrap;'
-    +'animation:coinBurstAnim .9s ease-out forwards;';
-  el.textContent='+'+amount+' ✨'+(reason?' '+reason:'');
+    +'transform:translateX(-50%) scale(0);'
+    +'font-size:clamp(1.4rem,5vw,2rem);'
+    +'animation:coinMsgAnim 1.1s cubic-bezier(.17,.67,.35,1.5) forwards;';
+  el.textContent=msg;
   document.body.appendChild(el);
-  setTimeout(function(){el.remove();},950);
+
+  // Coin amount badge
+  var badge=document.createElement('div');
+  badge.style.cssText='position:fixed;top:42%;left:50%;'
+    +'z-index:600;font-family:Baloo 2,cursive;font-size:1.3rem;font-weight:800;'
+    +'color:white;background:rgba(255,180,0,.95);'
+    +'border-radius:999px;padding:6px 18px;'
+    +'box-shadow:0 0 20px rgba(255,200,0,.6);'
+    +'pointer-events:none;white-space:nowrap;'
+    +'transform:translateX(-50%) scale(0);'
+    +'animation:coinBadgeAnim 1.1s cubic-bezier(.17,.67,.35,1.5) .15s forwards;';
+  badge.textContent='+'+amount+' ✨ Shine Coins!';
+  document.body.appendChild(badge);
+
+  // Scatter a few coin emojis around
+  for(var i=0;i<Math.min(amount,6);i++){
+    (function(i){
+      var coin=document.createElement('div');
+      var x=30+Math.random()*40; // 30-70% of screen width
+      var delay=i*0.08;
+      coin.style.cssText='position:fixed;left:'+x+'%;top:50%;z-index:599;'
+        +'font-size:'+( 1.2+Math.random()*.6)+'rem;pointer-events:none;'
+        +'animation:coinRain 1.2s ease-out '+delay+'s forwards;';
+      coin.textContent='✨';
+      document.body.appendChild(coin);
+      setTimeout(function(){coin.remove();},1400);
+    })(i);
+  }
+
+  setTimeout(function(){el.remove();},1200);
+  setTimeout(function(){badge.remove();},1400);
 }
 
 function spendCoins(amount){
@@ -1573,6 +1626,11 @@ function checkSpell(){
     updateStreakHUD();
     // Show streak burst if on a roll
     if(streak>=2) showStreakBurst(streak);
+    // Streak coin bonus - first-try streaks earn bonus coins
+    if(attempts===1 && !hintUsed && streak>=3){
+      var streakBonus=streak>=7?10:streak>=5?6:streak>=3?3:0;
+      if(streakBonus>0) earnCoins(streakBonus,'Streak Bonus!');
+    }
     // Small confetti on correct
     confettiBurst(10);
     // Transition to throw screen after brief pause
@@ -2047,6 +2105,7 @@ function afterCatch(){
 function updateHUD(){
   document.getElementById('scoreEl').textContent=score;
   document.getElementById('heartsEl').textContent='❤️'.repeat(hearts)+'🖤'.repeat(Math.max(0,3-hearts));
+  updateCoinHUD();
 }
 
 // ═══════════════════════════════════════════════════════════
