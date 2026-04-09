@@ -1095,7 +1095,7 @@ function _toggleSignup(){
   _isSignup=!_isSignup;_pinEntry='';_updateDots();_setMsg('');
   var b=document.getElementById('switchBtn');var h=document.getElementById('pinHint');var l=document.getElementById('loginBtn');
   if(_isSignup){if(b)b.textContent='Already have an account? Log in';if(h)h.textContent='Choose a PIN you will remember';if(l)l.textContent='Create Account';}
-  else{if(b)b.textContent='New here? Create an account';if(h)h.textContent='Enter your 4-digit PIN';if(l)l.innerHTML='&#10024; Let's Go!';}
+  else{if(b)b.textContent='New here? Create an account';if(h)h.textContent='Enter your 4-digit PIN';if(l)l.innerHTML='&#10024; Let&#39;s Go!';}
 }
 function _doLogin(){
   var name=(document.getElementById('loginUsername')||{}).value||'';
