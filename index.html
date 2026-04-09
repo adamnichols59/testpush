@@ -592,6 +592,35 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 <canvas id="cvs"></canvas>
 
 <!-- ═══════════════════════ TITLE ═══════════════════════ -->
+<!-- RESUME SCREEN -->
+<div id="resumeScreen" style="display:none;position:fixed;inset:0;z-index:1001;
+  background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;">
+  <div style="font-size:3rem">🐾</div>
+  <div style="font-family:Baloo 2,cursive;font-size:1.4rem;font-weight:800;color:#ffe040;text-align:center">
+    Welcome back,<br><span id="resumeName"></span>!
+  </div>
+  <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);
+    border-radius:20px;padding:24px;width:100%;max-width:320px;
+    display:flex;flex-direction:column;gap:12px;text-align:center">
+    <div style="font-family:Baloo 2,cursive;font-size:.8rem;font-weight:800;color:#4dcf8a">
+      You have saved progress this week!
+    </div>
+    <div style="font-size:.75rem;font-weight:800;color:white" id="resumeWords"></div>
+    <div style="font-size:.65rem;color:#aac4ff" id="resumeScore"></div>
+    <button id="resumeBtn" style="font-family:Baloo 2,cursive;font-size:.9rem;font-weight:800;
+      background:linear-gradient(135deg,#4dcf8a,#2299cc);border:none;border-radius:12px;
+      padding:14px;color:white;cursor:pointer;width:100%">
+      ▶ Continue where I left off
+    </button>
+    <button id="freshBtn" style="font-family:Baloo 2,cursive;font-size:.75rem;font-weight:800;
+      background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:12px;
+      padding:12px;color:#aac4ff;cursor:pointer;width:100%">
+      🔄 Start fresh this week
+    </button>
+  </div>
+</div>
+
 <!-- LOGIN SCREEN -->
 <div id="sLogin" style="position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;">
   <div style="font-size:2.8rem">🐾</div>
@@ -616,6 +645,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
     <div style="text-align:center"><button id="switchBtn" style="font-family:Nunito,sans-serif;font-size:.6rem;font-weight:800;color:#aac4ff;background:none;border:none;cursor:pointer;text-decoration:underline">New here? Create an account</button></div>
   </div>
   <button id="guestBtn" style="font-family:Nunito,sans-serif;font-size:.58rem;font-weight:800;color:rgba(170,196,255,.5);background:none;border:none;cursor:pointer">Play without saving progress</button>
+  <a href="admin.html" style="font-family:Nunito,sans-serif;font-size:.42rem;font-weight:800;color:rgba(100,100,160,.35);text-decoration:none;margin-top:12px;">Admin</a>
 </div>
 
 <!-- SPLASH OVERLAY - tap anywhere to dismiss -->
@@ -886,6 +916,8 @@ let wordOrder=[],wordIdx=0,score=0,hearts=3;
 let hintUsed=false,attempts=0,isPerfect=true;
 let caught=[],speaking=false,soundEnabled=true;
 let streak=0,bestStreak=0;
+let wordStats=[]; // per-word analytics
+let _wordStartTime=0; // word load timestamp
 let throwReady=false,throwLocked=false;
 let audioCtx=null,bgmGain=null,sfxGain=null,bgmPlaying=false,bgmNodes=[],bgmSched=null;
 
@@ -1074,6 +1106,7 @@ function saveNickname(){
   if(entry) entry.nickname = val;
   inp.disabled = true;
   if(saved){ saved.style.display='block'; setTimeout(()=>saved.style.display='none',2000); }
+  _autoSave(); // Save nickname to Firebase
 }
 
 function getNickname(crName){
@@ -1085,6 +1118,7 @@ var _pinEntry='';
 var _isSignup=false;
 var _currentUser=null;
 var WEEK_KEY='week_apr_2026';
+var _sessionStart=Date.now();
 
 function _setMsg(m,c){var e=document.getElementById('loginMsg');if(e){e.textContent=m;e.style.color=c||'#aac4ff';}}
 function _updateDots(){for(var i=0;i<4;i++){var d=document.getElementById('pd'+i);if(d)d.className='pin-dot'+(_pinEntry.length>i?' filled':'');}}
@@ -1120,31 +1154,115 @@ function _doLogin(){
 }
 function _loginOk(name){
   _currentUser={username:name,isGuest:false};
-  _hideLogin();
+  // Load saved progress before hiding login
+  var fb=window._fb;
+  if(!fb||!fb.ready){ _hideLogin(); return; }
+  fb.getDoc(fb.doc(fb.db,'students',name.toLowerCase())).then(function(snap){
+    if(!snap.exists()){ _hideLogin(); return; }
+    var data=snap.data();
+    var weekData=data.weeks&&data.weeks[WEEK_KEY];
+    if(weekData&&weekData.wordsDone>0&&weekData.wordsDone<20){
+      // Has saved progress this week - show resume screen
+      _savedWeekData=weekData;
+      _savedUserData=data;
+      _hideLogin();
+      _showResumeScreen(name, weekData);
+    } else {
+      // No progress or completed - just start fresh
+      if(data.bestStreak) bestStreak=data.bestStreak;
+      _hideLogin();
+    }
+  }).catch(function(){ _hideLogin(); });
+}
+
+var _savedWeekData=null;
+var _savedUserData=null;
+
+function _showResumeScreen(name, weekData){
+  var el=document.getElementById('resumeScreen');
+  if(!el) return;
+  document.getElementById('resumeName').textContent=name;
+  document.getElementById('resumeWords').textContent=weekData.wordsDone+' of 20 words done';
+  var crCount=weekData.caughtData?weekData.caughtData.length:weekData.caught||0;
+  document.getElementById('resumeScore').textContent='Score: '+(weekData.score||0)+' pts  |  Creatures: '+crCount+' caught';
+  el.style.display='flex';
+}
+
+function _resumeGame(){
+  var el=document.getElementById('resumeScreen');
+  if(el) el.style.display='none';
+  if(!_savedWeekData) return;
+  // Restore persistent stats
+  if(_savedUserData&&_savedUserData.bestStreak) bestStreak=_savedUserData.bestStreak;
+  // Restore game state
+  wordOrder=shuffle([...WORDS]);
+  score=_savedWeekData.score||0;
+  hearts=3;
+  isPerfect=false;
+  streak=0;
+  wordIdx=Math.min(_savedWeekData.wordsDone, WORDS.length-1);
+  // Restore caught creatures - rebuild fn from CREATURES array
+  caught=[];
+  var savedCaught=_savedWeekData.caughtData||[];
+  savedCaught.forEach(function(c){
+    // Find matching creature to restore the fn (SVG builder)
+    var cr=null;
+    for(var i=0;i<CREATURES.length;i++){
+      if(CREATURES[i].name===c.name){cr=CREATURES[i];break;}
+    }
+    if(cr){
+      caught.push({name:c.name,color:c.color,fn:cr.fn,word:c.word,
+        nickname:c.nickname||'',happiness:c.happiness||50,
+        caughtAt:c.caughtAt||Date.now(),evolved:c.evolved||false});
+    }
+  });
+  // Start game at saved position
+  unlockAudio();
+  initAudio();
+  startBGM();
+  buildMapNodes();
+  updateHUD();
+  initKeyboardHandler();
+  goTo('sSpell');
+  loadWord();
+}
+
+function _freshStart(){
+  var el=document.getElementById('resumeScreen');
+  if(el) el.style.display='none';
+  startGame();
 }
 function _autoSave(){
   if(!_currentUser||_currentUser.isGuest||!window._fb||!window._fb.ready)return;
-  var upd={totalScore:score,totalCreatures:caught.length,bestStreak:bestStreak};
-  upd['weeks.'+WEEK_KEY]={score:score,caught:caught.length,wordsDone:wordIdx,lastPlayed:Date.now()};
-  window._fb.updateDoc(window._fb.doc(window._fb.db,'students',_currentUser.username.toLowerCase()),upd)
+  var caughtData=caught.map(function(c){
+    return {name:c.name,color:c.color,word:c.word,
+      nickname:c.nickname||'',happiness:c.happiness||50,
+      caughtAt:c.caughtAt||Date.now(),evolved:c.evolved||false};
+  });
+  var counts={};
+  caughtData.forEach(function(c){counts[c.name]=(counts[c.name]||0)+1;});
+  // Build word analytics summary
+  var wordAnalytics={};
+  _wordStats.forEach(function(ws){
+    wordAnalytics[ws.word]={attempts:ws.attempts,hintUsed:ws.hintUsed,
+      skipped:ws.skipped,timeMs:ws.timeMs};
+  });
+  var sessionTime=Date.now()-_sessionStartTime;
+  var upd={totalScore:score,totalCreatures:caught.length,bestStreak:bestStreak,
+    creatureCounts:counts,lastSession:Date.now(),totalSessionTime:sessionTime};
+  upd['weeks.'+WEEK_KEY]={score:score,caught:caught.length,wordsDone:wordIdx,
+    lastPlayed:Date.now(),caughtData:caughtData,
+    wordAnalytics:wordAnalytics,sessionTimeMs:sessionTime};
+  window._fb.updateDoc(window._fb.doc(window._fb.db,'students',
+    _currentUser.username.toLowerCase()),upd)
     .catch(function(e){console.error('save:',e);});
 }
-
-// Wire up login buttons on load
-window.addEventListener('load',function(){
-  var keys=['1','2','3','4','5','6','7','8','9','0'];
-  keys.forEach(function(k){var b=document.getElementById('pk'+k);if(b)b.addEventListener('click',function(){_pinPress(k);});});
-  var del=document.getElementById('pkDel');if(del)del.addEventListener('click',function(){_pinPress('DEL');});
-  var lb=document.getElementById('loginBtn');if(lb)lb.addEventListener('click',_doLogin);
-  var sb=document.getElementById('switchBtn');if(sb)sb.addEventListener('click',_toggleSignup);
-  var gb=document.getElementById('guestBtn');if(gb)gb.addEventListener('click',_guestPlay);
-  var ui=document.getElementById('loginUsername');if(ui)ui.addEventListener('keydown',function(e){if(e.key==='Enter')_doLogin();});
-});
 
 function startGame(){
   unlockAudio(); // iOS requires audio unlock on direct user gesture
   wordOrder=shuffle([...WORDS]);
   wordIdx=0;score=0;hearts=3;caught=[];isPerfect=true;streak=0;bestStreak=0;
+  _sessionStart=Date.now();_wordStats=[];wordStats=[];
   initAudio();startBGM();
   initKeyboardHandler();
   buildMapNodes();
@@ -1205,6 +1323,7 @@ function showMapTransition(cb){
 function loadWord(){
   if(wordIdx>=20||hearts<=0){endGame();return}
   hintUsed=false;attempts=0;throwReady=false;throwLocked=false;
+  _wordStartTime=Date.now(); // start word timer
 
   const w=wordOrder[wordIdx];
   const cr=CREATURES[wordIdx%CREATURES.length];
@@ -1308,6 +1427,10 @@ function checkSpell(){
   if(val===w.w){
     inp.disabled=true;
     sfxCorrect();
+    // Record word analytics
+    var _elapsed=_wordTimerActive?Date.now()-_wordStartTime:0;
+    _wordTimerActive=false;
+    _wordStats.push({word:w.w,attempts:attempts,hintUsed:hintUsed,skipped:false,timeMs:_elapsed});
     // Update streak
     streak++;
     if(streak>bestStreak) bestStreak=streak;
@@ -1349,8 +1472,20 @@ function useHint(){
   document.getElementById('spellInp').focus();
 }
 
-function skipWord(){isPerfect=false;skipToNext()}
+function skipWord(){
+  isPerfect=false;
+  const w=wordOrder[wordIdx];
+  if(w) _wordStats.push({word:w.w,attempts:_wordAttempts,hintUsed:_wordHintUsed,
+    skipped:true,timeMs:Date.now()-_wordStartTime});
+  skipToNext();
+}
 function skipToNext(){
+  if(_wordTimerActive){
+    var w2=wordOrder[wordIdx];
+    var _elapsed=Date.now()-_wordStartTime;
+    _wordStats.push({word:w2?w2.w:'?',attempts:attempts,hintUsed:hintUsed,skipped:true,timeMs:_elapsed});
+    _wordTimerActive=false;
+  }
   wordIdx++;
   if(wordIdx>=20||hearts<=0){endGame();return}
   // Show map briefly then next word
@@ -1723,7 +1858,14 @@ function showCatch(throwBonus=0){
   const cr=CREATURES[wordIdx%CREATURES.length];
   const pts=(hintUsed?5:(attempts===1?10:7))+throwBonus;
   score+=pts;
-  caught.push({name:cr.name,color:cr.color,fn:cr.fn,word:w.w});
+  // Record word analytics
+  _wordStats.push({word:w.w,attempts:_wordAttempts,hintUsed:_wordHintUsed,
+    skipped:false,timeMs:Date.now()-_wordStartTime,firstTry:_wordAttempts===1});
+  caught.push({
+    name:cr.name, color:cr.color, fn:cr.fn, word:w.w,
+    nickname:'', happiness:50, caughtAt:Date.now(),
+    evolved:false
+  });
   sfxCatch();
   confettiBurst(22);
 
