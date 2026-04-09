@@ -41,6 +41,15 @@ document.dispatchEvent(new Event('fbReady'));
   border-radius:999px;padding:3px 10px;font-size:.7rem;font-weight:800;color:#ffaa44;
   display:flex;align-items:center;gap:4px;}
 @keyframes streakPop{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes coinBurstAnim{
+  0%{transform:translate(-50%,-50%) translateY(0) scale(0);opacity:0}
+  20%{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1.2)}
+  70%{opacity:1;transform:translate(-50%,-50%) translateY(-30px) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) translateY(-60px) scale(.8)}
+}
+/* Coin chip */
+#coinChip{background:rgba(255,224,64,.18);border:1.5px solid rgba(255,224,64,.5);
+  border-radius:999px;padding:3px 10px;font-size:.7rem;font-weight:800;color:#ffe040;}
 @keyframes streakBurstAnim{
   0%{transform:translate(-50%,-50%) scale(0);opacity:0}
   30%{opacity:1}
@@ -427,7 +436,31 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
   color:var(--yellow);text-align:center;text-shadow:3px 3px 0 var(--dyellow)}
 .dex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;width:100%;max-width:400px}
 .dex-card{background:#0f3460;border:2px solid var(--yellow);border-radius:12px;
-  padding:8px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
+  padding:8px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;
+  position:relative;transition:all .3s;}
+.dex-card.evolve-ready{
+  border-color:#ffe040;
+  box-shadow:0 0 18px rgba(255,224,64,.5), 0 0 8px rgba(255,224,64,.3);
+  animation:evolvePulse 1.8s ease-in-out infinite;}
+@keyframes evolvePulse{
+  0%,100%{box-shadow:0 0 12px rgba(255,224,64,.4);}
+  50%{box-shadow:0 0 28px rgba(255,224,64,.8), 0 0 12px rgba(255,200,0,.6);}}
+.cr-count-badge{
+  position:absolute;top:-6px;right:-6px;
+  background:#9b5fd4;color:white;
+  font-family:'Baloo 2',cursive;font-size:.55rem;font-weight:800;
+  border-radius:999px;padding:2px 6px;
+  border:2px solid #0f3460;min-width:20px;}
+.cr-count-badge.evolve-badge{
+  background:#ffe040;color:#0f3460;}
+.evo-bar-wrap{
+  width:48px;height:5px;background:rgba(255,255,255,.12);
+  border-radius:3px;overflow:hidden;margin-top:2px;}
+.evo-bar-fill{height:100%;border-radius:3px;transition:width .5s;}
+.evolve-label{
+  font-family:'Baloo 2',cursive;font-size:.42rem;font-weight:800;
+  color:#ffe040;animation:evolveLabelPop .6s ease-out;}
+@keyframes evolveLabelPop{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
 .dex-word{font-family:'Baloo 2',cursive;font-size:.48rem;font-weight:800;color:var(--yellow);word-break:break-all}
 .win-stats{background:#0f3460;border:2px solid var(--yellow);border-radius:12px;padding:14px 20px;width:100%;max-width:380px}
 .wstat{display:flex;justify-content:space-between;font-family:'Baloo 2',cursive;font-size:.72rem;
@@ -690,6 +723,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
     </div>
     <div class="spell-topbar-right">
       <div class="hchip">⭐ <span id="scoreEl">0</span></div>
+      <div class="hchip" id="coinChip">✨ <span id="coinEl">0</span></div>
       <div class="hchip" id="heartsEl">❤️❤️❤️</div>
       <div class="hchip" id="streakEl" style="display:none">🔥 <span id="streakNum">0</span></div>
       <div class="hchip" id="wordNumEl">1/20</div>
@@ -916,7 +950,8 @@ let wordOrder=[],wordIdx=0,score=0,hearts=3;
 let hintUsed=false,attempts=0,isPerfect=true;
 let caught=[],speaking=false,soundEnabled=true;
 let streak=0,bestStreak=0;
-let wordStats=[]; // per-word analytics
+let wordStats=[]; // per-word 
+let shineCoins=0;analytics
 let _wordStats=[]; // detailed per-word analytics
 let _wordStartTime=0; // word load timestamp
 let _wordTimerActive=false; // timer running flag
@@ -1163,17 +1198,38 @@ function _loginOk(name){
   fb.getDoc(fb.doc(fb.db,'students',name.toLowerCase())).then(function(snap){
     if(!snap.exists()){ _hideLogin(); return; }
     var data=snap.data();
-    var weekData=data.weeks&&data.weeks[WEEK_KEY];
-    if(weekData&&weekData.wordsDone>0&&weekData.wordsDone<20){
-      // Has saved progress this week - show resume screen
+    // Load persistent user data
+  if(data.shineCoins) { shineCoins=data.shineCoins; updateCoinHUD(); }
+  if(data.purchasedAccs) { if(!_savedUserData) _savedUserData={}; _savedUserData.purchasedAccs=data.purchasedAccs; }
+  if(data.accPositions) { if(!_savedUserData) _savedUserData={}; _savedUserData.accPositions=data.accPositions; }
+  var weekData=data.weeks&&data.weeks[WEEK_KEY];
+    if(weekData&&weekData.wordsDone>0){
+      // Has played this week - show resume screen
       _savedWeekData=weekData;
       _savedUserData=data;
       _hideLogin();
       _showResumeScreen(name, weekData);
     } else {
-      // No progress or completed - just start fresh
+      // No progress yet this week
       if(data.bestStreak) bestStreak=data.bestStreak;
       _hideLogin();
+    }
+    // Daily login bonus - check if last login was a different day
+    var today=new Date().toDateString();
+    if(data.lastLoginDate!==today){
+      shineCoins=(data.shineCoins||0)+3;
+      updateCoinHUD();
+      setTimeout(function(){showCoinBurst(3,'Daily Bonus!');},800);
+      // Save login date and coins
+      var fb=window._fb;
+      if(fb&&fb.ready){
+        var upd={lastLoginDate:today,shineCoins:shineCoins};
+        fb.updateDoc(fb.doc(fb.db,'students',name.toLowerCase()),upd)
+          .catch(function(e){console.error(e);});
+      }
+    } else {
+      shineCoins=data.shineCoins||0;
+      updateCoinHUD();
     }
   }).catch(function(){ _hideLogin(); });
 }
@@ -1184,10 +1240,16 @@ var _savedUserData=null;
 function _showResumeScreen(name, weekData){
   var el=document.getElementById('resumeScreen');
   if(!el) return;
+  var done=weekData.wordsDone||0;
+  var completed=done>=20;
   document.getElementById('resumeName').textContent=name;
-  document.getElementById('resumeWords').textContent=weekData.wordsDone+' of 20 words done';
+  document.getElementById('resumeWords').textContent=completed
+    ?'You finished all 20 words this week! &#11088;'
+    :done+' of 20 words done';
   var crCount=weekData.caughtData?weekData.caughtData.length:weekData.caught||0;
   document.getElementById('resumeScore').textContent='Score: '+(weekData.score||0)+' pts  |  Creatures: '+crCount+' caught';
+  var rb=document.getElementById('resumeBtn');
+  if(rb) rb.textContent=completed?'Practice Again':'Continue where I left off';
   el.style.display='flex';
 }
 
@@ -1197,6 +1259,7 @@ function _resumeGame(){
   if(!_savedWeekData) return;
   // Restore persistent stats
   if(_savedUserData&&_savedUserData.bestStreak) bestStreak=_savedUserData.bestStreak;
+  if(_savedUserData&&_savedUserData.shineCoins) { shineCoins=_savedUserData.shineCoins; updateCoinHUD(); }
   // Restore game state
   wordOrder=shuffle([...WORDS]);
   score=_savedWeekData.score||0;
@@ -1204,12 +1267,15 @@ function _resumeGame(){
   isPerfect=false;
   streak=0;
   _wordStats=[];_wordTimerActive=false;_sessionStartTime=Date.now();
-  wordIdx=Math.min(_savedWeekData.wordsDone, WORDS.length-1);
-  // Restore caught creatures - rebuild fn from CREATURES array
+  var _wasDone=(_savedWeekData.wordsDone||0)>=20;
+  // If they completed the week, restart from word 0 for practice
+  // If in progress, resume from where they left off
+  wordIdx=_wasDone?0:Math.min(_savedWeekData.wordsDone, WORDS.length-1);
+  isPerfect=false; // don't overwrite their score if practicing
+  // Restore caught creatures from allCreatures (top-level, persists across weeks)
   caught=[];
-  var savedCaught=_savedWeekData.caughtData||[];
+  var savedCaught=(_savedUserData&&_savedUserData.allCreatures)||_savedWeekData.caughtData||[];
   savedCaught.forEach(function(c){
-    // Find matching creature to restore the fn (SVG builder)
     var cr=null;
     for(var i=0;i<CREATURES.length;i++){
       if(CREATURES[i].name===c.name){cr=CREATURES[i];break;}
@@ -1238,34 +1304,99 @@ function _freshStart(){
 }
 function _autoSave(){
   if(!_currentUser||_currentUser.isGuest||!window._fb||!window._fb.ready)return;
-  var caughtData=caught.map(function(c){
+
+  // Serialize caught this session (strip fn functions)
+  var sessionCaught=caught.map(function(c){
     return {name:c.name,color:c.color,word:c.word,
       nickname:c.nickname||'',happiness:c.happiness||50,
       caughtAt:c.caughtAt||Date.now(),evolved:c.evolved||false};
   });
-  var counts={};
-  caughtData.forEach(function(c){counts[c.name]=(counts[c.name]||0)+1;});
-  // Build word analytics summary
+
+  // Build word analytics
   var wordAnalytics={};
   _wordStats.forEach(function(ws){
     wordAnalytics[ws.word]={attempts:ws.attempts,hintUsed:ws.hintUsed,
       skipped:ws.skipped,timeMs:ws.timeMs};
   });
+
   var sessionTime=Date.now()-_sessionStartTime;
-  var upd={totalScore:score,totalCreatures:caught.length,bestStreak:bestStreak,
-    creatureCounts:counts,lastSession:Date.now(),totalSessionTime:sessionTime};
-  upd['weeks.'+WEEK_KEY]={score:score,caught:caught.length,wordsDone:wordIdx,
-    lastPlayed:Date.now(),caughtData:caughtData,
-    wordAnalytics:wordAnalytics,sessionTimeMs:sessionTime};
-  window._fb.updateDoc(window._fb.doc(window._fb.db,'students',
-    _currentUser.username.toLowerCase()),upd)
-    .catch(function(e){console.error('save:',e);});
+  var uid=_currentUser.username.toLowerCase();
+  var db=window._fb.db;
+
+  // First load existing allCreatures so we can merge (not overwrite)
+  window._fb.getDoc(window._fb.doc(db,'students',uid)).then(function(snap){
+    var existing=snap.exists()?snap.data():{};
+    var allCreatures=existing.allCreatures||[];
+
+    // Merge this session's catches into allCreatures
+    sessionCaught.forEach(function(c){
+      allCreatures.push(c);
+    });
+
+    // Build creature counts for evolution tracking
+    var counts={};
+    allCreatures.forEach(function(c){counts[c.name]=(counts[c.name]||0)+1;});
+
+    var upd={
+      totalScore:score,
+      totalCreatures:allCreatures.length,
+      bestStreak:bestStreak,
+      allCreatures:allCreatures,
+      creatureCounts:counts,
+      shineCoins:shineCoins,
+      lastSession:Date.now()
+    };
+    upd['weeks.'+WEEK_KEY]={
+      score:score,
+      caught:sessionCaught.length,
+      wordsDone:wordIdx,
+      lastPlayed:Date.now(),
+      wordAnalytics:wordAnalytics,
+      sessionTimeMs:sessionTime
+    };
+    return window._fb.updateDoc(window._fb.doc(db,'students',uid),upd);
+  }).catch(function(e){console.error('save:',e);});
 }
+
+// ── SHINE COINS ──
+function updateCoinHUD(){
+  var el=document.getElementById('coinEl');
+  if(el) el.textContent=shineCoins;
+}
+
+function earnCoins(amount, reason){
+  shineCoins+=amount;
+  updateCoinHUD();
+  // Show floating coin burst
+  showCoinBurst(amount, reason);
+}
+
+function showCoinBurst(amount, reason){
+  var el=document.createElement('div');
+  el.style.cssText='position:fixed;top:35%;left:50%;transform:translate(-50%,-50%);'
+    +'z-index:500;font-family:Baloo 2,cursive;font-size:1.1rem;font-weight:800;'
+    +'color:#ffe040;text-shadow:0 0 12px rgba(255,224,64,.8),0 2px 4px rgba(0,0,0,.8);'
+    +'pointer-events:none;text-align:center;white-space:nowrap;'
+    +'animation:coinBurstAnim .9s ease-out forwards;';
+  el.textContent='+'+amount+' ✨'+(reason?' '+reason:'');
+  document.body.appendChild(el);
+  setTimeout(function(){el.remove();},950);
+}
+
+function spendCoins(amount){
+  if(shineCoins<amount) return false;
+  shineCoins-=amount;
+  updateCoinHUD();
+  return true;
+}
+
+function canAfford(amount){ return shineCoins>=amount; }
 
 function startGame(){
   unlockAudio(); // iOS requires audio unlock on direct user gesture
   wordOrder=shuffle([...WORDS]);
   wordIdx=0;score=0;hearts=3;caught=[];isPerfect=true;streak=0;bestStreak=0;
+  // Note: shineCoins NOT reset here - they persist across games
   _wordStats=[];_wordTimerActive=false;_sessionStartTime=Date.now();
   _sessionStart=Date.now();_wordStats=[];wordStats=[];
   initAudio();startBGM();
@@ -1863,6 +1994,13 @@ function showCatch(throwBonus=0){
   const cr=CREATURES[wordIdx%CREATURES.length];
   const pts=(hintUsed?5:(attempts===1?10:7))+throwBonus;
   score+=pts;
+  // Award Shine Coins based on performance
+  var coinAward=0;
+  if(attempts===1&&!hintUsed){ coinAward=8; } // first try, no hint
+  else if(attempts===2){ coinAward=3; }        // second try
+  else { coinAward=1; }                         // third try or hint
+  coinAward+=1; // +1 for catching the creature
+  earnCoins(coinAward, attempts===1&&!hintUsed?'First Try!':'');
   // Record word analytics
   _wordStats.push({word:w.w,attempts:attempts,hintUsed:hintUsed,
     skipped:false,timeMs:Date.now()-_wordStartTime,firstTry:attempts===1});
@@ -1930,7 +2068,8 @@ function endGame(){
 function showWin(){
   goTo('sWin');
   setTimeout(sfxVictory,300);
-  // Show best streak
+  // Perfect game coin bonus
+  if(isPerfect){ earnCoins(25,'Perfect!'); }
   if(bestStreak>=2){
     const bsEl=document.getElementById('winStreakEl');
     const bsNum=document.getElementById('winBestStreak');
@@ -1939,13 +2078,47 @@ function showWin(){
   confettiBurst(30);
   const dex=document.getElementById('dexGrid');
   dex.innerHTML='';
+  // Build creature counts from allCreatures (top level) if available
+  // otherwise fall back to caught this session
+  var allCreaturesData = (_currentUser && !_currentUser.isGuest && _savedUserData && _savedUserData.allCreatures)
+    ? _savedUserData.allCreatures : caught;
+  var crCounts={};
+  allCreaturesData.forEach(function(c){ crCounts[c.name]=(crCounts[c.name]||0)+1; });
+
+  // Deduplicate caught for display (show each creature once)
+  var seen={};
   caught.forEach(c=>{
+    if(seen[c.name]) return;
+    seen[c.name]=true;
     const crIdx=CREATURES.findIndex(cr=>cr.name===c.name);
     const el=document.createElement('div');
-    el.className='dex-card';
+    const count=crCounts[c.name]||1;
+    const evolveReady=count>=3;
+    el.className='dex-card'+(evolveReady?' evolve-ready':'');
     el.style.cursor='pointer';
-    const nick = c.nickname ? `<div style="font-size:.5rem;color:#ffe040;font-weight:800;margin-top:1px">"${c.nickname}"</div>` : '';
-    el.innerHTML=`<div style="width:52px;height:52px">${c.fn(c.color)}</div><div class="dex-word">${c.word}</div>${nick}<div style="font-size:.5rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
+    const nick = c.nickname ? `<div style="font-size:.48rem;color:#ffe040;font-weight:800;margin-top:1px">"${c.nickname}"</div>` : '';
+    // Count badge
+    const countBadge = count>1
+      ? `<div class="cr-count-badge ${evolveReady?'evolve-badge':''}">${count>1?'×'+count:''}</div>`
+      : '';
+    // Evolution progress bar (show when count >= 1)
+    const prog=Math.min(count,3);
+    const progBar=`<div class="evo-bar-wrap" title="${count}/3 to evolve">
+      <div class="evo-bar-fill" style="width:${prog/3*100}%;background:${evolveReady?'#ffe040':'#9b5fd4'}"></div>
+    </div>`;
+    const evolveLabel = evolveReady
+      ? `<div class="evolve-label">&#9889; Evolve Ready!</div>`
+      : `<div style="font-size:.42rem;color:#666;margin-top:1px">${count}/3 to evolve</div>`;
+    el.innerHTML=`
+      <div style="position:relative;width:52px;height:52px">
+        ${c.fn(c.color)}
+        ${countBadge}
+      </div>
+      <div class="dex-word">${c.word}</div>
+      ${nick}
+      ${progBar}
+      ${evolveLabel}
+      <div style="font-size:.45rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
     el.onclick=()=>openCare(crIdx,c);
     dex.appendChild(el);
   });
@@ -2127,32 +2300,77 @@ function openCreatureCare(crIdx, caughtEntry){
 
   // Load the care page
   frame.src = './creature_care.html';
+  frame.dataset.crName = cr.name;
   overlay.classList.add('show');
 
-  // Once loaded, send creature data
+  // Once loaded, send creature data including coins and purchases
   frame.onload = () => {
+    // Get purchased accessories and positions for this creature
+    var purchased = _currentUser && !_currentUser.isGuest && _savedUserData
+      ? (_savedUserData.purchasedAccs||{}) : {};
+    var positions = _currentUser && !_currentUser.isGuest && _savedUserData
+      ? (_savedUserData.accPositions||{}) : {};
     frame.contentWindow.postMessage({
-      type:'initCreature',
+      type:'initCare',
       name:cr.name,
       color:cr.color,
-      word:caughtEntry.word,
-      happiness:happiness,
+      word:caughtEntry ? caughtEntry.word : cr.name,
+      happy:happiness,
+      coins:shineCoins,
+      purchasedAccs:purchased,
+      accPositions:positions[cr.name]||{}
     }, '*');
   };
 }
 
 // Listen for messages back from care iframe
-window.addEventListener('message', e => {
-  if(e.data && e.data.type === 'closeCare'){
-    // Save happiness
+window.addEventListener('message', function(e) {
+  if(!e.data) return;
+
+  if(e.data.type === 'closeCare'){
     if(e.data.name) creatureHappiness[e.data.name] = e.data.happiness || 50;
     const overlay = document.getElementById('careOverlay');
     const frame   = document.getElementById('careFrame');
     overlay.classList.remove('show');
-    setTimeout(()=>{ frame.src=''; }, 400);
-    // Rebuild dex if on win screen
+    setTimeout(function(){ frame.src=''; }, 400);
     if(currentScreen === 'sWin') showWin();
     if(currentScreen === 'sDex') buildDexGrid();
+  }
+
+  // Save coins spent in shop
+  if(e.data.type === 'saveCoins'){
+    shineCoins = e.data.coins || 0;
+    updateCoinHUD();
+    // Save purchasedAccs to user data and Firebase
+    if(_currentUser && !_currentUser.isGuest){
+      if(!_savedUserData) _savedUserData={};
+      _savedUserData.purchasedAccs = e.data.purchasedAccs || {};
+      if(window._fb && window._fb.ready){
+        var upd={shineCoins:shineCoins, purchasedAccs:_savedUserData.purchasedAccs};
+        window._fb.updateDoc(
+          window._fb.doc(window._fb.db,'students',_currentUser.username.toLowerCase()),upd
+        ).catch(function(err){console.error('saveCoins:',err);});
+      }
+    }
+  }
+
+  // Save accessory positions
+  if(e.data.type === 'saveAccPositions'){
+    if(_currentUser && !_currentUser.isGuest){
+      if(!_savedUserData) _savedUserData={};
+      if(!_savedUserData.accPositions) _savedUserData.accPositions={};
+      const frame = document.getElementById('careFrame');
+      const crName = frame ? frame.dataset.crName : null;
+      if(crName){
+        _savedUserData.accPositions[crName] = e.data.accPositions || {};
+      }
+      if(window._fb && window._fb.ready){
+        var upd={accPositions:_savedUserData.accPositions};
+        window._fb.updateDoc(
+          window._fb.doc(window._fb.db,'students',_currentUser.username.toLowerCase()),upd
+        ).catch(function(err){console.error('savePositions:',err);});
+      }
+    }
   }
 });
 
