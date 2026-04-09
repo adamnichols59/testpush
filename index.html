@@ -1200,6 +1200,7 @@ function _resumeGame(){
   hearts=3;
   isPerfect=false;
   streak=0;
+  _wordStats=[];_wordTimerActive=false;_sessionStartTime=Date.now();
   wordIdx=Math.min(_savedWeekData.wordsDone, WORDS.length-1);
   // Restore caught creatures - rebuild fn from CREATURES array
   caught=[];
@@ -1262,6 +1263,7 @@ function startGame(){
   unlockAudio(); // iOS requires audio unlock on direct user gesture
   wordOrder=shuffle([...WORDS]);
   wordIdx=0;score=0;hearts=3;caught=[];isPerfect=true;streak=0;bestStreak=0;
+  _wordStats=[];_wordTimerActive=false;_sessionStartTime=Date.now();
   _sessionStart=Date.now();_wordStats=[];wordStats=[];
   initAudio();startBGM();
   initKeyboardHandler();
