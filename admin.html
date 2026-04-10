@@ -631,6 +631,91 @@ function renderStudentsFiltered(search){
 
 
 function renderStudents(){renderStudentsFiltered('');}
+function renderTrends(){
+  // Score distribution
+  var buckets={'0-49':0,'50-99':0,'100-149':0,'150-199':0,'200+':0};
+  allStudents.forEach(function(s){
+    var sc=s.totalScore||0;
+    if(sc<50)buckets['0-49']++;
+    else if(sc<100)buckets['50-99']++;
+    else if(sc<150)buckets['100-149']++;
+    else if(sc<200)buckets['150-199']++;
+    else buckets['200+']++;
+  });
+  if(charts.score)charts.score.destroy();
+  var ctx1=document.getElementById('scoreChart');
+  if(ctx1){
+    charts.score=new Chart(ctx1.getContext('2d'),{
+      type:'bar',
+      data:{labels:Object.keys(buckets),datasets:[{label:'Students',
+        data:Object.values(buckets),backgroundColor:'rgba(100,180,255,.7)',borderRadius:6}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{ticks:{color:'#aac4ff',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},
+          y:{ticks:{color:'#aac4ff',font:{size:10},stepSize:1},
+            grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true}}}
+    });
+  }
+
+  // Avg attempts by word
+  var wordStats=getWordStats();
+  var attLabels=[],attData=[],attColors=[];
+  WORDS.forEach(function(w){
+    var ws=wordStats[w];
+    var avg=ws.attempts.length
+      ?ws.attempts.reduce(function(a,b){return a+b;},0)/ws.attempts.length:0;
+    attLabels.push(w);
+    attData.push(parseFloat(avg.toFixed(2)));
+    attColors.push(diffColor(avg)+'cc');
+  });
+  if(charts.attempts)charts.attempts.destroy();
+  var ctx2=document.getElementById('attemptsChart');
+  if(ctx2){
+    charts.attempts=new Chart(ctx2.getContext('2d'),{
+      type:'bar',
+      data:{labels:attLabels,datasets:[{label:'Avg Attempts',
+        data:attData,backgroundColor:attColors,borderRadius:6}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{ticks:{color:'#aac4ff',font:{size:9},maxRotation:45},
+          grid:{color:'rgba(255,255,255,.05)'}},
+          y:{ticks:{color:'#aac4ff',font:{size:10}},
+            grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true}}}
+    });
+  }
+
+  // Creatures caught by type
+  var crCounts={};
+  allStudents.forEach(function(s){
+    if(!s.creatureCounts) return;
+    Object.keys(s.creatureCounts).forEach(function(k){
+      crCounts[k]=(crCounts[k]||0)+s.creatureCounts[k];
+    });
+  });
+  var crNames=Object.keys(crCounts)
+    .sort(function(a,b){return crCounts[b]-crCounts[a];})
+    .slice(0,15);
+  var crPalette=['#ff6eb4','#ffd700','#4dcf8a','#b3f0ff','#9b5fd4',
+    '#ff5252','#ffe040','#4a8fff','#ff8844','#4dcf8a',
+    '#ff7eb3','#aac4ff','#ffb3d9','#88ccff','#ffdd88'];
+  if(charts.creatures)charts.creatures.destroy();
+  var ctx3=document.getElementById('creaturesChart');
+  if(ctx3){
+    charts.creatures=new Chart(ctx3.getContext('2d'),{
+      type:'bar',
+      data:{labels:crNames,datasets:[{label:'Times Caught',
+        data:crNames.map(function(n){return crCounts[n];}),
+        backgroundColor:crPalette,borderRadius:6}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{ticks:{color:'#aac4ff',font:{size:10}},
+          grid:{color:'rgba(255,255,255,.05)'}},
+          y:{ticks:{color:'#aac4ff',font:{size:10},stepSize:1},
+            grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true}}}
+    });
+  }
+}
+
 
 // ── MISSING FUNCTIONS ──
 
