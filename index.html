@@ -1266,13 +1266,13 @@ function _showResumeScreen(name, weekData){
   var done=weekData.wordsDone||0;
   var completed=done>=20;
   document.getElementById('resumeName').textContent=name;
-  document.getElementById('resumeWords').textContent=completed
-    ?'You finished all 20 words this week! &#11088;'
+  document.getElementById('resumeWords').innerHTML=completed
+    ?'You finished all 20 words this week! ⭐'
     :done+' of 20 words done';
   var crCount=weekData.caughtData?weekData.caughtData.length:weekData.caught||0;
-  document.getElementById('resumeScore').textContent='Score: '+(weekData.score||0)+' pts  |  Creatures: '+crCount+' caught';
+  document.getElementById('resumeScore').innerHTML='Score: '+(weekData.score||0)+' pts &nbsp;|&nbsp; Creatures: '+crCount+' caught';
   var rb=document.getElementById('resumeBtn');
-  if(rb) rb.textContent=completed?'Practice Again':'Continue where I left off';
+  if(rb) rb.innerHTML=completed?'Practice Again':'Continue where I left off';
   el.style.display='flex';
 }
 
@@ -1351,9 +1351,13 @@ function _autoSave(){
     var existing=snap.exists()?snap.data():{};
     var allCreatures=existing.allCreatures||[];
 
-    // Merge this session's catches into allCreatures
+    // Merge this session's catches into allCreatures (dedupe by caughtAt)
+    var existingTimes=new Set(allCreatures.map(function(c){return c.caughtAt;}));
     sessionCaught.forEach(function(c){
-      allCreatures.push(c);
+      if(!existingTimes.has(c.caughtAt)){
+        allCreatures.push(c);
+        existingTimes.add(c.caughtAt);
+      }
     });
 
     // Build creature counts for evolution tracking
@@ -2099,6 +2103,7 @@ function showCatch(throwBonus=0){
   if(ni){ni.value='';ni.disabled=false;}
   if(ns) ns.style.display='none';
   updateHUD();
+  _autoSave(); // Save progress after each catch
 }
 
 function afterCatch(){

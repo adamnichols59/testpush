@@ -5214,7 +5214,10 @@ function playCareSound(type){
 }
 
 window.addEventListener('message',e=>{
-  if(e.data?.type==='initCreature') initCreature(e.data.name,e.data.color,e.data.word,e.data.happiness);
+  // Legacy support - both initCreature and initCare work
+  if(e.data?.type==='initCreature') 
+    initCreature(e.data.name,e.data.color,e.data.word,e.data.happiness||e.data.happy||50,
+      e.data.coins||0,e.data.purchasedAccs||{},e.data.accPositions||{});
 });
 window.addEventListener('load',()=>{
   // Listen for data from parent game
