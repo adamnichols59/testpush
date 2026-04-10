@@ -906,6 +906,18 @@ const LOCATIONS=[
 ];
 const NODE_PCT=[8,27,46,65,84];
 
+// Evolution map - 3 of same creature = evolve
+const EVOLUTION_MAP = {
+  Fluffkin:'Lumifur', Sparklox:'Emberfox', Puddlum:'Coralswim',
+  Fernbit:'Bloomhop', Glimcat:'Shadowpurr',
+  Coraluff:'Prismbear', Driftail:'Stormwing', Peppin:'Chompking',
+  Starwhirl:'Novaflare', Mossling:'Ancienshell',
+  Twinkow:'Galaxhorn', Boulbear:'Jadepaw',
+  Zipplet:'Thunderwing', Dazzlphin:'Tidalcrest', Flameow:'Infernokit',
+  Crystaloo:'Prismraccoon', Dewdrop:'Bloomlotl', Puffy:'Truffleking',
+  Shimmur:'Solarmane', Lunabelle:'Cosmowl',
+};
+
 const CREATURES=[
   {name:"Fluffkin", color:"#ffb3d9", fn:drawBunny,  furry:true,  food:"🥕 carrot",    sleepMsg:"Fluffkin curls into a fluffy ball 💤"},
   {name:"Sparklox", color:"#ffe066", fn:drawFox,    furry:true,  food:"🍓 berries",   sleepMsg:"Sparklox tucks its tail around itself 💤"},
@@ -2165,9 +2177,10 @@ function showWin(){
     const progBar=`<div class="evo-bar-wrap" title="${count}/3 to evolve">
       <div class="evo-bar-fill" style="width:${prog/3*100}%;background:${evolveReady?'#ffe040':'#9b5fd4'}"></div>
     </div>`;
+    const evoName = evolvedName||'???';
     const evolveLabel = evolveReady
-      ? `<div class="evolve-label">&#9889; Evolve Ready!</div>`
-      : `<div style="font-size:.42rem;color:#666;margin-top:1px">${count}/3 to evolve</div>`;
+      ? `<div class="evolve-label">&#9889; Evolves to ${evoName}!</div>`
+      : `<div style="font-size:.42rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>`;
     el.innerHTML=`
       <div style="position:relative;width:52px;height:52px">
         ${c.fn(c.color)}
