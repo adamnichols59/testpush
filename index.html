@@ -667,13 +667,14 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 </div>
 
 <!-- LOGIN SCREEN -->
-<div id="sLogin" style="position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;">
+<div id="sLogin" style="position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:env(safe-area-inset-top,24px) 24px 60px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;">
   <div style="font-size:2.8rem">🐾</div>
   <div style="font-family:Baloo 2,cursive;font-size:1.6rem;font-weight:800;color:#ffe040;text-align:center;line-height:1.2">Bella's Spelling<br>Adventure!</div>
   <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
     <div id="loginMsg" style="font-size:.7rem;font-weight:800;color:#aac4ff;text-align:center;min-height:18px"></div>
-    <input id="loginUsername" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Your name (e.g. BellaM)"
-      style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 16px;color:white;width:100%;outline:none;box-sizing:border-box"/>
+    <input id="loginUsername" type="text" maxlength="20" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text" placeholder="Your name (e.g. BellaM)"
+      style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 16px;color:white;width:100%;outline:none;box-sizing:border-box" list="usernameSuggestions"/>
+    <datalist id="usernameSuggestions"></datalist>
     <div style="font-size:.55rem;color:rgba(170,196,255,.6);text-align:center;margin-top:-8px">Suggestion: first name + last initial (e.g. BellaM)</div>
     <div style="display:flex;gap:8px;justify-content:center">
       <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
@@ -687,10 +688,25 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
       <button class="pin-key" style="visibility:hidden">-</button><button class="pin-key" id="pk0">0</button><button class="pin-key" id="pkDel">&#9003;</button>
     </div>
     <button id="loginBtn" style="font-family:Baloo 2,cursive;font-size:.9rem;font-weight:800;background:linear-gradient(135deg,#9b5fd4,#4dcf8a);border:none;border-radius:12px;padding:14px;color:white;cursor:pointer;margin-top:4px;width:100%">&#10024; Let's Go!</button>
-    <div style="text-align:center"><button id="switchBtn" style="font-family:Nunito,sans-serif;font-size:.6rem;font-weight:800;color:#aac4ff;background:none;border:none;cursor:pointer;text-decoration:underline">New here? Create an account</button></div>
+    <!-- New Here button - more noticeable -->
+    <button id="switchBtn" style="font-family:Nunito,sans-serif;font-size:.72rem;
+      font-weight:800;color:#ffe040;background:rgba(255,224,64,.12);
+      border:2px solid rgba(255,224,64,.4);border-radius:12px;
+      cursor:pointer;padding:10px 16px;width:100%;margin-top:2px;
+      transition:all .2s;">&#10024; New here? Create an account</button>
   </div>
-  <button id="guestBtn" style="font-family:Nunito,sans-serif;font-size:.58rem;font-weight:800;color:rgba(170,196,255,.5);background:none;border:none;cursor:pointer">Play without saving progress</button>
-  <a href="admin.html" style="font-family:Nunito,sans-serif;font-size:.42rem;font-weight:800;color:rgba(100,100,160,.35);text-decoration:none;margin-top:12px;">Admin</a>
+  <!-- Below card buttons -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;
+    margin-top:12px;padding-bottom:20px;width:100%;max-width:340px">
+    <button id="guestBtn" style="font-family:Nunito,sans-serif;font-size:.58rem;
+      font-weight:800;color:rgba(170,196,255,.5);background:none;border:none;
+      cursor:pointer">Play without saving progress</button>
+    <!-- Admin button - subtle but reachable on mobile -->
+    <button id="adminBtn" style="font-family:Nunito,sans-serif;font-size:.6rem;
+      font-weight:800;color:rgba(255,255,255,.35);background:rgba(255,255,255,.06);
+      border:1.5px solid rgba(255,255,255,.2);border-radius:10px;
+      cursor:pointer;padding:8px 20px;letter-spacing:.05em;min-height:36px;min-width:80px">&#9881; Admin</button>
+  </div>
 </div>
 
 <!-- SPLASH OVERLAY - tap anywhere to dismiss -->
@@ -1195,10 +1211,15 @@ function _toggleSignup(){
 }
 function _doLogin(){
   var name=(document.getElementById('loginUsername')||{}).value||'';
-  name=name.trim();
+  // Normalize smart quotes, curly apostrophes, and hidden chars
+  name=name
+    .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g,"'") // curly apostrophes -> straight
+    .replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g,'"') // curly quotes -> straight
+    .replace(/[\u200B-\u200D\uFEFF\u00A0]/g,'')              // zero-width & non-breaking spaces
+    .trim();
   if(!name){_setMsg('Please enter your name!','#ffaa44');return;}
   if(_pinEntry.length!==4){_setMsg('Please enter your 4-digit PIN!','#ffaa44');return;}
-  _setMsg('Loading...','#aac4ff');
+  _setMsg('Looking up: '+name,'#aac4ff');
   var fb=window._fb;
   if(!fb||!fb.ready){_guestPlay();return;}
   var id=name.toLowerCase();
@@ -1212,7 +1233,15 @@ function _doLogin(){
       if(snap.data().pin!==_pinEntry){_setMsg('Wrong PIN!','#ff8888');_pinEntry='';_updateDots();return;}
       _setMsg('Welcome back '+name+'!','#4dcf8a');setTimeout(function(){_loginOk(name);},600);
     }
-  }).catch(function(e){console.error(e);_setMsg('Error. Playing as guest.','#ffaa44');setTimeout(_guestPlay,1000);});
+  }).catch(function(e){
+    console.error('Firebase error:',e);
+    if(e.code==='permission-denied'){
+      _setMsg('Firebase rules need updating. Playing as guest.','#ffaa44');
+    } else {
+      _setMsg('Connection error. Playing as guest.','#ffaa44');
+    }
+    setTimeout(_guestPlay,1000);
+  });
 }
 function _loginOk(name){
   _currentUser={username:name,isGuest:false};
@@ -1222,15 +1251,13 @@ function _loginOk(name){
   fb.getDoc(fb.doc(fb.db,'students',name.toLowerCase())).then(function(snap){
     if(!snap.exists()){ _hideLogin(); return; }
     var data=snap.data();
+    _savedUserData=data; // Store full user data first
     // Load persistent user data
-  if(data.shineCoins) { shineCoins=data.shineCoins; updateCoinHUD(); }
-  if(data.purchasedAccs) { if(!_savedUserData) _savedUserData={}; _savedUserData.purchasedAccs=data.purchasedAccs; }
-  if(data.accPositions) { if(!_savedUserData) _savedUserData={}; _savedUserData.accPositions=data.accPositions; }
-  var weekData=data.weeks&&data.weeks[WEEK_KEY];
+    if(data.shineCoins){ shineCoins=data.shineCoins; updateCoinHUD(); }
+    var weekData=data.weeks&&data.weeks[WEEK_KEY];
     if(weekData&&weekData.wordsDone>0){
       // Has played this week - show resume screen
       _savedWeekData=weekData;
-      _savedUserData=data;
       _hideLogin();
       _showResumeScreen(name, weekData);
     } else {
@@ -2732,6 +2759,23 @@ function openCareFromWin(creatureIdx){
 initTitle();
 
 // ── WIRE LOGIN BUTTONS ──
+// ── POPULATE USERNAME DATALIST FROM FIREBASE ──
+function _loadUsernameSuggestions(){
+  var fb=window._fb;
+  if(!fb||!fb.ready) return;
+  fb.getDocs(fb.collection(fb.db,'students')).then(function(snap){
+    var dl=document.getElementById('usernameSuggestions');
+    if(!dl) return;
+    dl.innerHTML='';
+    snap.forEach(function(d){
+      var opt=document.createElement('option');
+      opt.value=d.data().username||d.id;
+      dl.appendChild(opt);
+    });
+  }).catch(function(e){console.log('Could not load suggestions:',e);});
+}
+document.addEventListener('fbReady', _loadUsernameSuggestions);
+
 window.addEventListener('load', function(){
   ['1','2','3','4','5','6','7','8','9','0'].forEach(function(k){
     var b=document.getElementById('pk'+k);
