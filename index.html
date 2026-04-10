@@ -2147,6 +2147,7 @@ function showWin(){
   setTimeout(sfxVictory,300);
   // Perfect game coin bonus
   if(isPerfect){ earnCoins(25,'Perfect!'); }
+  _autoSave(); // Final save on win
   if(bestStreak>=2){
     const bsEl=document.getElementById('winStreakEl');
     const bsNum=document.getElementById('winBestStreak');
