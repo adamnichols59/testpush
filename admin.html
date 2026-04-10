@@ -631,6 +631,82 @@ function renderStudentsFiltered(search){
 
 
 function renderStudents(){renderStudentsFiltered('');}
+
+// ── MISSING FUNCTIONS ──
+
+function filterStudents(){
+  var search=(document.getElementById('searchInp').value||'').toLowerCase();
+  renderStudentsFiltered(search);
+}
+
+function toggleStuDetail(id){
+  var el=document.getElementById('detail-'+id);
+  if(!el) return;
+  el.style.display = el.style.display==='table-row' ? 'none' : 'table-row';
+}
+
+function buildStuDetail(s){
+  var w=s.weeks&&s.weeks[WEEK_KEY];
+  if(!w||!w.wordAnalytics){
+    return '<div style="color:#666;font-size:.6rem;padding:12px">No word-level data yet for this week.</div>';
+  }
+  var cards=WORDS.map(function(word){
+    var wa=w.wordAnalytics[word];
+    if(!wa) return '<div class="stu-word-card" style="opacity:.3"><div class="stu-word-name">'+word+'</div><div class="stu-word-stat" style="color:#555">Not reached</div></div>';
+    var col=diffColor(wa.attempts||1);
+    return '<div class="stu-word-card" style="border-color:'+col+'44">'
+      +'<div class="stu-word-name" style="color:'+col+'">'+word+'</div>'
+      +'<div class="stu-word-stat">'
+        +'Attempts: <b style="color:white">'+(wa.attempts||1)+'</b><br>'
+        +'Hint: '+(wa.hintUsed?'<b style="color:#ffaa44">Yes</b>':'No')+'  '
+        +(wa.skipped?'<b style="color:#ff8888">Skipped</b><br>':'')
+        +'Time: <b style="color:white">'+(wa.timeMs?fmtTime(wa.timeMs):'-')+'</b>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+  return '<div class="stu-word-grid">'+cards+'</div>';
+}
+
+function openReset(id, name){
+  var pin=String(Math.floor(1000+Math.random()*9000));
+  pendingAction={type:'reset',id:id,name:name,pin:pin};
+  document.getElementById('resetBody').textContent='Reset PIN for '+name+'? New PIN will be:';
+  document.getElementById('newPinEl').textContent=pin;
+  document.getElementById('resetModal').classList.add('show');
+}
+
+function openDelete(id, name){
+  pendingAction={type:'delete',id:id,name:name};
+  document.getElementById('deleteBody').textContent='Delete '+name+'? This removes ALL their progress permanently.';
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+async function confirmReset(){
+  if(!pendingAction||pendingAction.type!=='reset') return;
+  try{
+    await window._fb.updateDoc(window._fb.doc(window._fb.db,'students',pendingAction.id),{pin:pendingAction.pin});
+    closeModal('resetModal');
+    alert('PIN for '+pendingAction.name+' has been reset to: '+pendingAction.pin+'\n\nWrite this down and give it to the student!');
+    loadDashboard();
+  }catch(e){ alert('Error: '+e.message); }
+}
+
+async function confirmDelete(){
+  if(!pendingAction||pendingAction.type!=='delete') return;
+  try{
+    await window._fb.deleteDoc(window._fb.doc(window._fb.db,'students',pendingAction.id));
+    closeModal('deleteModal');
+    loadDashboard();
+  }catch(e){ alert('Error: '+e.message); }
+}
+
+function closeModal(id){
+  var el=document.getElementById(id);
+  if(el) el.classList.remove('show');
+  pendingAction=null;
+}
+
+
 </script>
 </body>
 </html>
