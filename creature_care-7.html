@@ -4598,7 +4598,7 @@ function initCreature(name,color,word,happy,coins,purchasedAccs,accPositions){
   appState={name,color,word,happy:happy||50,acc:null,sleeping:false,lore:data,
     coins:coins||0,
     purchasedAccs:purchasedAccs||{}, // {creatureName: [accId, ...]}
-    accPositions:accPositions||{},    // {accId: {cx,cy}}
+    accPositions:accPositions||{},    // {accId: {dx,dy}} offset transform
     accSet:new Set()
   };
   curHab=data.bgType||'meadow';
@@ -4634,6 +4634,43 @@ function initCreature(name,color,word,happy,coins,purchasedAccs,accPositions){
   appState.acc = null;
   appState.accSet = new Set();
   updateHappy();buildTools();buildAccPicker();startParts();startAnim(name);
+  // Restore previously placed accessories with their positions
+  setTimeout(_restoreAccPositions, 300); // slight delay so SVG is rendered
+}
+
+function _restoreAccPositions(){
+  const cSvg=document.getElementById('cSvg');
+  if(!cSvg||!appState.accPositions) return;
+  const positions=appState.accPositions;
+  const owned=getPurchasedForCreature();
+  const accs=getCreatureAccs();
+  
+  Object.keys(positions).forEach(function(accId){
+    if(!owned.has(accId)) return; // not owned, skip
+    const accDef=accs.find(function(a){return a.id===accId;});
+    if(!accDef) return;
+    
+    const pos=positions[accId];
+    const dx=pos.dx||pos.cx||0;
+    const dy=pos.dy||pos.cy||0;
+    
+    // Remove any existing instance
+    const existing=cSvg.querySelector('#acc_'+accId);
+    if(existing) existing.remove();
+    
+    // Re-render at saved position
+    const svgStr=accDef.svg(appState.color||'#ffb3d9');
+    const ns='http://www.w3.org/2000/svg';
+    const tmp=document.createElementNS(ns,'g');
+    tmp.innerHTML=svgStr;
+    const child=tmp.firstElementChild;
+    if(child){
+      child.setAttribute('transform',`translate(${dx.toFixed(1)},${dy.toFixed(1)})`);
+      cSvg.appendChild(child);
+      appState.accSet.add(accId);
+    }
+  });
+  buildAccPicker(); // Update equipped tab to show active accessories
 }
 
 // ═══════════════════════════════════════════
@@ -4863,16 +4900,16 @@ function _onDragEnd(evt){
 
   if(!_dragGhost||!_dragAcc){ _cleanDrag(); return; }
 
-  const pos=_getTouchPos(evt.changedTouches?evt:evt);
+  // Get final drop position before removing ghost
+  const finalPos=evt.changedTouches&&evt.changedTouches[0]
+    ?{x:evt.changedTouches[0].clientX, y:evt.changedTouches[0].clientY}
+    :{x:evt.clientX||0, y:evt.clientY||0};
   _dragGhost.remove(); _dragGhost=null;
 
   // Check if dropped on creature stage
   const stage=document.getElementById('stage');
   if(!stage){ _cleanDrag(); return; }
   const rect=stage.getBoundingClientRect();
-  const finalPos=evt.changedTouches
-    ?{x:evt.changedTouches[0].clientX, y:evt.changedTouches[0].clientY}
-    :{x:evt.clientX, y:evt.clientY};
 
   if(finalPos.x>=rect.left && finalPos.x<=rect.right &&
      finalPos.y>=rect.top  && finalPos.y<=rect.bottom){
@@ -4909,27 +4946,41 @@ function _placeAccAtPosition(accDef, cx, cy){
   if(!appState.accSet) appState.accSet=new Set();
   appState.accSet.add(accDef.id);
 
-  // Get the SVG viewBox center to calculate offset from default position
-  const svgVB=cSvg.viewBox.baseVal;
-  const centerX=(svgVB.width||220)/2;
-  const centerY=(svgVB.height||220)/2;
-  const dx=cx-centerX;
-  const dy=cy-centerY;
-
-  // Store position
-  if(!appState.accPositions) appState.accPositions={};
-  appState.accPositions[accDef.id]={dx,dy};
-
-  // Render with transform offset
+  // Render at natural position first so we can measure it
   const svgStr=accDef.svg(appState.color||'#ffb3d9');
   const ns='http://www.w3.org/2000/svg';
   const tmp=document.createElementNS(ns,'g');
   tmp.innerHTML=svgStr;
   const child=tmp.firstElementChild;
-  if(child){
-    child.setAttribute('transform',`translate(${dx},${dy})`);
-    cSvg.appendChild(child);
+  if(!child) return;
+
+  // Temporarily add to SVG to measure natural bounding box
+  child.style.visibility='hidden';
+  cSvg.appendChild(child);
+
+  let dx=0, dy=0;
+  try{
+    const bbox=child.getBBox();
+    // Natural center of accessory in SVG coordinate space
+    const natCx=bbox.x + bbox.width/2;
+    const natCy=bbox.y + bbox.height/2;
+    // Translate so natural center lands at drop point
+    dx=cx - natCx;
+    dy=cy - natCy;
+  }catch(e){
+    // getBBox failed (e.g. not yet in DOM) - fall back to simple positioning
+    const svgVB=cSvg.viewBox.baseVal;
+    dx=cx - (svgVB.width||220)/2;
+    dy=cy - (svgVB.height||220)/2;
   }
+
+  // Apply transform and make visible
+  child.setAttribute('transform', `translate(${dx.toFixed(1)},${dy.toFixed(1)})`);
+  child.style.visibility='';
+
+  // Store position for persistence
+  if(!appState.accPositions) appState.accPositions={};
+  appState.accPositions[accDef.id]={dx, dy};
 
   // Reactions
   speak(appState.lore?appState.lore.moods.acc||'I love it! 🥰':'Looking great! 🥰');
