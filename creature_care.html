@@ -4233,6 +4233,20 @@ function al(){
     bg.style.transform=`scaleY(${1+breathe}) scaleX(${breatheX})`;
   }
 
+  // ── CURSOR LEAN: creature body subtly leans toward the cursor ──
+  if(animT%3===0 && !isHopping && !dragging && _mouseX){
+    const cSvgEl=el('cSvg');
+    const bg=el('bodyGroup');
+    if(cSvgEl && bg){
+      const sr=cSvgEl.getBoundingClientRect();
+      const rawX=(_mouseX-(sr.left+sr.width/2))/Math.max(sr.width,1);
+      const leanAngle=Math.max(-4, Math.min(4, rawX*8));
+      const breathe=Math.sin(animT*.038)*0.016;
+      // Combine breathe with lean
+      bg.style.transform=`scaleY(${1+breathe}) scaleX(${1-breathe*.4}) rotate(${leanAngle}deg)`;
+    }
+  }
+
   // ── BLINKING ──
   blinkTimer--;
   if(blinkTimer<=0 && !isBlinking){ isBlinking=true; blinkFrame=0; }
@@ -4265,13 +4279,60 @@ function al(){
     }
   }
 
-  // ── EYE MICRO-MOVEMENT: subtle pupil drift via the inner iris elements ──
-  if(!isBlinking && animT%4===0){
-    const ex=Math.sin(animT*.018)*1.2;
-    const ey=Math.sin(animT*.022)*.6;
-    // Move just pupils, not whole eye group (avoids transform conflict)
+  // ── EYE TRACKING: pupils follow cursor/touch ──
+  if(!isBlinking){
+    const cSvgEl=el('cSvg');
+    if(cSvgEl && _mouseX && _mouseY){
+      const sr=cSvgEl.getBoundingClientRect();
+      // Center of SVG on screen
+      const scx=sr.left+sr.width/2;
+      const scy=sr.top+sr.height/2;
+      // Direction to cursor (normalized, capped)
+      const rawX=(_mouseX-scx)/Math.max(sr.width,1);
+      const rawY=(_mouseY-scy)/Math.max(sr.height,1);
+      const dist=Math.sqrt(rawX*rawX+rawY*rawY);
+      const scale=dist>1?1/dist:1; // normalize
+      const targetX=rawX*scale*4.5; // max 4.5px pupil travel
+      const targetY=rawY*scale*3.5;
+      // Smooth interpolation
+      _lookAtX+=(_lookAtX===0&&_lookAtY===0)?targetX:( targetX-_lookAtX)*_lookSmooth;
+      _lookAtY+=(_lookAtY===0&&_lookAtY===0)?targetY:(targetY-_lookAtY)*_lookSmooth;
+      _lookAtX+=(targetX-_lookAtX)*_lookSmooth;
+      _lookAtY+=(targetY-_lookAtY)*_lookSmooth;
+    }
+    // Add subtle idle drift when cursor isn't near
+    const idleDrift = Math.abs(_lookAtX)<0.5 && Math.abs(_lookAtY)<0.5;
+    const ex = _lookAtX + (idleDrift ? Math.sin(animT*.018)*1.2 : 0);
+    const ey = _lookAtY + (idleDrift ? Math.sin(animT*.022)*.6 : 0);
     const pupils=document.querySelectorAll('#cSvg circle[fill="#111"]');
-    pupils.forEach(p=>{ p.style.transform=`translate(${ex}px,${ey}px)`; });
+    pupils.forEach(p=>{ p.style.transform=`translate(${ex.toFixed(2)}px,${ey.toFixed(2)}px)`; });
+  }
+
+  // ── IDLE EXCITEMENT: creature perks up when cursor enters ──
+  if(_idleExcited && _excitedTimer>0){
+    _excitedTimer--;
+    const st=el('stage');
+    if(st && _excitedTimer>60){
+      // Quick bounce of anticipation
+      const bounce=Math.sin((_excitedTimer-60)*0.4)*3;
+      const existing=st.style.transform;
+      if(!existing||existing==='') st.style.transform=`translateY(${-Math.abs(bounce)}px)`;
+    }
+    if(_excitedTimer<=0){ _idleExcited=false; const st=el('stage'); if(st&&!isHopping) st.style.transform=''; }
+  }
+
+  // ── HEAD NOD: subtle head tilt on idle ──
+  if(animT%300===0 && !isHopping && !isClapping){
+    const bg=el('bodyGroup');
+    if(bg && Math.random()<0.4){
+      let nf=0;
+      const nodIv=setInterval(()=>{
+        nf++;
+        if(bg) bg.style.transform=(bg.style.transform||'').replace(/rotate\([^)]*\)/,'')
+          + ` rotate(${Math.sin(nf*0.3)*3}deg)`;
+        if(nf>20){ clearInterval(nodIv); }
+      },40);
+    }
   }
 
   // ── CREATURE-SPECIFIC ANIMATIONS ──
@@ -4293,7 +4354,10 @@ function animFluffkin(){
   if(earL) earL.style.transform=`rotate(${Math.sin(earWigglePhase)*6 + Math.sin(animT*.15)*2}deg)`;
   if(earR) earR.style.transform=`rotate(${Math.sin(earWigglePhase+1.4)*4}deg)`;
   // Tail wag
-  if(tail) tail.style.transform=`rotate(${Math.sin(animT*.07)*11}deg)`;
+  // Wag faster when cursor is near
+  const wagSpeed = (_idleExcited || _excitedTimer>0) ? .14 : .07;
+  const wagAmp = (_idleExcited || _excitedTimer>0) ? 18 : 11;
+  if(tail) tail.style.transform=`rotate(${Math.sin(animT*wagSpeed)*wagAmp}deg)`;
   // Hop
   hopTimer--;
   if(hopTimer<=0 && !isHopping){ isHopping=true; hopPhase=0; hopTimer=200+Math.random()*240; }
@@ -4439,11 +4503,20 @@ function squashStretch(stage, frames){
 
 function reactPet(){
   const st=el('stage'), he=el('heartEyes');
-  if(he) he.style.display='block';
+  if(he){ he.style.display='block'; setTimeout(()=>{ if(he) he.style.display='none';},2000); }
+  // Quick excited wiggle before the squash
+  let prePh=0;
+  const preWig=setInterval(()=>{
+    prePh++;
+    if(st) st.style.transform=`rotate(${Math.sin(prePh*1.2)*8}deg) translateY(${-Math.abs(Math.sin(prePh*.8))*4}px)`;
+    if(prePh>8){ clearInterval(preWig); if(st) st.style.transform=''; }
+  },30);
+  setTimeout(()=>{
   // Big squish (wide/flat) then bounce up (narrow/tall) then settle
   squashStretch(st,[
     [1.22,.78,80],[.92,1.14,80],[1.1,.9,70],[.96,1.06,70],[1.0,1.0,60]
   ]);
+  },250);
   setTimeout(()=>{ if(he) he.style.display='none'; }, 2200);
 }
 
@@ -4682,6 +4755,8 @@ const SPARKLE_ICONS=['✨','💫','⭐','🌟','💎'];
 const HEART_ICONS={pet:'💕',feed:'⭐',brush:'✨',sparkle:'💎',cuddle:'💤',acc:'🎀'};
 
 let activeTool=null,dragging=false,dX=0,dY=0,lastSpX=-999,lastSpY=-999;
+let _mouseX=0,_mouseY=0,_eyeTrack=true,_idleExcited=false,_excitedTimer=0;
+let _lookAtX=0,_lookAtY=0,_lookSmooth=0.08; // smooth eye tracking
 
 function buildTools(){
   const d=appState.lore,row=document.getElementById('toolsRow');
@@ -4709,6 +4784,24 @@ function startDrag(e,tool){
   const g=document.getElementById('ghost');g.textContent=tool.icon;g.style.left=dX+'px';g.style.top=dY+'px';g.classList.add('on');
   document.getElementById('tool_'+tool.id)?.classList.add('on');
 }
+// ── EYE TRACKING: Track cursor/touch on stage ──
+document.addEventListener('mousemove', function(e){
+  _mouseX=e.clientX; _mouseY=e.clientY;
+});
+document.addEventListener('touchmove', function(e){
+  if(e.touches[0]){ _mouseX=e.touches[0].clientX; _mouseY=e.touches[0].clientY; }
+},{passive:true});
+// Excitement when cursor enters stage area
+const _stageEl=document.getElementById('stage');
+if(_stageEl){
+  _stageEl.addEventListener('mouseenter', function(){
+    if(!_idleExcited){ _idleExcited=true; _excitedTimer=120; }
+  });
+  _stageEl.addEventListener('touchstart', function(){
+    if(!_idleExcited){ _idleExcited=true; _excitedTimer=80; }
+  },{passive:true});
+}
+
 document.addEventListener('mousemove',mv);document.addEventListener('touchmove',mv,{passive:false});
 document.addEventListener('mouseup',up);document.addEventListener('touchend',up);
 
@@ -4721,6 +4814,7 @@ function mv(e){
     if(Math.sqrt(dx2*dx2+dy2*dy2)>18){spawnSpark(dX,dY);lastSpX=dX;lastSpY=dY;}
   }
 }
+let _lastTapTime=0;
 function up(){
   if(!dragging)return;dragging=false;
   const g=document.getElementById('ghost');g.classList.remove('on');
@@ -4728,8 +4822,33 @@ function up(){
     document.getElementById('tool_'+activeTool.id)?.classList.remove('on');
     if(overCreature(dX,dY)) doAction(activeTool.id);
     activeTool=null;
+  } else if(overCreature(dX,dY)){
+    // No tool - bare tap/click on creature = wink + speak
+    const now=Date.now();
+    if(now-_lastTapTime<400){
+      // Double-tap: excited jump
+      _idleExcited=true; _excitedTimer=100;
+      speak(['Hehe! Again! 😄','You found my tickle spot! 🤣','Wheee! 🎉'][Math.floor(Math.random()*3)]);
+      playCareSound('pet');
+    } else {
+      // Single tap: wink
+      _doWink();
+      speak(['Hi! 😊','Tap me again! 😄','Hehe~ 🐾'][Math.floor(Math.random()*3)]);
+    }
+    _lastTapTime=now;
   }
   lastSpX=lastSpY=-999;
+}
+
+function _doWink(){
+  // Close one eye briefly
+  const side=Math.random()<0.5?'L':'R';
+  const lid=el('lid'+side), eye=el('eye'+side);
+  if(!lid||!eye) return;
+  lid.style.display='block'; lid.setAttribute('ry','11');
+  eye.style.filter='brightness(.15)';
+  setTimeout(()=>{ lid.setAttribute('ry','5'); eye.style.filter='brightness(.5)'; },120);
+  setTimeout(()=>{ lid.style.display='none'; eye.style.filter=''; },280);
 }
 
 function overCreature(x,y){
