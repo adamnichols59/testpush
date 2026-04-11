@@ -687,7 +687,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 
 
 <!-- ═══════════════════════ ONBOARDING OVERLAY ═══════════════════ -->
-<div id="onboardOverlay" style="display:none;position:fixed;inset:0;z-index:1500;
+<div id="onboardOverlay" style="display:none;position:fixed;inset:0;z-index:1050;
   background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);
   flex-direction:column;align-items:center;justify-content:center;
   padding:24px;box-sizing:border-box">
@@ -724,7 +724,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 </div>
 
 <!-- LOGIN SCREEN -->
-<div id="sLogin" style="position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:env(safe-area-inset-top,24px) 24px 60px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;">
+<div id="sLogin" style="position:fixed;inset:0;z-index:1100;background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:env(safe-area-inset-top,24px) 24px 60px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;">
   <div style="font-size:2.8rem">🐾</div>
   <div style="font-family:Baloo 2,cursive;font-size:1.6rem;font-weight:800;color:#ffe040;text-align:center;line-height:1.2">Bella's Spelling<br>Adventure!</div>
   <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
@@ -2950,6 +2950,9 @@ initTitle();
 // ── ONBOARDING ──
 var _obSlide=0;
 function _showOnboarding(){
+  // Hide login screen first
+  var login=document.getElementById('sLogin');
+  if(login){ login.style.display='none'; }
   var el=document.getElementById('onboardOverlay');
   if(el){ el.style.display='flex'; _obSlide=0; _updateObSlide(); }
 }
@@ -2971,7 +2974,8 @@ function _updateObSlide(){
 function _closeOnboarding(){
   var el=document.getElementById('onboardOverlay');
   if(el) el.style.display='none';
-  _hideLogin();
+  // Login is already hidden at this point - just start the game
+  goTo('sTitle');
 }
 
 // ── WIRE LOGIN BUTTONS ──
