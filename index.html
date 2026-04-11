@@ -29,9 +29,20 @@ const fbApp=initializeApp(fbCfg);
 const fbDb=getFirestore(fbApp);
 window._fb={db:fbDb,doc,getDoc,setDoc,updateDoc,collection,getDocs,query,orderBy,limit,ready:true};
 document.dispatchEvent(new Event('fbReady'));
+// Try to load this week's word list from Firebase
+(async function(){
+  try{
+    const wlSnap=await getDoc(doc(fbDb,'wordLists',WEEK_KEY));
+    if(wlSnap.exists()&&wlSnap.data().words&&wlSnap.data().words.length){
+      WORDS=wlSnap.data().words;
+      console.log('Loaded '+WORDS.length+' words from Firebase');
+    }
+  }catch(e){ console.log('Using default word list'); }
+})();
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="screen-orientation" content="portrait">
 <title>Bella's Spelling Adventure</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -42,6 +53,8 @@ document.dispatchEvent(new Event('fbReady'));
   border-radius:999px;padding:3px 10px;font-size:.7rem;font-weight:800;color:#ffaa44;
   display:flex;align-items:center;gap:4px;}
 @keyframes streakPop{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s;}
+.ob-dot.active{background:#ffe040;transform:scale(1.3);}
 @keyframes coinMsgAnim{
   0%{transform:translateX(-50%) scale(0);opacity:0}
   30%{transform:translateX(-50%) scale(1.15);opacity:1}
@@ -93,6 +106,13 @@ document.dispatchEvent(new Event('fbReady'));
 @keyframes splashTap{from{opacity:.4;transform:scale(.95)}to{opacity:1;transform:scale(1.05)}}
 @keyframes splashSpin{0%{transform:scale(0) rotate(-180deg);opacity:0}60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
 html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'Nunito',sans-serif}
+@media screen and (orientation:landscape) and (max-height:500px){
+  body::before{content:'Please rotate your device to portrait mode 📱';
+    position:fixed;inset:0;z-index:99999;background:#0d0221;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;
+    color:#ffe040;text-align:center;padding:24px;box-sizing:border-box;}
+}
 
 :root{
   --pink:#ff7eb3;--dpink:#e8458a;
@@ -152,6 +172,9 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 }
 .spell-topbar-title{font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--yellow)}
 .spell-topbar-right{display:flex;gap:8px;align-items:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-spinner{width:20px;height:20px;border:3px solid rgba(255,224,64,.3);
+  border-top-color:#ffe040;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
 .hchip{background:#0f3460;border:2px solid var(--yellow);border-radius:999px;
   padding:4px 12px;font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:var(--yellow)}
 
@@ -663,6 +686,49 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
       padding:12px;color:#aac4ff;cursor:pointer;width:100%">
       🔄 Start fresh this week
     </button>
+    <button onclick="_visitCreatures()" style="font-family:'Baloo 2',cursive;
+      font-size:.65rem;font-weight:800;background:none;border:none;
+      color:rgba(170,196,255,.5);cursor:pointer;padding:8px;margin-top:2px">
+      🐾 Just visiting my creatures
+    </button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════ ONBOARDING OVERLAY ═══════════════════ -->
+<div id="onboardOverlay" style="display:none;position:fixed;inset:0;z-index:1500;
+  background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;box-sizing:border-box">
+  <div style="max-width:340px;width:100%;text-align:center">
+    <!-- Slide indicators -->
+    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px">
+      <div class="ob-dot active" id="ob0"></div>
+      <div class="ob-dot" id="ob1"></div>
+      <div class="ob-dot" id="ob2"></div>
+    </div>
+    <!-- Slides -->
+    <div id="obSlide0">
+      <div style="font-size:4rem;margin-bottom:12px">✏️</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:#ffe040;margin-bottom:10px">Spell the Word!</div>
+      <div style="font-size:.72rem;color:#aac4ff;line-height:1.7">Each word comes with a definition and a clue sentence.<br><br>Type the word and press <b style="color:white">CHECK</b>.<br>Use <b style="color:#ffe040">HEAR IT</b> to listen or <b style="color:#ff88cc">HINT</b> if you're stuck!</div>
+    </div>
+    <div id="obSlide1" style="display:none">
+      <div style="font-size:4rem;margin-bottom:12px">🎯</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:#ffe040;margin-bottom:10px">Catch a Creature!</div>
+      <div style="font-size:.72rem;color:#aac4ff;line-height:1.7">Spell it right and a creature appears!<br><br>Swipe up to throw your Poké Ball and catch it.<br>The better you spell, the more <b style="color:#ffe040">✨ Shine Coins</b> you earn!</div>
+    </div>
+    <div id="obSlide2" style="display:none">
+      <div style="font-size:4rem;margin-bottom:12px">🐾</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:#ffe040;margin-bottom:10px">Build Your Team!</div>
+      <div style="font-size:.72rem;color:#aac4ff;line-height:1.7">Catch 20 different creatures and care for them!<br><br>Use your coins to buy accessories in the Shop.<br>Catch the same creature <b style="color:#ffe040">3 times</b> and it <b style="color:#ff88cc">evolves</b> into something amazing! ⚡</div>
+    </div>
+    <!-- Buttons -->
+    <button id="obNext" onclick="_obNext()" style="font-family:'Baloo 2',cursive;font-size:.9rem;
+      font-weight:800;background:linear-gradient(135deg,#9b5fd4,#4dcf8a);border:none;
+      border-radius:14px;padding:14px 32px;color:white;cursor:pointer;margin-top:28px;width:100%">
+      Next →
+    </button>
   </div>
 </div>
 
@@ -672,9 +738,12 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
   <div style="font-family:Baloo 2,cursive;font-size:1.6rem;font-weight:800;color:#ffe040;text-align:center;line-height:1.2">Bella's Spelling<br>Adventure!</div>
   <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
     <div id="loginMsg" style="font-size:.7rem;font-weight:800;color:#aac4ff;text-align:center;min-height:18px"></div>
-    <input id="loginUsername" type="text" maxlength="20" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text" placeholder="Your name (e.g. BellaM)"
-      style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 16px;color:white;width:100%;outline:none;box-sizing:border-box" list="usernameSuggestions"/>
-    <datalist id="usernameSuggestions"></datalist>
+    <div style="position:relative;width:100%"><div style="position:relative;width:100%">
+    <input id="loginUsername" type="text" maxlength="30" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text" placeholder="Your name (e.g. BellaM)"
+      style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 44px 12px 16px;color:white;width:100%;outline:none;box-sizing:border-box"/>
+    <div id="dropArrow" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:rgba(255,224,64,.6);font-size:1rem;pointer-events:none">▾</div>
+    <div id="usernameDropdown" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:#150830;border:2px solid rgba(255,224,64,.4);border-radius:12px;overflow:hidden;z-index:9999;max-height:220px;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 8px 32px rgba(0,0,0,.6)"></div>
+    </div>
     <div style="font-size:.55rem;color:rgba(170,196,255,.6);text-align:center;margin-top:-8px">Suggestion: first name + last initial (e.g. BellaM)</div>
     <div style="display:flex;gap:8px;justify-content:center">
       <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
@@ -862,9 +931,34 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
   <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:#aac4ff;text-align:center;line-height:1.8">You caught all the creatures, Bella!<br>You are AMAZING! ⭐</div>
   <div class="dex-grid" id="dexGrid"></div>
   <div class="win-stats" id="winStats"></div>
+  <div id="coinWin" style="font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:800;
+    color:#ffe040;text-align:center;margin-top:4px;opacity:.85"></div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px">
     <button class="btn-continue" onclick="openDex()" style="background:linear-gradient(135deg,var(--purple),#6622aa);box-shadow:0 5px 0 #440088">📖 Pokédex</button>
     <button class="btn-continue" onclick="playAgain()">🔄 Play Again!</button>
+  <button id="recapBtn" onclick="showRecap()" style="display:none;
+    font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;
+    background:rgba(255,160,50,.2);border:2px solid rgba(255,160,50,.5);
+    border-radius:14px;padding:10px 24px;color:#ffaa44;cursor:pointer;margin-top:4px">
+    📖 Review Tricky Words
+  </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ RECAP OVERLAY ═══════════════════ -->
+<div id="recapOverlay" style="display:none;position:fixed;inset:0;z-index:800;
+  background:rgba(0,0,0,.92);overflow-y:auto;padding:24px;box-sizing:border-box">
+  <div style="max-width:480px;margin:0 auto">
+    <div style="font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;
+      color:#ffaa44;text-align:center;margin-bottom:6px">📖 Practice These Words</div>
+    <div style="font-size:.6rem;color:#aac4ff;text-align:center;margin-bottom:20px">
+      These took a few tries — one more look before you go!</div>
+    <div id="recapList" style="display:flex;flex-direction:column;gap:12px"></div>
+    <button onclick="closeRecap()" style="font-family:'Baloo 2',cursive;font-size:.85rem;
+      font-weight:800;background:linear-gradient(135deg,#9b5fd4,#4dcf8a);border:none;
+      border-radius:14px;padding:14px;color:white;width:100%;cursor:pointer;margin-top:20px">
+      ✅ Got it! Back to my creatures
+    </button>
   </div>
 </div>
 
@@ -889,7 +983,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 // ═══════════════════════════════════════════════════════════
 //  DATA
 // ═══════════════════════════════════════════════════════════
-const WORDS=[
+const WORDS_DEFAULT=[
   {w:"names",      d:"More than one name — what we call people or things 🏷️",                     s:"She wrote all the names on the birthday cards."},
   {w:"named",      d:"Was given a name, or called something 📛",                                   s:"The puppy was named Biscuit because he was golden brown."},
   {w:"naming",     d:"The act of giving someone or something a name right now ✏️",                 s:"They were naming all the new kittens at the shelter."},
@@ -911,6 +1005,8 @@ const WORDS=[
   {w:"driving",    d:"Controlling a car or vehicle to make it go somewhere 🚗",                   s:"Dad was driving us to school when it started to rain."},
   {w:"traded",     d:"Gave something and got something else in return 🔄",                        s:"She traded her apple for his crackers at lunch."}
 ];
+var WORDS=[...WORDS_DEFAULT]; // May be overridden by Firebase word list
+
 
 
 
@@ -1219,15 +1315,19 @@ function _doLogin(){
     .trim();
   if(!name){_setMsg('Please enter your name!','#ffaa44');return;}
   if(_pinEntry.length!==4){_setMsg('Please enter your 4-digit PIN!','#ffaa44');return;}
-  _setMsg('Looking up: '+name,'#aac4ff');
+  _setMsg('Looking up your account...','#aac4ff',true);
   var fb=window._fb;
   if(!fb||!fb.ready){_guestPlay();return;}
   var id=name.toLowerCase();
   fb.getDoc(fb.doc(fb.db,'students',id)).then(function(snap){
     if(_isSignup){
       if(snap.exists()){_setMsg('Name taken! Try adding your last initial.','#ff8888');return;}
-      return fb.setDoc(fb.doc(fb.db,'students',id),{username:name,pin:_pinEntry,createdAt:Date.now(),totalScore:0,totalCreatures:0,bestStreak:0,weeks:{}})
-        .then(function(){_setMsg('Welcome '+name+'!','#4dcf8a');setTimeout(function(){_loginOk(name);},800);});
+      return fb.setDoc(fb.doc(fb.db,'students',id),{username:name,pin:_pinEntry,createdAt:Date.now(),totalScore:0,totalCreatures:0,bestStreak:0,shineCoins:0,weeks:{}})
+        .then(function(){
+          _setMsg('Welcome '+name+'! ✨','#4dcf8a');
+          _currentUser={username:name,isGuest:false};
+          setTimeout(function(){ _showOnboarding(); },600);
+        });
     } else {
       if(!snap.exists()){_setMsg('Name not found. New here?','#ff8888');return;}
       if(snap.data().pin!==_pinEntry){_setMsg('Wrong PIN!','#ff8888');_pinEntry='';_updateDots();return;}
@@ -1302,6 +1402,29 @@ function _showResumeScreen(name, weekData){
   var rb=document.getElementById('resumeBtn');
   if(rb) rb.innerHTML=completed?'Practice Again':'Continue where I left off';
   el.style.display='flex';
+}
+
+
+function _visitCreatures(){
+  // Hide resume screen and go to win/dex screen with existing creatures
+  var rs=document.getElementById('resumeScreen');
+  if(rs) rs.style.display='none';
+  // Restore caught from saved data
+  caught=[];
+  var savedC=(_savedUserData&&_savedUserData.allCreatures)||[];
+  savedC.forEach(function(c){
+    var cr=null;
+    for(var i=0;i<CREATURES.length;i++){
+      if(CREATURES[i].name===c.name){cr=CREATURES[i];break;}
+    }
+    if(cr) caught.push({name:c.name,color:c.color,fn:cr.fn,word:c.word,
+      nickname:c.nickname||'',happiness:c.happiness||50,
+      caughtAt:c.caughtAt||Date.now(),evolved:c.evolved||false});
+  });
+  if(_savedUserData&&_savedUserData.shineCoins){
+    shineCoins=_savedUserData.shineCoins;updateCoinHUD();
+  }
+  showWin();
 }
 
 function _resumeGame(){
@@ -1702,12 +1825,51 @@ function checkSpell(){
 function useHint(){
   hintUsed=true;isPerfect=false;
   const w=wordOrder[wordIdx];
-  const h=w.w[0].toUpperCase()+' _ '.repeat(w.w.length-2).trim()+' '+w.w[w.w.length-1].toUpperCase();
   const hb=document.getElementById('hintBox');
   hb.style.display='block';
-  hb.textContent='💡 '+h+' ('+w.w.length+' letters)';
-  // Refocus the hidden input
+
+  // Try pattern hint for verb endings
+  var patternHint=_getPatternHint(w.w);
+  if(patternHint){
+    hb.innerHTML='💡 '+patternHint;
+  } else {
+    const h=w.w[0].toUpperCase()+' _ '.repeat(w.w.length-2).trim()+' '+w.w[w.w.length-1].toUpperCase();
+    hb.textContent='💡 '+h+' ('+w.w.length+' letters)';
+  }
   document.getElementById('spellInp').focus();
+}
+
+function _getPatternHint(word){
+  // Detect common verb ending patterns and show base + suffix
+  var patterns=[
+    {suffix:'ing', check: function(w){return w.endsWith('ing')&&w.length>4;},
+     hint: function(w){
+       var base=w.slice(0,-3);
+       // double consonant: running -> run + ning
+       if(base.length>=2&&base[base.length-1]===base[base.length-2])
+         return '<b>'+base.slice(0,-1)+'</b> + <b>'+base[base.length-1]+'ing</b>';
+       // drop e: dancing -> danc + ing
+       return '<b>'+base+'</b> + <b>ing</b>';
+     }},
+    {suffix:'ed', check: function(w){return w.endsWith('ed')&&w.length>3;},
+     hint: function(w){
+       var base=w.slice(0,-2);
+       if(base.length>=2&&base[base.length-1]===base[base.length-2])
+         return '<b>'+base.slice(0,-1)+'</b> + <b>'+base[base.length-1]+'ed</b>';
+       return '<b>'+base+'</b> + <b>ed</b>';
+     }},
+    {suffix:'s', check: function(w){return w.endsWith('s')&&!w.endsWith('ss')&&w.length>3;},
+     hint: function(w){return '<b>'+w.slice(0,-1)+'</b> + <b>s</b>';}},
+    {suffix:'es', check: function(w){return w.endsWith('es')&&w.length>3;},
+     hint: function(w){return '<b>'+w.slice(0,-2)+'</b> + <b>es</b>';}},
+  ];
+  for(var i=0;i<patterns.length;i++){
+    if(patterns[i].check(word)){
+      return '&#128161; Pattern: '+patterns[i].hint(word)+
+        ' <span style="font-size:.5rem;color:rgba(255,255,255,.5)">('+word.length+' letters)</span>';
+    }
+  }
+  return null;
 }
 
 function skipWord(){
@@ -2169,12 +2331,47 @@ function endGame(){
   }
 }
 
+
+function showRecap(){
+  var trickyWords=_wordStats.filter(function(ws){return (ws.attempts>=3||ws.hintUsed||ws.skipped);});
+  var list=document.getElementById('recapList');
+  if(!list) return;
+  list.innerHTML=trickyWords.map(function(ws){
+    var wordObj=WORDS.find(function(w){return w.w===ws.word;})||{d:'',s:''};
+    var tag=ws.skipped?'⏭️ Skipped':ws.attempts>=3?'🔄 '+ws.attempts+' tries':'💡 Used hint';
+    var tagColor=ws.skipped?'#888':ws.attempts>=3?'#ff8888':'#ffaa44';
+    return '<div style="background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);'
+      +'border-radius:14px;padding:16px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+        +'<div style="font-family:Baloo 2,cursive;font-size:1.1rem;font-weight:800;color:white;'
+          +'letter-spacing:.05em">'+ws.word.toUpperCase()+'</div>'
+        +'<div style="font-size:.52rem;font-weight:800;color:'+tagColor+';background:rgba(255,255,255,.08);'
+          +'border-radius:999px;padding:3px 10px">'+tag+'</div>'
+      +'</div>'
+      +(wordObj.d?'<div style="font-size:.62rem;color:#aac4ff;margin-bottom:6px">'+wordObj.d+'</div>':'')
+      +(wordObj.s?'<div style="font-size:.6rem;color:rgba(255,255,255,.6);font-style:italic">"'+wordObj.s+'"</div>':'')
+      +'</div>';
+  }).join('');
+  document.getElementById('recapOverlay').style.display='block';
+}
+
+function closeRecap(){
+  document.getElementById('recapOverlay').style.display='none';
+}
+
 function showWin(){
   goTo('sWin');
   setTimeout(sfxVictory,300);
   // Perfect game coin bonus
   if(isPerfect){ earnCoins(25,'Perfect!'); }
   _autoSave(); // Final save on win
+  // Show recap button if any words were tricky
+  var trickyWords=_wordStats.filter(function(ws){return (ws.attempts>=3||ws.hintUsed||ws.skipped);});
+  var rb=document.getElementById('recapBtn');
+  if(rb) rb.style.display=trickyWords.length>0?'block':'none';
+  // Show coin balance on win screen
+  var coinWin=document.getElementById('coinWin');
+  if(coinWin) coinWin.textContent='✨ '+shineCoins+' Shine Coins';
   if(bestStreak>=2){
     const bsEl=document.getElementById('winStreakEl');
     const bsNum=document.getElementById('winBestStreak');
@@ -2758,23 +2955,89 @@ function openCareFromWin(creatureIdx){
 // ═══════════════════════════════════════════════════════════
 initTitle();
 
+
+// ── ONBOARDING ──
+var _obSlide=0;
+function _showOnboarding(){
+  var el=document.getElementById('onboardOverlay');
+  if(el){ el.style.display='flex'; _obSlide=0; _updateObSlide(); }
+}
+function _obNext(){
+  _obSlide++;
+  if(_obSlide>=3){ _closeOnboarding(); return; }
+  _updateObSlide();
+  var btn=document.getElementById('obNext');
+  if(btn) btn.textContent=_obSlide===2?"Let's Go! 🎉":"Next →";
+}
+function _updateObSlide(){
+  [0,1,2].forEach(function(i){
+    var s=document.getElementById('obSlide'+i);
+    var d=document.getElementById('ob'+i);
+    if(s) s.style.display=i===_obSlide?'block':'none';
+    if(d) d.className='ob-dot'+(i===_obSlide?' active':'');
+  });
+}
+function _closeOnboarding(){
+  var el=document.getElementById('onboardOverlay');
+  if(el) el.style.display='none';
+  _hideLogin();
+}
+
 // ── WIRE LOGIN BUTTONS ──
-// ── POPULATE USERNAME DATALIST FROM FIREBASE ──
+// ── CUSTOM USERNAME DROPDOWN ──
+var _allUsernames=[];
+
 function _loadUsernameSuggestions(){
   var fb=window._fb;
   if(!fb||!fb.ready) return;
   fb.getDocs(fb.collection(fb.db,'students')).then(function(snap){
-    var dl=document.getElementById('usernameSuggestions');
-    if(!dl) return;
-    dl.innerHTML='';
+    _allUsernames=[];
     snap.forEach(function(d){
-      var opt=document.createElement('option');
-      opt.value=d.data().username||d.id;
-      dl.appendChild(opt);
+      _allUsernames.push(d.data().username||d.id);
     });
+    _allUsernames.sort();
   }).catch(function(e){console.log('Could not load suggestions:',e);});
 }
 document.addEventListener('fbReady', _loadUsernameSuggestions);
+
+function _showDropdown(filter){
+  var dd=document.getElementById('usernameDropdown');
+  if(!dd) return;
+  var matches=filter
+    ?_allUsernames.filter(function(n){return n.toLowerCase().startsWith(filter.toLowerCase());})
+    :_allUsernames;
+  if(!matches.length){dd.style.display='none';return;}
+  dd.innerHTML='';
+  matches.forEach(function(name){
+    var item=document.createElement('div');
+    item.textContent=name;
+    item.style.cssText='padding:12px 16px;font-family:Nunito,sans-serif;font-size:16px;'
+      +'font-weight:700;color:white;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.08);'
+      +'transition:background .15s;-webkit-tap-highlight-color:rgba(255,224,64,.2);';
+    item.addEventListener('touchstart',function(){item.style.background='rgba(255,224,64,.15)';},{passive:true});
+    item.addEventListener('touchend',function(){
+      item.style.background='';
+      _selectUsername(name);
+    },{passive:true});
+    item.addEventListener('mousedown',function(e){
+      e.preventDefault(); // prevent blur before click registers
+      _selectUsername(name);
+    });
+    dd.appendChild(item);
+  });
+  dd.style.display='block';
+}
+
+function _hideDropdown(){
+  var dd=document.getElementById('usernameDropdown');
+  if(dd) dd.style.display='none';
+}
+
+function _selectUsername(name){
+  var inp=document.getElementById('loginUsername');
+  if(inp){ inp.value=name; inp.focus(); }
+  _hideDropdown();
+}
 
 window.addEventListener('load', function(){
   ['1','2','3','4','5','6','7','8','9','0'].forEach(function(k){
@@ -2797,7 +3060,29 @@ window.addEventListener('load', function(){
   if(ab) ab.addEventListener('click', function(){ window.location.href='admin.html'; });
 
   var ui=document.getElementById('loginUsername');
-  if(ui) ui.addEventListener('keydown', function(e){ if(e.key==='Enter') _doLogin(); });
+  if(ui){
+    ui.addEventListener('keydown', function(e){
+      if(e.key==='Enter'){ _hideDropdown(); _doLogin(); }
+      if(e.key==='Escape') _hideDropdown();
+    });
+    ui.addEventListener('input', function(){
+      _showDropdown(ui.value.trim());
+    });
+    ui.addEventListener('focus', function(){
+      _showDropdown(ui.value.trim());
+    });
+    ui.addEventListener('blur', function(){
+      // Small delay so tap on item registers first
+      setTimeout(_hideDropdown, 200);
+    });
+    // Arrow indicator toggles dropdown on tap
+    var arrow=document.getElementById('dropArrow');
+    if(arrow) arrow.addEventListener('click', function(){
+      var dd=document.getElementById('usernameDropdown');
+      if(dd&&dd.style.display==='none') _showDropdown('');
+      else _hideDropdown();
+    });
+  }
 
   var rb=document.getElementById('resumeBtn');
   if(rb) rb.addEventListener('click', _resumeGame);

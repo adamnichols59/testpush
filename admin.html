@@ -199,6 +199,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .btn-reset-pin{background:rgba(255,160,50,.2);color:#ffaa44;border:1px solid rgba(255,160,50,.35);}
 .btn-del{background:rgba(255,80,80,.2);color:var(--red);border:1px solid rgba(255,80,80,.35);}
 .btn-edit{background:rgba(50,180,255,.2);color:#88ddff;border:1px solid rgba(50,180,255,.35);}
+.word-editor-row{background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:12px;display:grid;grid-template-columns:1fr 2fr 3fr auto;gap:8px;align-items:start;}
+@media(max-width:700px){.word-editor-row{grid-template-columns:1fr;}}
+.word-inp{font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;
+  background:rgba(255,255,255,.07);border:1.5px solid var(--border);border-radius:8px;
+  padding:8px 12px;color:white;width:100%;outline:none;box-sizing:border-box;resize:vertical;}
+.word-inp:focus{border-color:rgba(255,224,64,.5);}
+.word-num{font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--muted);
+  padding-top:8px;min-width:20px;}
 .btn-merge{background:rgba(100,220,100,.2);color:#88ffaa;border:1px solid rgba(100,220,100,.35);}
 .btn-edit{background:rgba(64,200,255,.2);color:#44ccff;border:1px solid rgba(64,200,255,.35);}
 .btn-merge{background:rgba(100,255,180,.2);color:#44ffaa;border:1px solid rgba(100,255,180,.35);}
@@ -275,6 +283,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="dash-title">📊 Class Dashboard</div>
     <div class="dash-actions">
       <div class="last-refresh" id="lastRefresh"></div>
+      <button class="btn-sm btn-ghost" onclick="exportCSV()" title="Download class data as CSV">⬇ Export CSV</button>
       <button class="btn-sm btn-primary" id="refreshBtn">↻ Refresh</button>
       <button class="btn-sm btn-ghost" id="logoutBtn">Log out</button>
     </div>
@@ -287,10 +296,13 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     <button class="tab" data-tab="students">👥 Students</button>
     <button class="tab" data-tab="trends">📈 Trends</button>
   <button class="tab" data-tab="insights">🧠 Insights</button>
+  <button class="tab" data-tab="words-edit">✏️ Word List</button>
   </div>
 
   <!-- ── OVERVIEW TAB ── -->
   <div class="tab-panel active" id="tab-overview">
+    <div id="midWeekAlert" style="display:none;background:rgba(255,160,50,.15);border:1.5px solid rgba(255,160,50,.4);
+      border-radius:12px;padding:12px 16px;font-size:.62rem;font-weight:700;color:#ffaa44;margin-bottom:16px"></div>
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-num" id="sTotal">-</div><div class="stat-lbl">Total Students</div></div>
       <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num" id="sPlayed">-</div><div class="stat-lbl">Played This Week</div></div>
@@ -320,7 +332,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="chart-grid">
       <div class="chart-card" style="grid-column:1/-1">
         <div class="chart-title">Word Difficulty — Avg Attempts per Word</div>
-        <div class="chart-wrap"><canvas id="wordChart"></canvas></div>
+        <div class="chart-wrap" style="height:260px"><canvas id="wordChart"></canvas></div>
       </div>
     </div>
 
@@ -359,7 +371,34 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
   </div>
 
-  <!-- ── INSIGHTS TAB ── -->
+  <!-- ── WORD LIST EDITOR TAB ── -->
+  <div class="tab-panel" id="tab-words-edit">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+      <div>
+        <div style="font-family:'Baloo 2',cursive;font-size:.85rem;font-weight:800;color:#ffe040">
+          ✏️ Edit This Week's Word List
+        </div>
+        <div style="font-size:.55rem;color:var(--muted);margin-top:2px">
+          Changes save to Firebase instantly. Students see new words on next game start.
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-sm btn-primary" onclick="saveWordList()">💾 Save to Firebase</button>
+        <button class="btn-sm btn-ghost" onclick="resetWordList()">↩ Reset to Default</button>
+      </div>
+    </div>
+    <div style="font-size:.58rem;color:var(--muted);margin-bottom:12px">
+      Current week: <b style="color:#ffe040" id="currentWeekKey"></b>
+      &nbsp;|&nbsp;
+      <span id="wordCountLabel">20 words</span>
+    </div>
+    <div id="wordEditorGrid" style="display:flex;flex-direction:column;gap:10px"></div>
+    <button onclick="addWordSlot()" class="btn-sm btn-ghost" style="margin-top:12px;width:100%">
+      + Add Word
+    </button>
+  </div>
+
+<!-- ── INSIGHTS TAB ── -->
   <div class="tab-panel" id="tab-insights">
     <div class="stat-grid" id="insightCards"></div>
     <div class="section-title">⚠️ Needs Attention</div>
@@ -378,7 +417,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     <div id="studentProfiles" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px"></div>
   </div>
 
-  <!-- ── TRENDS TAB ── -->(replaces trends) ── -->
+  <!-- ── TRENDS TAB ── -->
 
 
 <div class="tab-panel" id="tab-trends">
@@ -389,7 +428,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
       </div>
       <div class="chart-card">
         <div class="chart-title">Avg Attempts by Word (Class)</div>
-        <div class="chart-wrap"><canvas id="attemptsChart"></canvas></div>
+        <div class="chart-wrap" style="height:280px"><canvas id="attemptsChart"></canvas></div>
       </div>
       <div class="chart-card" style="grid-column:1/-1">
         <div class="chart-title">Creatures Caught by Type</div>
@@ -461,23 +500,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   </div>
 </div>
 
-<div class="modal-bg" id="mergeModal">
-  <div class="modal">
-    <div class="modal-title">🔀 Merge Accounts</div>
-    <div class="modal-body" id="mergeBody" style="margin-bottom:12px"></div>
-    <div style="font-size:.6rem;color:var(--muted);margin-bottom:8px">Merge INTO (keep this account):</div>
-    <select id="mergeTarget" style="font-family:Nunito,sans-serif;font-size:14px;font-weight:700;
-      background:rgba(255,255,255,.08);border:1.5px solid var(--border);border-radius:10px;
-      padding:10px;color:white;width:100%;margin-bottom:12px"></select>
-    <div style="font-size:.55rem;color:rgba(255,100,100,.7);margin-bottom:12px">
-      ⚠️ The selected source account will be deleted after merge.
-    </div>
-    <div class="modal-actions">
-      <button class="btn-sm btn-primary" id="confirmMergeBtn">Merge</button>
-      <button class="btn-sm btn-ghost" onclick="closeModal('mergeModal')">Cancel</button>
-    </div>
-  </div>
-</div>
+
 
 <script>
 const ADMIN_USER='adamnichols59';
@@ -544,6 +567,7 @@ function waitForFb(){
 function switchTab(name){
   document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===name);});
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.toggle('active',p.id==='tab-'+name);});
+  if(name==='words-edit') initWordEditor();
   // Re-render analytics when tab opened to ensure fresh data
   if(name==='analytics'&&allStudents.length) renderInsights();
 }
@@ -600,8 +624,21 @@ function renderOverview(){
 
   // Not played
   var notPlayed=allStudents.filter(function(s){return !s.weeks||!s.weeks[WEEK_KEY];});
+  // Mid-week alert
+  var alert=getMidWeekAlert();
+  var alertBanner=document.getElementById('midWeekAlert');
+  if(alertBanner){
+    if(alert&&alert.count>0&&alert.daysLeft<=2){
+      alertBanner.style.display='block';
+      alertBanner.innerHTML='⚠️ <b>'+alert.count+' student'+(alert.count>1?'s':'')+
+        ' haven't played yet</b> — only '+alert.daysLeft+' day'+(alert.daysLeft===1?'':'s')+
+        ' left this week! ('+alert.names.join(', ')+')';
+    } else { alertBanner.style.display='none'; }
+  }
   document.getElementById('notPlayed').innerHTML=notPlayed.length
-    ?notPlayed.map(function(s){return '<div class="not-played-chip">'+s.username+'</div>';}).join('')
+    ?notPlayed.map(function(s){
+      return '<div class="not-played-chip" style="cursor:default">'+s.username+'</div>';
+    }).join('')
     :'<div style="color:#4dcf8a;font-size:.65rem;font-weight:800">🎉 Everyone has played!</div>';
 }
 
@@ -686,7 +723,7 @@ function renderWordAnalytics(){
       backgroundColor:chartColors,borderRadius:6,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'Avg attempts: '+c.raw;}}}},
-      scales:{x:{ticks:{color:'#aac4ff',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},
+      scales:{x:{ticks:{color:'#aac4ff',font:{size:9},maxRotation:55,minRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.05)'}},
         y:{ticks:{color:'#aac4ff',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true}}}
   });
 }
@@ -1109,6 +1146,183 @@ function renderInsights(){
 }
 
 
+// ── WORD LIST EDITOR ──
+var _editWords=[];
+
+function initWordEditor(){
+  document.getElementById('currentWeekKey').textContent=WEEK_KEY;
+  // Try to load from Firebase first
+  var fb=window._fb;
+  if(!fb||!fb.ready){buildWordEditor(WORDS);return;}
+  fb.getDoc(fb.doc(fb.db,'wordLists',WEEK_KEY)).then(function(snap){
+    if(snap.exists()&&snap.data().words&&snap.data().words.length){
+      buildWordEditor(snap.data().words);
+    } else {
+      buildWordEditor(WORDS.map(function(w){return {w:w,d:'',s:''};}));
+    }
+  }).catch(function(){buildWordEditor(WORDS.map(function(w){return {w:w,d:'',s:''};} ));});
+}
+
+function buildWordEditor(wordList){
+  _editWords=wordList.map(function(w){
+    return typeof w==='string'?{w:w,d:'',s:''}:{w:w.w||'',d:w.d||'',s:w.s||''};
+  });
+  renderWordEditor();
+}
+
+function renderWordEditor(){
+  var grid=document.getElementById('wordEditorGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  _editWords.forEach(function(wd,i){
+    var row=document.createElement('div');
+    row.className='word-editor-row';
+    row.innerHTML='<div class="word-num">#'+(i+1)+'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:4px">'
+        +'<div style="font-size:.48rem;font-weight:800;color:var(--muted);text-transform:uppercase">Word</div>'
+        +'<input class="word-inp" data-idx="'+i+'" data-field="w" value="'+escHtml(wd.w)+'" placeholder="Word" style="height:36px"/>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:4px">'
+        +'<div style="font-size:.48rem;font-weight:800;color:var(--muted);text-transform:uppercase">Definition</div>'
+        +'<input class="word-inp" data-idx="'+i+'" data-field="d" value="'+escHtml(wd.d)+'" placeholder="Definition (shown to student)"/>'
+        +'<div style="font-size:.48rem;font-weight:800;color:var(--muted);text-transform:uppercase;margin-top:4px">Example Sentence</div>'
+        +'<input class="word-inp" data-idx="'+i+'" data-field="s" value="'+escHtml(wd.s)+'" placeholder="Example sentence"/>'
+      +'</div>'
+      +'<button onclick="removeWordSlot('+i+')" style="font-size:.8rem;background:rgba(255,80,80,.2);'
+        +'border:1px solid rgba(255,80,80,.35);color:#ff8888;border-radius:8px;padding:6px 10px;'
+        +'cursor:pointer;align-self:center">✕</button>';
+    grid.appendChild(row);
+  });
+  // Wire change events
+  grid.querySelectorAll('.word-inp').forEach(function(inp){
+    inp.addEventListener('input',function(){
+      var idx=parseInt(inp.dataset.idx);
+      var field=inp.dataset.field;
+      if(_editWords[idx]) _editWords[idx][field]=inp.value;
+      document.getElementById('wordCountLabel').textContent=_editWords.length+' words';
+    });
+  });
+  document.getElementById('wordCountLabel').textContent=_editWords.length+' words';
+}
+
+function escHtml(str){
+  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function addWordSlot(){
+  _editWords.push({w:'',d:'',s:''});
+  renderWordEditor();
+}
+
+function removeWordSlot(i){
+  _editWords.splice(i,1);
+  renderWordEditor();
+}
+
+async function saveWordList(){
+  var valid=_editWords.filter(function(w){return w.w.trim();});
+  if(valid.length<1){alert('Please add at least one word.');return;}
+  try{
+    await window._fb.setDoc(window._fb.doc(window._fb.db,'wordLists',WEEK_KEY),{
+      words:valid,updatedAt:Date.now(),updatedBy:'admin'
+    });
+    alert('✅ Word list saved! '+valid.length+' words. Students will see these on their next game.');
+  }catch(e){alert('Error saving: '+e.message);}
+}
+
+function resetWordList(){
+  if(!confirm('Reset to the hardcoded default word list?')) return;
+  buildWordEditor(WORDS.map(function(w){return {w:w,d:'',s:''};} ));
+}
+
+// ── CSV EXPORT ──
+function exportCSV(){
+  var rows=[['Student','Score','Words Done','Creatures','Best Streak','Avg Attempts','Hint Rate %','Skip Rate %','Session Min','Last Played']];
+  allStudents.forEach(function(s){
+    var wk=s.weeks&&s.weeks[WEEK_KEY];
+    var wa=wk&&wk.wordAnalytics||{};
+    var atts=[],hints=0,skips=0;
+    WORDS.forEach(function(word){
+      var w=wa[word]; if(!w) return;
+      atts.push(w.attempts||1);
+      if(w.hintUsed) hints++;
+      if(w.skipped) skips++;
+    });
+    var avgAtt=atts.length?(atts.reduce(function(a,b){return a+b;},0)/atts.length).toFixed(2):'-';
+    var hintRate=atts.length?(hints/atts.length*100).toFixed(0)+'%':'-';
+    var skipRate=atts.length?(skips/atts.length*100).toFixed(0)+'%':'-';
+    var sessMin=wk?(wk.sessionTimeMs/60000).toFixed(1):'-';
+    var last=wk&&wk.lastPlayed?new Date(wk.lastPlayed).toLocaleDateString():'-';
+    rows.push([
+      s.username,s.totalScore||0,wk?wk.wordsDone||0:0,
+      s.totalCreatures||0,s.bestStreak||0,
+      avgAtt,hintRate,skipRate,sessMin,last
+    ]);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='spelling_class_'+WEEK_KEY+'.csv';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ── PRINTABLE STUDENT REPORT ──
+function printStudentReport(id,name){
+  var s=allStudents.find(function(st){return st.id===id;});
+  if(!s){alert('Student not found.');return;}
+  var wk=s.weeks&&s.weeks[WEEK_KEY];
+  var wa=wk&&wk.wordAnalytics||{};
+  var wordRows=WORDS.map(function(word){
+    var w=wa[word];
+    if(!w) return '<tr><td>'+word+'</td><td>—</td><td>—</td><td>—</td><td>Not reached</td></tr>';
+    var status=w.skipped?'Skipped':w.attempts>=3?'Needs Practice':w.hintUsed?'With Hint':'✅ Mastered';
+    var color=w.skipped?'#888':w.attempts>=3?'#cc0000':w.hintUsed?'#cc7700':'#007700';
+    return '<tr><td><b>'+word+'</b></td><td>'+w.attempts+'</td><td>'+(w.hintUsed?'Yes':'No')+'</td><td>'+(w.skipped?'Yes':'No')+'</td>'
+      +'<td style="color:'+color+';font-weight:bold">'+status+'</td></tr>';
+  }).join('');
+  
+  var html='<!DOCTYPE html><html><head><title>Spelling Report - '+name+'</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:24px;color:#111;max-width:700px;margin:0 auto}'
+    +'h1{color:#4a00a0;border-bottom:2px solid #4a00a0;padding-bottom:8px}'
+    +'h2{color:#666;font-size:1rem;font-weight:normal;margin-top:0}'
+    +'table{width:100%;border-collapse:collapse;margin-top:16px}'
+    +'th{background:#4a00a0;color:white;padding:8px 12px;text-align:left}'
+    +'td{padding:7px 12px;border-bottom:1px solid #eee}'
+    +'tr:nth-child(even) td{background:#f9f9f9}'
+    +'.stat{display:inline-block;background:#f0e6ff;border-radius:8px;padding:10px 16px;margin:6px;text-align:center}'
+    +'.stat-num{font-size:1.6rem;font-weight:bold;color:#4a00a0}'
+    +'.stat-lbl{font-size:.7rem;color:#666}</style></head><body>'
+    +'<h1>📚 Spelling Adventure Report</h1>'
+    +'<h2>Student: '+name+' &nbsp;|&nbsp; Week: '+WEEK_KEY+'</h2>'
+    +'<div>'
+      +'<div class="stat"><div class="stat-num">'+(s.totalScore||0)+'</div><div class="stat-lbl">Total Score</div></div>'
+      +'<div class="stat"><div class="stat-num">'+(wk?wk.wordsDone||0:0)+'</div><div class="stat-lbl">Words Done</div></div>'
+      +'<div class="stat"><div class="stat-num">'+(s.totalCreatures||0)+'</div><div class="stat-lbl">Creatures</div></div>'
+      +'<div class="stat"><div class="stat-num">'+(s.bestStreak||0)+'</div><div class="stat-lbl">Best Streak</div></div>'
+    +'</div>'
+    +'<table><thead><tr><th>Word</th><th>Attempts</th><th>Hint Used</th><th>Skipped</th><th>Result</th></tr></thead>'
+    +'<tbody>'+wordRows+'</tbody></table>'
+    +'<p style="margin-top:20px;color:#999;font-size:.7rem">Generated '+new Date().toLocaleDateString()+' from Bella's Spelling Adventure</p>'
+    +'</body></html>';
+  var w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  w.print();
+}
+
+// ── MID-WEEK ALERT ──
+function getMidWeekAlert(){
+  var notPlayed=allStudents.filter(function(s){return !s.weeks||!s.weeks[WEEK_KEY];});
+  if(!notPlayed.length) return null;
+  var today=new Date();
+  var day=today.getDay(); // 0=Sun,1=Mon...5=Fri
+  var daysLeft=day<=5?5-day:0;
+  return {count:notPlayed.length, daysLeft:daysLeft, names:notPlayed.map(function(s){return s.username;})};
+}
+
+
 function renderStudents(){renderStudentsFiltered('');}
 // ── EDIT USERNAME ──
 function openEdit(id, name){
@@ -1436,7 +1650,7 @@ function renderTrends(){
         data:attData,backgroundColor:attColors,borderRadius:6}]},
       options:{responsive:true,maintainAspectRatio:false,
         plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#aac4ff',font:{size:9},maxRotation:45},
+        scales:{x:{ticks:{color:'#aac4ff',font:{size:9},maxRotation:55,minRotation:45,autoSkip:false},
           grid:{color:'rgba(255,255,255,.05)'}},
           y:{ticks:{color:'#aac4ff',font:{size:10}},
             grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true}}}
