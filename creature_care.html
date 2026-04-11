@@ -4228,17 +4228,17 @@ function al(){
   // ── BREATHING + LEAN: single combined transform for body ──
   const bg=el('bodyGroup');
   if(bg && !isHopping){
-    const breathe=Math.sin(animT*.038)*0.016;
+    const breathe=Math.sin(animT*.038)*0.055; // bigger breathe
     // Smooth lean toward cursor
     if(_mouseX){
       const cSvgEl=el('cSvg');
       if(cSvgEl){
         const sr=cSvgEl.getBoundingClientRect();
         const rawX=(_mouseX-(sr.left+sr.width/2))/Math.max(sr.width,1);
-        _bodyLeanTarget=Math.max(-3.5, Math.min(3.5, rawX*7));
+        _bodyLeanTarget=Math.max(-6, Math.min(6, rawX*12));
       }
     }
-    _bodyLean+=(_bodyLeanTarget-_bodyLean)*0.04; // very smooth, slow
+    _bodyLean+=(_bodyLeanTarget-_bodyLean)*0.08; // responsive
     bg.style.transform=`scaleY(${(1+breathe).toFixed(4)}) scaleX(${(1-breathe*.4).toFixed(4)}) rotate(${_bodyLean.toFixed(2)}deg)`;
   }
 
@@ -4303,6 +4303,14 @@ function al(){
     pupils.forEach(p=>{ p.style.transform=`translate(${ex.toFixed(2)}px,${ey.toFixed(2)}px)`; });
   }
 
+  // ── RANDOM IDLE ACTIONS: occasional look-around, stretch, shake ──
+  if(animT%1===0 && !isHopping && !isClapping && animT>120){
+    // Every ~4 seconds randomly do something
+    if(animT%240===0 && Math.random()<0.6){
+      _doIdleAction();
+    }
+  }
+
   // ── IDLE EXCITEMENT: creature perks up when cursor enters ──
   if(_idleExcited && _excitedTimer>0){
     _excitedTimer--;
@@ -4323,10 +4331,11 @@ function al(){
   if(!isHopping && !isClapping && !_idleExcited && _excitedTimer<=0){
     const st=el('stage');
     if(st){
-      const bob=Math.sin(animT*.025)*2.5;
+      const bob=Math.sin(animT*.028)*7; // more visible bob
       // Only set if not currently being used by a reaction
       if(!st.style.transform || st.style.transform==='' || st.style.transform.includes('translateY')){
-        st.style.transform=`translateY(${bob.toFixed(2)}px)`;
+        const sway=Math.sin(animT*.018)*2.5; // slow gentle side sway
+        st.style.transform=`translateY(${bob.toFixed(2)}px) rotate(${sway.toFixed(2)}deg)`;
       }
     }
   }
@@ -4353,8 +4362,8 @@ function animFluffkin(){
   if(earR) earR.style.transform=`rotate(${Math.sin(earWigglePhase+1.4)*4}deg)`;
   // Tail wag
   // Wag faster when cursor is near
-  const wagSpeed = (_idleExcited || _excitedTimer>0) ? .14 : .07;
-  const wagAmp = (_idleExcited || _excitedTimer>0) ? 18 : 11;
+  const wagSpeed = (_idleExcited || _excitedTimer>0) ? .18 : .09;
+  const wagAmp = (_idleExcited || _excitedTimer>0) ? 28 : 16;
   if(tail) tail.style.transform=`rotate(${Math.sin(animT*wagSpeed)*wagAmp}deg)`;
   // Hop
   hopTimer--;
@@ -4385,7 +4394,7 @@ function animSparklox(){
   const tail=el('tail'), earL=el('earL'), earR=el('earR');
   // Tail has a slight lag/spring feel via sin + offset
   if(tail){
-    const wag=Math.sin(tailWag)*22 + Math.sin(tailWag*2)*.8*4;
+    const wag=Math.sin(tailWag)*32 + Math.sin(tailWag*1.7)*8;
     tail.style.transform=`rotate(${wag}deg)`;
   }
   // Occasional ear flick
@@ -4956,6 +4965,62 @@ function getCreatureAccs(){
 
 
 // ── ACC ──
+
+
+// ── RANDOM IDLE ACTIONS ──
+function _doIdleAction(){
+  const actions=['stretch','shake','lookAround','wiggle'];
+  const action=actions[Math.floor(Math.random()*actions.length)];
+  const st=el('stage');
+  const bg=el('bodyGroup');
+  if(!st) return;
+
+  if(action==='stretch'){
+    // Stretch tall then snap back
+    let f=0;
+    const iv=setInterval(()=>{
+      f++;
+      if(bg){
+        const s=f<10 ? 1+f*.025 : f<20 ? 1.25-((f-10)*.025) : 1.0;
+        const sx=f<10 ? 1-f*.012 : f<20 ? 1.12-((f-10)*.012) : 1.0;
+        const breathe=Math.sin(animT*.038)*0.055;
+        bg.style.transform=`scaleY(${s+breathe}) scaleX(${sx}) rotate(${_bodyLean.toFixed(2)}deg)`;
+      }
+      if(f>=22){ clearInterval(iv); }
+    },40);
+
+  } else if(action==='shake'){
+    // Quick head/body shake
+    let f=0;
+    const iv=setInterval(()=>{
+      f++;
+      if(st) st.style.transform=`translateX(${Math.sin(f*1.8)*7}px) translateY(${Math.sin(animT*.028)*7}px)`;
+      if(f>=16){ clearInterval(iv); if(st) st.style.transform=''; }
+    },35);
+
+  } else if(action==='lookAround'){
+    // Pupils dart to one side then back
+    const dir=Math.random()<0.5?1:-1;
+    const pupils=document.querySelectorAll('#cSvg circle[fill="#111"]');
+    pupils.forEach(p=>{ p.style.transform=`translate(${dir*5}px, 0px)`; });
+    setTimeout(()=>{
+      pupils.forEach(p=>{ p.style.transform=`translate(${dir*2}px, -1px)`; });
+    },400);
+    setTimeout(()=>{
+      // Return control to eye tracking
+      _lookAtX=dir*2; _lookAtY=-1;
+    },700);
+
+  } else if(action==='wiggle'){
+    // Full body wiggle - the most fun one
+    let f=0;
+    const iv=setInterval(()=>{
+      f++;
+      if(st) st.style.transform=`rotate(${Math.sin(f*1.5)*10}deg) translateY(${Math.sin(animT*.028)*7}px)`;
+      if(f>=18){ clearInterval(iv); if(st) st.style.transform=''; }
+    },38);
+  }
+}
 
 // ── DRAG & DROP ACCESSORY PLACEMENT ──
 let _dragAcc=null;
