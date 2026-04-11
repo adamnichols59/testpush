@@ -29,16 +29,7 @@ const fbApp=initializeApp(fbCfg);
 const fbDb=getFirestore(fbApp);
 window._fb={db:fbDb,doc,getDoc,setDoc,updateDoc,collection,getDocs,query,orderBy,limit,ready:true};
 document.dispatchEvent(new Event('fbReady'));
-// Try to load this week's word list from Firebase
-(async function(){
-  try{
-    const wlSnap=await getDoc(doc(fbDb,'wordLists',WEEK_KEY));
-    if(wlSnap.exists()&&wlSnap.data().words&&wlSnap.data().words.length){
-      WORDS=wlSnap.data().words;
-      console.log('Loaded '+WORDS.length+' words from Firebase');
-    }
-  }catch(e){ console.log('Using default word list'); }
-})();
+
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -2999,6 +2990,17 @@ function _loadUsernameSuggestions(){
   }).catch(function(e){console.log('Could not load suggestions:',e);});
 }
 document.addEventListener('fbReady', _loadUsernameSuggestions);
+document.addEventListener('fbReady', function(){
+  // Load this week's word list from Firebase
+  var fb=window._fb;
+  if(!fb||!fb.ready) return;
+  fb.getDoc(fb.doc(fb.db,'wordLists',WEEK_KEY)).then(function(snap){
+    if(snap.exists()&&snap.data().words&&snap.data().words.length){
+      WORDS=snap.data().words;
+      console.log('Loaded '+WORDS.length+' words from Firebase');
+    }
+  }).catch(function(){ console.log('Using default word list'); });
+});
 
 function _showDropdown(filter){
   var dd=document.getElementById('usernameDropdown');
