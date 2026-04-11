@@ -1477,13 +1477,45 @@ function _autoSave(){
       shineCoins:shineCoins,
       lastSession:Date.now()
     };
+    // Merge wordAnalytics with existing — keep best attempts per word
+    var existingWeek=(existing.weeks&&existing.weeks[WEEK_KEY])||{};
+    var existingWA=existingWeek.wordAnalytics||{};
+    var mergedWA={};
+    // Start with all existing data
+    Object.keys(existingWA).forEach(function(w){ mergedWA[w]=existingWA[w]; });
+    // Merge in this session — keep best (lowest) attempts per word
+    Object.keys(wordAnalytics).forEach(function(w){
+      var curr=wordAnalytics[w];
+      var prev=mergedWA[w];
+      if(!prev){
+        mergedWA[w]=curr;
+      } else {
+        // Keep best attempt count; if tied keep the one without hint
+        var bestAttempts=Math.min(curr.attempts||1, prev.attempts||1);
+        var useBest=(curr.attempts||1)<=(prev.attempts||1)?curr:prev;
+        mergedWA[w]={
+          attempts:bestAttempts,
+          hintUsed:bestAttempts===(curr.attempts||1)?curr.hintUsed:prev.hintUsed,
+          skipped:useBest.skipped||false,
+          timeMs:useBest.timeMs||0,
+          plays:(prev.plays||1)+1  // track how many times played
+        };
+      }
+    });
+
+    // Best score across all plays of this word list
+    var bestScore=Math.max(score, existingWeek.score||0);
+    // Total words ever reached this word list
+    var maxWordsDone=Math.max(wordIdx, existingWeek.wordsDone||0);
+
     upd['weeks.'+WEEK_KEY]={
-      score:score,
+      score:bestScore,
       caught:sessionCaught.length,
-      wordsDone:wordIdx,
+      wordsDone:maxWordsDone,
       lastPlayed:Date.now(),
-      wordAnalytics:wordAnalytics,
-      sessionTimeMs:sessionTime
+      wordAnalytics:mergedWA,
+      sessionTimeMs:(existingWeek.sessionTimeMs||0)+sessionTime,
+      playCount:(existingWeek.playCount||0)+1
     };
     return window._fb.updateDoc(window._fb.doc(db,'students',uid),upd);
   }).catch(function(e){console.error('save:',e);});
@@ -2361,7 +2393,7 @@ function showWin(){
     const progBar=`<div class="evo-bar-wrap" title="${count}/3 to evolve">
       <div class="evo-bar-fill" style="width:${prog/3*100}%;background:${evolveReady?'#ffe040':'#9b5fd4'}"></div>
     </div>`;
-    const evoName = evolvedName||'???';
+    const evoName = EVOLUTION_MAP[c.name]||'???';
     const evolveLabel = evolveReady
       ? `<div class="evolve-label">&#9889; Evolves to ${evoName}!</div>`
       : `<div style="font-size:.42rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>`;
@@ -2710,7 +2742,12 @@ function buildDexGrid(){
     return;
   }
 
-  // Show all 20 slots — caught ones are interactive, rest are locked
+  // Build creature counts from allCreatures (persisted) or session caught
+  var allCreaturesData = (_currentUser && !_currentUser.isGuest && _savedUserData && _savedUserData.allCreatures)
+    ? _savedUserData.allCreatures : caught;
+  var crCounts={};
+  allCreaturesData.forEach(function(c){ crCounts[c.name]=(crCounts[c.name]||0)+1; });
+
   CREATURES.forEach((cr, i) => {
     const caughtEntry = caught.find(c => c.name === cr.name);
     const card = document.createElement('div');
@@ -2718,13 +2755,35 @@ function buildDexGrid(){
     const happyEmoji = happiness >= 80 ? '😄' : happiness >= 50 ? '🙂' : '😔';
 
     if(caughtEntry){
-      card.className = 'dex-care-card';
+      const count = crCounts[cr.name] || 1;
+      const evolveReady = count >= 3;
+      const evoName = EVOLUTION_MAP[cr.name] || '???';
+      const prog = Math.min(count, 3);
+      const progBar = `<div class="evo-bar-wrap" title="${count}/3 to evolve" style="width:80%;margin:3px auto 0">
+        <div class="evo-bar-fill" style="width:${prog/3*100}%;background:${evolveReady?'#ffe040':'#9b5fd4'}"></div>
+      </div>`;
+      const countBadge = count > 1
+        ? `<div class="cr-count-badge ${evolveReady?'evolve-badge':''}" style="position:absolute;top:-4px;right:-4px">×${count}</div>`
+        : '';
+      const evolveLabel = evolveReady
+        ? `<div class="evolve-label" style="font-size:.42rem">⚡ Evolves to ${evoName}!</div>`
+        : `<div style="font-size:.38rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>`;
+      const nick = caughtEntry.nickname
+        ? `<div style="font-size:.42rem;color:#ffe040;font-weight:800">"${caughtEntry.nickname}"</div>` : '';
+
+      card.className = 'dex-care-card' + (evolveReady ? ' evolve-ready' : '');
       card.innerHTML = `
         <div class="dcc-happy">${happyEmoji}</div>
-        <div style="width:64px;height:64px">${cr.fn(cr.color)}</div>
+        <div style="position:relative;width:64px;height:64px">
+          ${cr.fn(cr.color)}
+          ${countBadge}
+        </div>
         <div class="dcc-name">${cr.name}</div>
         <div class="dcc-word">${caughtEntry.word}</div>
-      `;
+        ${nick}
+        ${progBar}
+        ${evolveLabel}
+        <div style="font-size:.38rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
       card.onclick = () => openCare(i, caughtEntry);
     } else {
       card.className = 'dex-care-card locked';
@@ -2736,6 +2795,7 @@ function buildDexGrid(){
     grid.appendChild(card);
   });
 }
+
 
 function openCare(creatureIdx, caughtEntry){
   openCreatureCare(creatureIdx, caughtEntry);
