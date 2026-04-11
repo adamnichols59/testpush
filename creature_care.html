@@ -4225,26 +4225,21 @@ function al(){
   if(!el('cSvg')) return;
   try{
 
-  // ── BREATHING: body gently expands and contracts ──
+  // ── BREATHING + LEAN: single combined transform for body ──
   const bg=el('bodyGroup');
-  if(bg){
+  if(bg && !isHopping){
     const breathe=Math.sin(animT*.038)*0.016;
-    const breatheX=1-breathe*.4;
-    bg.style.transform=`scaleY(${1+breathe}) scaleX(${breatheX})`;
-  }
-
-  // ── CURSOR LEAN: creature body subtly leans toward the cursor ──
-  if(animT%3===0 && !isHopping && !dragging && _mouseX){
-    const cSvgEl=el('cSvg');
-    const bg=el('bodyGroup');
-    if(cSvgEl && bg){
-      const sr=cSvgEl.getBoundingClientRect();
-      const rawX=(_mouseX-(sr.left+sr.width/2))/Math.max(sr.width,1);
-      const leanAngle=Math.max(-4, Math.min(4, rawX*8));
-      const breathe=Math.sin(animT*.038)*0.016;
-      // Combine breathe with lean
-      bg.style.transform=`scaleY(${1+breathe}) scaleX(${1-breathe*.4}) rotate(${leanAngle}deg)`;
+    // Smooth lean toward cursor
+    if(_mouseX){
+      const cSvgEl=el('cSvg');
+      if(cSvgEl){
+        const sr=cSvgEl.getBoundingClientRect();
+        const rawX=(_mouseX-(sr.left+sr.width/2))/Math.max(sr.width,1);
+        _bodyLeanTarget=Math.max(-3.5, Math.min(3.5, rawX*7));
+      }
     }
+    _bodyLean+=(_bodyLeanTarget-_bodyLean)*0.04; // very smooth, slow
+    bg.style.transform=`scaleY(${(1+breathe).toFixed(4)}) scaleX(${(1-breathe*.4).toFixed(4)}) rotate(${_bodyLean.toFixed(2)}deg)`;
   }
 
   // ── BLINKING ──
@@ -4311,29 +4306,32 @@ function al(){
   // ── IDLE EXCITEMENT: creature perks up when cursor enters ──
   if(_idleExcited && _excitedTimer>0){
     _excitedTimer--;
+    // Use stage translateY only - no conflict with bodyGroup
     const st=el('stage');
-    if(st && _excitedTimer>60){
-      // Quick bounce of anticipation
-      const bounce=Math.sin((_excitedTimer-60)*0.4)*3;
-      const existing=st.style.transform;
-      if(!existing||existing==='') st.style.transform=`translateY(${-Math.abs(bounce)}px)`;
+    if(st && !isHopping){
+      const bounce=Math.sin(_excitedTimer*0.35)*Math.min(_excitedTimer/40,1)*5;
+      st.style.transform=`translateY(${-Math.abs(bounce)}px)`;
     }
-    if(_excitedTimer<=0){ _idleExcited=false; const st=el('stage'); if(st&&!isHopping) st.style.transform=''; }
+    if(_excitedTimer<=0){
+      _idleExcited=false;
+      const st=el('stage');
+      if(st&&!isHopping) st.style.transform='';
+    }
   }
 
-  // ── HEAD NOD: subtle head tilt on idle ──
-  if(animT%300===0 && !isHopping && !isClapping){
-    const bg=el('bodyGroup');
-    if(bg && Math.random()<0.4){
-      let nf=0;
-      const nodIv=setInterval(()=>{
-        nf++;
-        if(bg) bg.style.transform=(bg.style.transform||'').replace(/rotate\([^)]*\)/,'')
-          + ` rotate(${Math.sin(nf*0.3)*3}deg)`;
-        if(nf>20){ clearInterval(nodIv); }
-      },40);
+  // ── IDLE BOB: gentle up/down on stage (separate from bodyGroup) ──
+  if(!isHopping && !isClapping && !_idleExcited && _excitedTimer<=0){
+    const st=el('stage');
+    if(st){
+      const bob=Math.sin(animT*.025)*2.5;
+      // Only set if not currently being used by a reaction
+      if(!st.style.transform || st.style.transform==='' || st.style.transform.includes('translateY')){
+        st.style.transform=`translateY(${bob.toFixed(2)}px)`;
+      }
     }
   }
+
+
 
   // ── CREATURE-SPECIFIC ANIMATIONS ──
   const arch = ARCHETYPE[currentName];
@@ -4404,7 +4402,8 @@ function animPuddlum(){
   // Override body transform to add rock on top of breathing
   if(bg){
     const breathe=Math.sin(animT*.038)*0.016;
-    bg.style.transform=`scaleY(${1+breathe}) scaleX(${1-breathe*.4}) rotate(${rock}deg)`;
+    // Include lean in Puddlum's rock too
+    bg.style.transform=`scaleY(${(1+breathe).toFixed(4)}) scaleX(${(1-breathe*.4).toFixed(4)}) rotate(${(rock+_bodyLean).toFixed(2)}deg)`;
   }
   clapTimer--;
   if(clapTimer<=0 && !isClapping){ isClapping=true; clapPhase=0; clapTimer=180+Math.random()*180; }
@@ -4757,6 +4756,7 @@ const HEART_ICONS={pet:'💕',feed:'⭐',brush:'✨',sparkle:'💎',cuddle:'💤
 let activeTool=null,dragging=false,dX=0,dY=0,lastSpX=-999,lastSpY=-999;
 let _mouseX=0,_mouseY=0,_eyeTrack=true,_idleExcited=false,_excitedTimer=0;
 let _lookAtX=0,_lookAtY=0,_lookSmooth=0.08; // smooth eye tracking
+let _bodyLean=0,_bodyLeanTarget=0; // smooth body lean toward cursor
 
 function buildTools(){
   const d=appState.lore,row=document.getElementById('toolsRow');
