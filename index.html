@@ -791,7 +791,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
   </div>
 </div>
 
-<div class="screen off" id="sTitle">
+<div class="screen" id="sTitle">
   <div class="title-creatures" id="titleCreatures"></div>
   <h1 class="title-h1">Bella's Spelling<br>Adventure!</h1>
   <p class="title-sub">Verb Endings (-s, -ed, -ing)</p>
@@ -1094,8 +1094,8 @@ let currentScreen='sTitle';
 function goTo(id,dir=''){
   const cur=document.getElementById(currentScreen);
   const nxt=document.getElementById(id);
-  cur.classList.add(dir==='left'?'off-left':dir==='right'?'off-right':'off');
-  nxt.classList.remove('off','off-left','off-right');
+  if(cur) cur.classList.add(dir==='left'?'off-left':dir==='right'?'off-right':'off');
+  if(nxt) nxt.classList.remove('off','off-left','off-right');
   currentScreen=id;
 }
 
@@ -1294,13 +1294,8 @@ function _hideLogin(){
   if(e){
     e.style.opacity='0';
     e.style.transition='opacity .5s';
-    setTimeout(function(){
-      e.style.display='none';
-    },500);
+    setTimeout(function(){e.style.display='none';},500);
   }
-  // Reveal title screen using proper class removal (CSS transition handles animation)
-  var title=document.getElementById('sTitle');
-  if(title) title.classList.remove('off','off-left','off-right');
 }
 function _guestPlay(){_currentUser={username:'Guest',isGuest:true};_hideLogin();}
 function _toggleSignup(){
