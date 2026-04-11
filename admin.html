@@ -631,7 +631,7 @@ function renderOverview(){
     if(alert&&alert.count>0&&alert.daysLeft<=2){
       alertBanner.style.display='block';
       alertBanner.innerHTML='⚠️ <b>'+alert.count+' student'+(alert.count>1?'s':'')+
-        ' haven't played yet</b> — only '+alert.daysLeft+' day'+(alert.daysLeft===1?'':'s')+
+        ' haven\'t played yet</b> — only '+alert.daysLeft+' day'+(alert.daysLeft===1?'':'s')+
         ' left this week! ('+alert.names.join(', ')+')';
     } else { alertBanner.style.display='none'; }
   }
