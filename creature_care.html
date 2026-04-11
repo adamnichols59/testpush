@@ -123,8 +123,9 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif
 .acc-opt-label{font-size:.4rem;font-weight:800;color:#8899cc;text-align:center;
   line-height:1.3;padding:0 2px;}
 .acc-opt.on .acc-opt-label{color:var(--yellow)}
-.zzz{position:absolute;top:-20px;right:-25px;font-size:1.2rem;z-index:15;
-  animation:zzzFloat 1.8s ease-in-out infinite alternate;pointer-events:none}
+.zzz{position:absolute;top:-30px;right:-20px;font-size:1.6rem;z-index:15;
+  animation:zzzFloat 1.8s ease-in-out infinite alternate;pointer-events:none;
+  filter:drop-shadow(0 0 6px rgba(100,150,255,.6));}
 @keyframes zzzFloat{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-10px) rotate(8deg)}}
 /* Accessories are now inline SVG - no floating div needed */
 .part{position:absolute;pointer-events:none;z-index:3;font-size:.85rem;opacity:.7;animation:partFloat linear infinite}
@@ -4225,9 +4226,9 @@ function al(){
   if(!el('cSvg')) return;
   try{
 
-  // ── BREATHING + LEAN: single combined transform for body ──
+  // ── BREATHING + LEAN: single combined transform for body (awake only) ──
   const bg=el('bodyGroup');
-  if(bg && !isHopping){
+  if(bg && !isHopping && !appState.sleeping){
     const breathe=Math.sin(animT*.038)*0.055; // bigger breathe
     // Smooth lean toward cursor
     if(_mouseX){
@@ -4242,40 +4243,48 @@ function al(){
     bg.style.transform=`scaleY(${(1+breathe).toFixed(4)}) scaleX(${(1-breathe*.4).toFixed(4)}) rotate(${_bodyLean.toFixed(2)}deg)`;
   }
 
-  // ── BLINKING ──
-  blinkTimer--;
-  if(blinkTimer<=0 && !isBlinking){ isBlinking=true; blinkFrame=0; }
-  if(isBlinking){
-    blinkFrame++;
-    const lidL=el('lidL'), lidR=el('lidR');
-    const eyeL=el('eyeL'), eyeR=el('eyeR');
-    if(blinkFrame===1){
-      // Snap closed
-      if(lidL){ lidL.style.display='block'; lidL.setAttribute('ry','11'); }
-      if(lidR){ lidR.style.display='block'; lidR.setAttribute('ry','11'); }
-      if(eyeL) eyeL.style.filter='brightness(.15)';
-      if(eyeR) eyeR.style.filter='brightness(.15)';
-    } else if(blinkFrame===4){
-      // Half open
-      if(lidL) lidL.setAttribute('ry','5');
-      if(lidR) lidR.setAttribute('ry','5');
-      if(eyeL) eyeL.style.filter='brightness(.5)';
-      if(eyeR) eyeR.style.filter='brightness(.5)';
-    } else if(blinkFrame===7){
-      // Open
-      if(lidL) lidL.style.display='none';
-      if(lidR) lidR.style.display='none';
-      if(eyeL) eyeL.style.filter='';
-      if(eyeR) eyeR.style.filter='';
-    } else if(blinkFrame===12){
-      isBlinking=false;
-      blinkTimer=blinkNext;
-      blinkNext=140+Math.random()*200;
+  // ── BLINKING / SLEEPING EYES ──
+  const lidL=el('lidL'), lidR=el('lidR');
+  const eyeL=el('eyeL'), eyeR=el('eyeR');
+
+  if(appState.sleeping){
+    // Eyes stay fully closed while sleeping
+    if(lidL){ lidL.style.display='block'; lidL.setAttribute('ry','11'); }
+    if(lidR){ lidR.style.display='block'; lidR.setAttribute('ry','11'); }
+    if(eyeL) eyeL.style.filter='brightness(.1)';
+    if(eyeR) eyeR.style.filter='brightness(.1)';
+    isBlinking=false; // reset blink state
+  } else {
+    // Normal blinking when awake
+    blinkTimer--;
+    if(blinkTimer<=0 && !isBlinking){ isBlinking=true; blinkFrame=0; }
+    if(isBlinking){
+      blinkFrame++;
+      if(blinkFrame===1){
+        if(lidL){ lidL.style.display='block'; lidL.setAttribute('ry','11'); }
+        if(lidR){ lidR.style.display='block'; lidR.setAttribute('ry','11'); }
+        if(eyeL) eyeL.style.filter='brightness(.15)';
+        if(eyeR) eyeR.style.filter='brightness(.15)';
+      } else if(blinkFrame===4){
+        if(lidL) lidL.setAttribute('ry','5');
+        if(lidR) lidR.setAttribute('ry','5');
+        if(eyeL) eyeL.style.filter='brightness(.5)';
+        if(eyeR) eyeR.style.filter='brightness(.5)';
+      } else if(blinkFrame===7){
+        if(lidL) lidL.style.display='none';
+        if(lidR) lidR.style.display='none';
+        if(eyeL) eyeL.style.filter='';
+        if(eyeR) eyeR.style.filter='';
+      } else if(blinkFrame===12){
+        isBlinking=false;
+        blinkTimer=blinkNext;
+        blinkNext=140+Math.random()*200;
+      }
     }
   }
 
-  // ── EYE TRACKING: pupils follow cursor/touch ──
-  if(!isBlinking){
+  // ── EYE TRACKING: pupils follow cursor/touch (skip when sleeping) ──
+  if(!isBlinking && !appState.sleeping){
     const cSvgEl=el('cSvg');
     if(cSvgEl && _mouseX && _mouseY){
       const sr=cSvgEl.getBoundingClientRect();
@@ -4304,8 +4313,7 @@ function al(){
   }
 
   // ── RANDOM IDLE ACTIONS: occasional look-around, stretch, shake ──
-  if(animT%1===0 && !isHopping && !isClapping && animT>120){
-    // Every ~4 seconds randomly do something
+  if(!appState.sleeping && !isHopping && !isClapping && animT>120){
     if(animT%240===0 && Math.random()<0.6){
       _doIdleAction();
     }
@@ -4327,14 +4335,26 @@ function al(){
     }
   }
 
-  // ── IDLE BOB: gentle up/down on stage (separate from bodyGroup) ──
-  if(!isHopping && !isClapping && !_idleExcited && _excitedTimer<=0){
+  // ── IDLE BOB / SLEEP DROOP ──
+  if(appState.sleeping){
+    // Sleeping posture: drooped forward, slight slow sway
+    const st=el('stage');
+    const bg=el('bodyGroup');
+    if(st){
+      const sleepSway=Math.sin(animT*.012)*3; // very slow breathing sway
+      st.style.transform=`rotate(${-8+sleepSway}deg) translateY(8px)`;
+    }
+    if(bg){
+      // Body slightly compressed/slouched
+      const breathe=Math.sin(animT*.025)*0.03; // slower, shallower breathing
+      bg.style.transform=`scaleY(${0.92+breathe}) scaleX(${1.06-breathe*.3}) rotate(${_bodyLean*.1}deg)`;
+    }
+  } else if(!isHopping && !isClapping && !_idleExcited && _excitedTimer<=0){
     const st=el('stage');
     if(st){
-      const bob=Math.sin(animT*.028)*7; // more visible bob
-      // Only set if not currently being used by a reaction
+      const bob=Math.sin(animT*.028)*7;
       if(!st.style.transform || st.style.transform==='' || st.style.transform.includes('translateY')){
-        const sway=Math.sin(animT*.018)*2.5; // slow gentle side sway
+        const sway=Math.sin(animT*.018)*2.5;
         st.style.transform=`translateY(${bob.toFixed(2)}px) rotate(${sway.toFixed(2)}deg)`;
       }
     }
@@ -4832,19 +4852,37 @@ function up(){
     if(overCreature(dX,dY)) doAction(activeTool.id);
     activeTool=null;
   } else if(overCreature(dX,dY)){
-    // No tool - bare tap/click on creature = wink + speak
-    const now=Date.now();
-    if(now-_lastTapTime<400){
-      // Double-tap: excited jump
-      _idleExcited=true; _excitedTimer=100;
-      speak(['Hehe! Again! 😄','You found my tickle spot! 🤣','Wheee! 🎉'][Math.floor(Math.random()*3)]);
+    // No tool - bare tap/click on creature
+    if(appState.sleeping){
+      // ANY tap wakes them up
+      appState.sleeping=false;
+      removeSleepZ();
+      // Open eyes immediately
+      const lidL=el('lidL'),lidR=el('lidR'),eyeL=el('eyeL'),eyeR=el('eyeR');
+      if(lidL) lidL.style.display='none';
+      if(lidR) lidR.style.display='none';
+      if(eyeL) eyeL.style.filter='';
+      if(eyeR) eyeR.style.filter='';
+      // Reset posture
+      const st=el('stage'); if(st) st.style.transform='';
+      blinkTimer=60; // short delay before first blink
+      speak(['Yawn… good morning! 😊','Hm? Oh! Hi! 😄','Zzz… wha?! 😮'][Math.floor(Math.random()*3)]);
+      hearts('💕',5);
       playCareSound('pet');
     } else {
-      // Single tap: wink
-      _doWink();
-      speak(['Hi! 😊','Tap me again! 😄','Hehe~ 🐾'][Math.floor(Math.random()*3)]);
+      const now=Date.now();
+      if(now-_lastTapTime<400){
+        // Double-tap: excited jump
+        _idleExcited=true; _excitedTimer=100;
+        speak(['Hehe! Again! 😄','You found my tickle spot! 🤣','Wheee! 🎉'][Math.floor(Math.random()*3)]);
+        playCareSound('pet');
+      } else {
+        // Single tap: wink
+        _doWink();
+        speak(['Hi! 😊','Tap me again! 😄','Hehe~ 🐾'][Math.floor(Math.random()*3)]);
+      }
+      _lastTapTime=now;
     }
-    _lastTapTime=now;
   }
   lastSpX=lastSpY=-999;
 }
@@ -4878,7 +4916,7 @@ function spawnSpark(x,y){
 const PET_MSGS=["Ooh that feels so nice! 🥰","More please! 💕","You have the best hands! ✨","So good! 😊","Best day ever! 🌟"];
 
 function doAction(type){
-  if(appState.sleeping&&type!=='pet'){speak("Shhh… sleeping! Pet me first 😴");playCareSound('no');return;}
+  if(appState.sleeping&&type!=='pet'){speak("Shhh… tap me to wake up first! 😴");playCareSound('no');return;}
   const d=appState.lore;
   let msg='';
   if(type==='pet'&&appState.sleeping){
@@ -4920,7 +4958,25 @@ function hearts(icon,n){
 }
 
 function updateHappy(){const f=document.getElementById('hFill');if(f) f.style.width=Math.min(100,appState.happy)+'%';}
-function addSleepZ(){removeSleepZ();const s=document.getElementById('stage');const el=document.createElement('div');el.className='zzz';el.id='zzz';el.textContent='💤';s.appendChild(el);}
+function addSleepZ(){
+  removeSleepZ();
+  const s=document.getElementById('stage');
+  // Container for multiple Z's
+  const wrap=document.createElement('div');
+  wrap.id='zzz';
+  wrap.style.cssText='position:absolute;top:-10px;right:-10px;pointer-events:none;z-index:15';
+  wrap.innerHTML=`
+    <div style="position:absolute;top:-28px;right:-8px;font-size:1.4rem;
+      animation:zzzFloat 1.8s ease-in-out infinite alternate;
+      filter:drop-shadow(0 0 6px rgba(100,150,255,.7))">Z</div>
+    <div style="position:absolute;top:-48px;right:6px;font-size:1.0rem;
+      animation:zzzFloat 2.2s ease-in-out infinite alternate-reverse;animation-delay:.4s;
+      filter:drop-shadow(0 0 4px rgba(100,150,255,.5));opacity:.8">z</div>
+    <div style="position:absolute;top:-60px;right:-2px;font-size:.7rem;
+      animation:zzzFloat 2.6s ease-in-out infinite alternate;animation-delay:.8s;
+      filter:drop-shadow(0 0 3px rgba(100,150,255,.4));opacity:.6">z</div>`;
+  s.appendChild(wrap);
+}
 function removeSleepZ(){const el=document.getElementById('zzz');if(el)el.remove();}
 
 // ── GENERIC ACCESSORIES (fallback for creatures without custom set) ──
