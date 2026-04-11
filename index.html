@@ -724,52 +724,6 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
   </div>
 </div>
 
-<!-- LOGIN SCREEN -->
-<div id="sLogin" style="position:fixed;inset:0;z-index:1100;background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:env(safe-area-inset-top,24px) 24px 60px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;">
-  <div style="font-size:2.8rem">🐾</div>
-  <div style="font-family:Baloo 2,cursive;font-size:1.6rem;font-weight:800;color:#ffe040;text-align:center;line-height:1.2">Bella's Spelling<br>Adventure!</div>
-  <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
-    <div id="loginMsg" style="font-size:.7rem;font-weight:800;color:#aac4ff;text-align:center;min-height:18px"></div>
-    <div style="position:relative;width:100%"><div style="position:relative;width:100%">
-    <input id="loginUsername" type="text" maxlength="30" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text" placeholder="Your name (e.g. BellaM)"
-      style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 44px 12px 16px;color:white;width:100%;outline:none;box-sizing:border-box"/>
-    <div id="dropArrow" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:rgba(255,224,64,.6);font-size:1rem;pointer-events:none">▾</div>
-    <div id="usernameDropdown" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:#150830;border:2px solid rgba(255,224,64,.4);border-radius:12px;overflow:hidden;z-index:9999;max-height:220px;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 8px 32px rgba(0,0,0,.6)"></div>
-    </div>
-    <div style="font-size:.55rem;color:rgba(170,196,255,.6);text-align:center;margin-top:-8px">Suggestion: first name + last initial (e.g. BellaM)</div>
-    <div style="display:flex;gap:8px;justify-content:center">
-      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
-    </div>
-    <div style="font-size:.58rem;color:rgba(170,196,255,.6);text-align:center" id="pinHint">Enter your 4-digit PIN</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px">
-      <button class="pin-key" id="pk1">1</button><button class="pin-key" id="pk2">2</button><button class="pin-key" id="pk3">3</button>
-      <button class="pin-key" id="pk4">4</button><button class="pin-key" id="pk5">5</button><button class="pin-key" id="pk6">6</button>
-      <button class="pin-key" id="pk7">7</button><button class="pin-key" id="pk8">8</button><button class="pin-key" id="pk9">9</button>
-      <button class="pin-key" style="visibility:hidden">-</button><button class="pin-key" id="pk0">0</button><button class="pin-key" id="pkDel">&#9003;</button>
-    </div>
-    <button id="loginBtn" style="font-family:Baloo 2,cursive;font-size:.9rem;font-weight:800;background:linear-gradient(135deg,#9b5fd4,#4dcf8a);border:none;border-radius:12px;padding:14px;color:white;cursor:pointer;margin-top:4px;width:100%">&#10024; Let's Go!</button>
-    <!-- New Here button - more noticeable -->
-    <button id="switchBtn" style="font-family:Nunito,sans-serif;font-size:.72rem;
-      font-weight:800;color:#ffe040;background:rgba(255,224,64,.12);
-      border:2px solid rgba(255,224,64,.4);border-radius:12px;
-      cursor:pointer;padding:10px 16px;width:100%;margin-top:2px;
-      transition:all .2s;">&#10024; New here? Create an account</button>
-  </div>
-  <!-- Below card buttons -->
-  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;
-    margin-top:12px;padding-bottom:20px;width:100%;max-width:340px">
-    <button id="guestBtn" style="font-family:Nunito,sans-serif;font-size:.58rem;
-      font-weight:800;color:rgba(170,196,255,.5);background:none;border:none;
-      cursor:pointer">Play without saving progress</button>
-    <!-- Admin button - subtle but reachable on mobile -->
-    <button id="adminBtn" style="font-family:Nunito,sans-serif;font-size:.6rem;
-      font-weight:800;color:rgba(255,255,255,.35);background:rgba(255,255,255,.06);
-      border:1.5px solid rgba(255,255,255,.2);border-radius:10px;
-      cursor:pointer;padding:8px 20px;letter-spacing:.05em;min-height:36px;min-width:80px">&#9881; Admin</button>
-  </div>
-</div>
-
 <!-- SPLASH OVERLAY - tap anywhere to dismiss -->
 <div id="splashOverlay" onclick="dismissSplash()" style="position:fixed;inset:0;z-index:999;
   background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);
@@ -3167,6 +3121,54 @@ window.addEventListener('load', function(){
 <div id="careOverlay">
   <iframe id="careFrame" src="" allow="autoplay"></iframe>
 </div>
+
+
+<!-- LOGIN SCREEN -->
+<div id="sLogin" style="position:fixed;inset:0;z-index:1100;background:linear-gradient(160deg,#0d0221,#1a0a3e,#0d1a4a);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:env(safe-area-inset-top,24px) 24px 60px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;">
+  <div style="font-size:2.8rem">🐾</div>
+  <div style="font-family:Baloo 2,cursive;font-size:1.6rem;font-weight:800;color:#ffe040;text-align:center;line-height:1.2">Bella's Spelling<br>Adventure!</div>
+  <div style="background:rgba(255,255,255,.08);border:2px solid rgba(255,224,64,.3);border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px">
+    <div id="loginMsg" style="font-size:.7rem;font-weight:800;color:#aac4ff;text-align:center;min-height:18px"></div>
+    <div style="position:relative;width:100%"><div style="position:relative;width:100%">
+    <input id="loginUsername" type="text" maxlength="30" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text" placeholder="Your name (e.g. BellaM)"
+      style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 44px 12px 16px;color:white;width:100%;outline:none;box-sizing:border-box"/>
+    <div id="dropArrow" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:rgba(255,224,64,.6);font-size:1rem;pointer-events:none">▾</div>
+    <div id="usernameDropdown" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:#150830;border:2px solid rgba(255,224,64,.4);border-radius:12px;overflow:hidden;z-index:9999;max-height:220px;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 8px 32px rgba(0,0,0,.6)"></div>
+    </div>
+    <div style="font-size:.55rem;color:rgba(170,196,255,.6);text-align:center;margin-top:-8px">Suggestion: first name + last initial (e.g. BellaM)</div>
+    <div style="display:flex;gap:8px;justify-content:center">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div style="font-size:.58rem;color:rgba(170,196,255,.6);text-align:center" id="pinHint">Enter your 4-digit PIN</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px">
+      <button class="pin-key" id="pk1">1</button><button class="pin-key" id="pk2">2</button><button class="pin-key" id="pk3">3</button>
+      <button class="pin-key" id="pk4">4</button><button class="pin-key" id="pk5">5</button><button class="pin-key" id="pk6">6</button>
+      <button class="pin-key" id="pk7">7</button><button class="pin-key" id="pk8">8</button><button class="pin-key" id="pk9">9</button>
+      <button class="pin-key" style="visibility:hidden">-</button><button class="pin-key" id="pk0">0</button><button class="pin-key" id="pkDel">&#9003;</button>
+    </div>
+    <button id="loginBtn" style="font-family:Baloo 2,cursive;font-size:.9rem;font-weight:800;background:linear-gradient(135deg,#9b5fd4,#4dcf8a);border:none;border-radius:12px;padding:14px;color:white;cursor:pointer;margin-top:4px;width:100%">&#10024; Let's Go!</button>
+    <!-- New Here button - more noticeable -->
+    <button id="switchBtn" style="font-family:Nunito,sans-serif;font-size:.72rem;
+      font-weight:800;color:#ffe040;background:rgba(255,224,64,.12);
+      border:2px solid rgba(255,224,64,.4);border-radius:12px;
+      cursor:pointer;padding:10px 16px;width:100%;margin-top:2px;
+      transition:all .2s;">&#10024; New here? Create an account</button>
+  </div>
+  <!-- Below card buttons -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;
+    margin-top:12px;padding-bottom:20px;width:100%;max-width:340px">
+    <button id="guestBtn" style="font-family:Nunito,sans-serif;font-size:.58rem;
+      font-weight:800;color:rgba(170,196,255,.5);background:none;border:none;
+      cursor:pointer">Play without saving progress</button>
+    <!-- Admin button - subtle but reachable on mobile -->
+    <button id="adminBtn" style="font-family:Nunito,sans-serif;font-size:.6rem;
+      font-weight:800;color:rgba(255,255,255,.35);background:rgba(255,255,255,.06);
+      border:1.5px solid rgba(255,255,255,.2);border-radius:10px;
+      cursor:pointer;padding:8px 20px;letter-spacing:.05em;min-height:36px;min-width:80px">&#9881; Admin</button>
+  </div>
+</div>
+
 
 </body>
 </html>
