@@ -546,9 +546,9 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('confirmResetBtn').addEventListener('click',confirmReset);
   document.getElementById('confirmDeleteBtn').addEventListener('click',confirmDelete);
   document.getElementById('confirmRenameBtn').addEventListener('click',confirmRename);
+  document.getElementById('confirmDeleteBtn').addEventListener('click',confirmDelete);
   document.getElementById('confirmMergeBtn').addEventListener('click',confirmMerge);
   document.getElementById('confirmEditBtn').addEventListener('click',confirmEdit);
-  document.getElementById('confirmMergeBtn').addEventListener('click',confirmMerge);
 });
 
 function doAdminLogin(){
@@ -1935,6 +1935,53 @@ function rebuildStuDetail(stuId,weekKey){
   var td=el.querySelector('td');
   if(td) td.innerHTML=buildStuDetail(s,weekKey);
 }
+// ── RESET PIN ──
+function openReset(id, name){
+  pendingAction={type:'reset', id:id, name:name};
+  var newPin=Math.floor(1000+Math.random()*9000).toString();
+  pendingAction.newPin=newPin;
+  document.getElementById('resetBody').textContent='Reset PIN for "'+name+'"?';
+  document.getElementById('newPinEl').textContent='New PIN: '+newPin;
+  document.getElementById('resetModal').classList.add('show');
+}
+
+async function confirmReset(){
+  if(!pendingAction||pendingAction.type!=='reset') return;
+  try{
+    await window._fb.updateDoc(
+      window._fb.doc(window._fb.db,'students',pendingAction.id),
+      {pin:pendingAction.newPin}
+    );
+    closeModal('resetModal');
+    alert('PIN for "'+pendingAction.name+'" reset to: '+pendingAction.newPin);
+  }catch(e){ alert('Error: '+e.message); }
+}
+
+
+// ── MODAL UTILITIES ──
+function closeModal(id){
+  var el=document.getElementById(id);
+  if(el) el.classList.remove('show');
+  pendingAction=null;
+}
+
+// ── DELETE STUDENT ──
+function openDelete(id, name){
+  pendingAction={type:'delete', id:id, name:name};
+  document.getElementById('deleteBody').textContent='Permanently delete "'+name+'" and all their data?';
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+async function confirmDelete(){
+  if(!pendingAction||pendingAction.type!=='delete') return;
+  try{
+    await window._fb.deleteDoc(window._fb.doc(window._fb.db,'students',pendingAction.id));
+    closeModal('deleteModal');
+    loadDashboard();
+  }catch(e){ alert('Error: '+e.message); }
+}
+
+
 </script>
 </body>
 </html>
