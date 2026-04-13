@@ -91,7 +91,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .stat-card::before{content:'';position:absolute;inset:0;border-radius:16px;
   background:linear-gradient(135deg,var(--accent-a,.1),var(--accent-b,.05));pointer-events:none;}
 .stat-num{font-family:'Baloo 2',cursive;font-size:2.2rem;font-weight:800;
-  background:linear-gradient(135deg,var(--yellow),#ff9f43);-webkit-background-clip:text;
+  background:linear-gradient(135deg,var(--yellow),#ff9f43);-webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;line-height:1;}
 .stat-lbl{font-size:.55rem;font-weight:800;color:var(--muted);margin-top:6px;
   text-transform:uppercase;letter-spacing:.05em;}
@@ -1869,7 +1869,7 @@ function buildStuDetail(s,weekKey){
     }).join('');
     html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">'
       +'<span style="font-size:.52rem;font-weight:800;color:var(--muted)">Word List:</span>'
-      +'<select onchange="rebuildStuDetail(''+stuId+'',this.value)" '
+      +'<select data-sid="'+stuId+'" onchange="rebuildStuDetail(this.dataset.sid,this.value)" '
         +'style="font-family:Nunito,sans-serif;font-size:.55rem;font-weight:700;'
         +'background:rgba(255,255,255,.08);border:1.5px solid var(--border);'
         +'border-radius:8px;padding:4px 8px;color:white;cursor:pointer">'
@@ -1907,10 +1907,9 @@ function buildStuDetail(s,weekKey){
     var col=diffColor(att);
     var icon=d.skipped?'⏭':att===1&&!d.hintUsed?'✅':'🔄';
     html+='<div class="stu-word-card" '
-      +'onclick="openWordHistory(''+stuId+'',''+word+'',''+weekKey+'')" '
-      +'style="border-color:'+col+'55;cursor:pointer;transition:background .15s" '
-      +'onmouseenter="this.style.background='rgba(255,255,255,.08)'" '
-      +'onmouseleave="this.style.background=''">'
+      +'data-sid="'+stuId+'" data-word="'+word+'" data-wk="'+weekKey+'" '
+      +'onclick="openWordHistory(this.dataset.sid,this.dataset.word,this.dataset.wk)" '
+      +'style="border-color:'+col+'55;cursor:pointer;transition:background .15s">'
       +'<div class="stu-word-name" style="color:'+col+'">'+icon+' '+word+'</div>'
       +'<div class="stu-word-stat">'
         +'<b style="color:white">'+att+'</b> try'+(att>1?'s':'')+'<br>'
