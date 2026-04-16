@@ -999,32 +999,38 @@ const EVOLUTION_MAP = {
 };
 
 const CREATURES=[
-  {name:"Fluffkin", color:"#ffb3d9", fn:drawBunny,  furry:true,  food:"🥕 carrot",    sleepMsg:"Fluffkin curls into a fluffy ball 💤"},
-  {name:"Sparklox", color:"#ffe066", fn:drawFox,    furry:true,  food:"🍓 berries",   sleepMsg:"Sparklox tucks its tail around itself 💤"},
-  {name:"Puddlum",  color:"#a0d8ff", fn:drawSeal,   furry:false, food:"🐟 fish",      sleepMsg:"Puddlum floats peacefully on its back 💤"},
-  {name:"Fernbit",  color:"#b3ffb3", fn:drawFrog,   furry:false, food:"🪲 bug",       sleepMsg:"Fernbit closes its big eyes slowly 💤"},
-  {name:"Glimcat",  color:"#e0b3ff", fn:drawCat,    furry:true,  food:"🐟 fish",      sleepMsg:"Glimcat purrs and kneads the air 💤"},
-  {name:"Coraluff", color:"#ffb3b3", fn:drawBear,   furry:true,  food:"🍯 honey",     sleepMsg:"Coraluff snuggles down for a long nap 💤"},
-  {name:"Driftail", color:"#b3e0ff", fn:drawDragon, furry:false, food:"🔥 firesnack", sleepMsg:"Driftail folds its wings and drifts off 💤"},
-  {name:"Peppin",   color:"#ffdfb3", fn:drawHamster,furry:true,  food:"🌰 acorn",     sleepMsg:"Peppin stuffs its cheeks and dozes off 💤"},
-  {name:"Starwhirl",color:"#fff0a0", fn:drawStar,   furry:false, food:"✨ stardust",  sleepMsg:"Starwhirl dims its glow and floats gently 💤"},
-  {name:"Mossling", color:"#c8ffb3", fn:drawTurtle, furry:false, food:"🥬 lettuce",   sleepMsg:"Mossling retreats into its shell 💤"},
-  {name:"Twinkow",  color:"#ffd6f5", fn:drawUnicorn,furry:true,  food:"🌈 rainbow",   sleepMsg:"Twinkow glows softly as it sleeps 💤"},
-  {name:"Boulbear", color:"#d4e0ff", fn:drawPanda,  furry:true,  food:"🎋 bamboo",    sleepMsg:"Boulbear hugs its belly and snores 💤"},
-  {name:"Zipplet",  color:"#fffbb3", fn:drawChick,  furry:true,  food:"🌾 seeds",     sleepMsg:"Zipplet fluffs up its feathers 💤"},
-  {name:"Dazzlphin",color:"#b3f0ff", fn:drawDolphin,furry:false, food:"🐠 fish",      sleepMsg:"Dazzlphin sways in an imaginary wave 💤"},
-  {name:"Flameow",  color:"#ffcbb3", fn:drawFirecat,furry:true,  food:"🌶️ spicy treat",sleepMsg:"Flameow purrs with tiny flame snores 💤"},
-  {name:"Crystaloo",color:"#e8b3ff", fn:drawRaccoon,furry:true,  food:"🍬 candy",     sleepMsg:"Crystaloo wraps its striped tail around itself 💤"},
-  {name:"Dewdrop",  color:"#b3f5e0", fn:drawAxolotl,furry:false, food:"🦐 shrimp",    sleepMsg:"Dewdrop wiggles its gills slowly 💤"},
-  {name:"Puffy",    color:"#ffb3cc", fn:drawPig,    furry:true,  food:"🌽 corn",      sleepMsg:"Puffy oinks softly and curls up 💤"},
-  {name:"Shimmur",  color:"#ffedb3", fn:drawLion,   furry:true,  food:"🥩 meat",      sleepMsg:"Shimmur yawns and rests its mane 💤"},
-  {name:"Lunabelle",color:"#cdb3ff", fn:drawOwl,    furry:true,  food:"🐭 mouse",     sleepMsg:"Lunabelle tucks its beak under its wing 💤"}
+  {name:"Fluffkin", color:"#ffb3d9", fn:buildFluffkin,  furry:true,  food:"🥕 carrot",    sleepMsg:"Fluffkin curls into a fluffy ball 💤"},
+  {name:"Sparklox", color:"#ffe066", fn:buildSparklox,  furry:true,  food:"🍓 berries",   sleepMsg:"Sparklox tucks its tail around itself 💤"},
+  {name:"Puddlum",  color:"#a0d8ff", fn:buildPuddlum,   furry:false, food:"🐟 fish",      sleepMsg:"Puddlum floats peacefully on its back 💤"},
+  {name:"Fernbit",  color:"#b3ffb3", fn:buildFernbit,   furry:false, food:"🪲 bug",       sleepMsg:"Fernbit closes its big eyes slowly 💤"},
+  {name:"Glimcat",  color:"#e0b3ff", fn:buildGlimcat,   furry:true,  food:"🐟 fish",      sleepMsg:"Glimcat purrs and kneads the air 💤"},
+  {name:"Coraluff", color:"#ffb3b3", fn:buildCoraluff,  furry:true,  food:"🍯 honey",     sleepMsg:"Coraluff snuggles down for a long nap 💤"},
+  {name:"Driftail", color:"#b3e0ff", fn:buildDriftail,  furry:false, food:"🔥 firesnack", sleepMsg:"Driftail folds its wings and drifts off 💤"},
+  {name:"Peppin",   color:"#ffdfb3", fn:buildPeppin,    furry:true,  food:"🌰 acorn",     sleepMsg:"Peppin stuffs its cheeks and dozes off 💤"},
+  {name:"Starwhirl",color:"#fff0a0", fn:buildStarwhirl, furry:false, food:"✨ stardust",  sleepMsg:"Starwhirl dims its glow and floats gently 💤"},
+  {name:"Mossling", color:"#c8ffb3", fn:buildMossling,  furry:false, food:"🥬 lettuce",   sleepMsg:"Mossling retreats into its shell 💤"},
+  {name:"Twinkow",  color:"#ffd6f5", fn:buildTwinkow,   furry:true,  food:"🌈 rainbow",   sleepMsg:"Twinkow glows softly as it sleeps 💤"},
+  {name:"Boulbear", color:"#d4e0ff", fn:buildBoulbear,  furry:true,  food:"🎋 bamboo",    sleepMsg:"Boulbear hugs its belly and snores 💤"},
+  {name:"Zipplet",  color:"#fffbb3", fn:buildZipplet,   furry:true,  food:"🌾 seeds",     sleepMsg:"Zipplet fluffs up its feathers 💤"},
+  {name:"Dazzlphin",color:"#b3f0ff", fn:buildDazzlphin, furry:false, food:"🐠 fish",      sleepMsg:"Dazzlphin sways in an imaginary wave 💤"},
+  {name:"Flameow",  color:"#ffcbb3", fn:buildFlameow,   furry:true,  food:"🌶️ spicy treat",sleepMsg:"Flameow purrs with tiny flame snores 💤"},
+  {name:"Crystaloo",color:"#e8b3ff", fn:buildCrystaloo, furry:true,  food:"🍬 candy",     sleepMsg:"Crystaloo wraps its striped tail around itself 💤"},
+  {name:"Dewdrop",  color:"#b3f5e0", fn:buildDewdrop,   furry:false, food:"🦐 shrimp",    sleepMsg:"Dewdrop wiggles its gills slowly 💤"},
+  {name:"Puffy",    color:"#ffb3cc", fn:buildPuffy,     furry:true,  food:"🌽 corn",      sleepMsg:"Puffy oinks softly and curls up 💤"},
+  {name:"Shimmur",  color:"#ffedb3", fn:buildShimmur,   furry:true,  food:"🥩 meat",      sleepMsg:"Shimmur yawns and rests its mane 💤"},
+  {name:"Lunabelle",color:"#cdb3ff", fn:buildLunabelle, furry:true,  food:"🐭 mouse",     sleepMsg:"Lunabelle tucks its beak under its wing 💤"}
 ];
 
 // ═══════════════════════════════════════════════════════════
 //  SVG CREATURES
 // ═══════════════════════════════════════════════════════════
 function svg(w,h,c){return`<svg width="100%" height="100%" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${c}</svg>`}
+let _uidCtr=0;
+function uniquifyIds(s){
+  const sfx='u'+(++_uidCtr);
+  return s.replace(/\bid="([^"]+)"/g,(_,id)=>`id="${id}_${sfx}"`)
+          .replace(/url\(#([^)]+)\)/g,(_,id)=>`url(#${id}_${sfx})`);
+}
 function drawBunny(c){return svg(90,100,`<ellipse cx="45" cy="62" rx="30" ry="28" fill="${c}" stroke="#222" stroke-width="2"/><ellipse cx="34" cy="38" rx="8" ry="20" fill="${c}" stroke="#222" stroke-width="2"/><ellipse cx="56" cy="38" rx="8" ry="20" fill="${c}" stroke="#222" stroke-width="2"/><ellipse cx="36" cy="36" rx="5" ry="14" fill="#ffcce0"/><ellipse cx="58" cy="36" rx="5" ry="14" fill="#ffcce0"/><circle cx="38" cy="60" r="5" fill="#222"/><circle cx="52" cy="60" r="5" fill="#222"/><circle cx="39.5" cy="58.5" r="2" fill="white"/><circle cx="53.5" cy="58.5" r="2" fill="white"/><ellipse cx="45" cy="68" rx="7" ry="5" fill="#ffcce0"/><path d="M42 65 Q45 70 48 65" stroke="#222" stroke-width="1.5" fill="none"/><ellipse cx="45" cy="85" rx="18" ry="10" fill="${c}" stroke="#222" stroke-width="1.5"/>`)}
 function drawFox(c){return svg(90,100,`<ellipse cx="45" cy="65" rx="28" ry="25" fill="${c}" stroke="#222" stroke-width="2"/><polygon points="28,42 20,20 36,38" fill="${c}" stroke="#222" stroke-width="2"/><polygon points="62,42 70,20 54,38" fill="${c}" stroke="#222" stroke-width="2"/><polygon points="30,40 23,23 37,38" fill="#ff8844"/><polygon points="60,40 67,23 53,38" fill="#ff8844"/><ellipse cx="45" cy="58" rx="18" ry="15" fill="#fff0e0"/><circle cx="38" cy="60" r="5" fill="#222"/><circle cx="52" cy="60" r="5" fill="#222"/><circle cx="39.5" cy="58.5" r="2" fill="white"/><circle cx="53.5" cy="58.5" r="2" fill="white"/><ellipse cx="45" cy="68" rx="5" ry="4" fill="#ff8888"/><path d="M38 72 Q45 77 52 72" stroke="#222" stroke-width="1.5" fill="none"/><ellipse cx="15" cy="78" rx="6" ry="20" fill="${c}" stroke="#222" stroke-width="1.5" transform="rotate(-20,15,78)"/>`)}
 function drawSeal(c){return svg(100,90,`<ellipse cx="50" cy="55" rx="38" ry="28" fill="${c}" stroke="#222" stroke-width="2"/><ellipse cx="50" cy="38" rx="20" ry="20" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="42" cy="36" r="5" fill="#222"/><circle cx="58" cy="36" r="5" fill="#222"/><circle cx="43.5" cy="34.5" r="2" fill="white"/><circle cx="59.5" cy="34.5" r="2" fill="white"/><ellipse cx="50" cy="44" rx="7" ry="5" fill="#ffb3cc"/><path d="M45 42 Q50 48 55 42" stroke="#222" stroke-width="1.5" fill="none"/><ellipse cx="20" cy="72" rx="12" ry="7" fill="${c}" stroke="#222" stroke-width="1.5" transform="rotate(30,20,72)"/><ellipse cx="80" cy="72" rx="12" ry="7" fill="${c}" stroke="#222" stroke-width="1.5" transform="rotate(-30,80,72)"/>`)}
@@ -1045,6 +1051,1492 @@ function drawAxolotl(c){return svg(100,90,`<ellipse cx="50" cy="58" rx="34" ry="
 function drawPig(c){return svg(90,100,`<ellipse cx="45" cy="65" rx="30" ry="28" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="45" cy="46" r="22" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="28" cy="30" r="10" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="62" cy="30" r="10" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="38" cy="46" r="5.5" fill="#222"/><circle cx="52" cy="46" r="5.5" fill="#222"/><circle cx="39.5" cy="44.5" r="2.5" fill="white"/><circle cx="53.5" cy="44.5" r="2.5" fill="white"/><ellipse cx="45" cy="56" rx="9" ry="7" fill="#ffaaaa"/><circle cx="42" cy="55" r="2.5" fill="#cc6688"/><circle cx="48" cy="55" r="2.5" fill="#cc6688"/><path d="M38 62 Q45 68 52 62" stroke="#222" stroke-width="1.5" fill="none"/>`)}
 function drawLion(c){return svg(100,100,`<circle cx="50" cy="50" r="34" fill="#ffbb44" opacity=".55" stroke="none"/><circle cx="50" cy="50" r="26" fill="#ffbb44" opacity=".35" stroke="none"/><ellipse cx="50" cy="66" rx="26" ry="24" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="50" cy="48" r="20" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="33" cy="30" r="9" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="67" cy="30" r="9" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="43" cy="47" r="5.5" fill="#222"/><circle cx="57" cy="47" r="5.5" fill="#222"/><circle cx="44.5" cy="45.5" r="2.5" fill="white"/><circle cx="58.5" cy="45.5" r="2.5" fill="white"/><ellipse cx="50" cy="55" rx="8" ry="6" fill="#ffddaa"/><ellipse cx="50" cy="56" rx="5" ry="3.5" fill="#ffaaaa"/><path d="M43 53 Q50 59 57 53" stroke="#222" stroke-width="1.5" fill="none"/><line x1="28" y1="52" x2="12" y2="48" stroke="#222" stroke-width="1.5"/><line x1="28" y1="55" x2="12" y2="55" stroke="#222" stroke-width="1.5"/><line x1="72" y1="52" x2="88" y2="48" stroke="#222" stroke-width="1.5"/><line x1="72" y1="55" x2="88" y2="55" stroke="#222" stroke-width="1.5"/>`)}
 function drawOwl(c){return svg(90,100,`<ellipse cx="45" cy="68" rx="26" ry="24" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="45" cy="46" r="24" fill="${c}" stroke="#222" stroke-width="2"/><path d="M26 28 Q20 14 30 12 Q26 24 38 26" fill="${c}" stroke="#222" stroke-width="2"/><path d="M64 28 Q70 14 60 12 Q64 24 52 26" fill="${c}" stroke="#222" stroke-width="2"/><circle cx="36" cy="44" r="10" fill="white" stroke="#222" stroke-width="1.5"/><circle cx="54" cy="44" r="10" fill="white" stroke="#222" stroke-width="1.5"/><circle cx="36" cy="44" r="6" fill="#222"/><circle cx="54" cy="44" r="6" fill="#222"/><circle cx="37.5" cy="42.5" r="2.5" fill="white"/><circle cx="55.5" cy="42.5" r="2.5" fill="white"/><polygon points="45,53 41,58 49,58" fill="#ffaa22" stroke="#222" stroke-width="1.5"/><ellipse cx="45" cy="68" rx="14" ry="10" fill="#fffde0" stroke="#222" stroke-width="1"/><path d="M28 75 Q22 82 20 92" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M62 75 Q68 82 70 92" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round"/>`)}
+
+// ═══════════════════════════════════════════════════════════
+//  DETAILED CREATURE BUILDERS (full-fidelity thumbnails)
+// ═══════════════════════════════════════════════════════════
+function buildFluffkin(c='#ffb3d9'){
+  return svg(200,230,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#ffeef8"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#d9608a"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="38%" r="52%"><stop offset="0%" stop-color="#fff6fc"/><stop offset="100%" stop-color="#ffd6ee"/></radialGradient>
+  <radialGradient id="earIn" cx="50%" cy="55%" r="50%"><stop offset="0%" stop-color="#ffb8d8"/><stop offset="100%" stop-color="#ff7ab0"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(180,60,110,.3)"/></filter>
+</defs>
+<ellipse cx="100" cy="225" rx="58" ry="9" fill="rgba(0,0,0,.14)"/>
+<g id="tail" style="transform-origin:38px 192px">
+  <ellipse cx="28" cy="200" rx="26" ry="18" fill="#d9608a" transform="rotate(-18,28,200)"/>
+  <ellipse cx="24" cy="196" rx="20" ry="14" fill="${c}" transform="rotate(-18,24,196)"/>
+  <ellipse cx="20" cy="192" rx="14" ry="10" fill="#ffd6ee" transform="rotate(-18,20,192)"/>
+  <ellipse cx="13" cy="187" rx="10" ry="8" fill="#fff0f8" transform="rotate(-15,13,187)"/>
+</g>
+<g id="bodyGroup" style="transform-origin:100px 182px">
+  <ellipse cx="100" cy="178" rx="68" ry="62" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="100" cy="188" rx="42" ry="36" fill="url(#bg2)"/>
+  <ellipse cx="78" cy="152" rx="16" ry="9" fill="rgba(255,255,255,.32)" transform="rotate(-25,78,152)"/>
+  <ellipse cx="120" cy="145" rx="8" ry="5" fill="rgba(255,255,255,.18)" transform="rotate(15,120,145)"/>
+</g>
+<g id="earL" style="transform-origin:62px 72px">
+  <ellipse cx="62" cy="52" rx="18" ry="44" fill="${c}" stroke="rgba(180,60,110,.35)" stroke-width="1.5"/>
+  <ellipse cx="62" cy="56" rx="11" ry="32" fill="url(#earIn)"/>
+  <ellipse cx="62" cy="55" rx="7" ry="22" fill="rgba(255,220,240,.5)"/>
+</g>
+<g id="earR" style="transform-origin:138px 72px">
+  <ellipse cx="138" cy="52" rx="18" ry="44" fill="${c}" stroke="rgba(180,60,110,.35)" stroke-width="1.5"/>
+  <ellipse cx="138" cy="56" rx="11" ry="32" fill="url(#earIn)"/>
+  <ellipse cx="138" cy="55" rx="7" ry="22" fill="rgba(255,220,240,.5)"/>
+</g>
+<ellipse cx="100" cy="120" rx="56" ry="52" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="80" cy="100" rx="14" ry="8" fill="rgba(255,255,255,.3)" transform="rotate(-22,80,100)"/>
+<g id="eyeL" style="transform-origin:82px 116px">
+  <ellipse cx="82" cy="116" rx="13" ry="15" fill="white" stroke="rgba(80,0,40,.2)" stroke-width="1"/>
+  <ellipse cx="82" cy="118" rx="8.5" ry="10.5" fill="#2a1040"/>
+  <ellipse cx="82" cy="117" rx="5.5" ry="7.5" fill="#5533aa"/>
+  <circle cx="82" cy="118" r="4" fill="#111"/>
+  <circle cx="87" cy="112" r="3.2" fill="white"/>
+  <circle cx="79" cy="122" r="1.8" fill="rgba(255,255,255,.65)"/>
+  <ellipse id="lidL" cx="82" cy="103" rx="13" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 70 108 Q 82 103 94 108" fill="none" stroke="rgba(80,0,40,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:118px 116px">
+  <ellipse cx="118" cy="116" rx="13" ry="15" fill="white" stroke="rgba(80,0,40,.2)" stroke-width="1"/>
+  <ellipse cx="118" cy="118" rx="8.5" ry="10.5" fill="#2a1040"/>
+  <ellipse cx="118" cy="117" rx="5.5" ry="7.5" fill="#5533aa"/>
+  <circle cx="118" cy="118" r="4" fill="#111"/>
+  <circle cx="123" cy="112" r="3.2" fill="white"/>
+  <circle cx="115" cy="122" r="1.8" fill="rgba(255,255,255,.65)"/>
+  <ellipse id="lidR" cx="118" cy="103" rx="13" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 106 108 Q 118 103 130 108" fill="none" stroke="rgba(80,0,40,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<ellipse cx="100" cy="133" rx="8" ry="6" fill="#e05878" stroke="rgba(180,40,80,.4)" stroke-width="1"/>
+<ellipse cx="98" cy="131" rx="3" ry="2" fill="rgba(255,255,255,.55)"/>
+<g id="mouth">
+  <path id="mn" d="M 91 141 Q 96 147 100 145 Q 104 147 109 141" stroke="rgba(160,40,80,.7)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none">
+    <path d="M 89 140 Q 100 158 111 140 Q 106 152 100 154 Q 94 152 89 140 Z" fill="#e05878"/>
+    <ellipse cx="100" cy="149" rx="8" ry="5" fill="#b03060"/>
+    <rect x="93" y="140" width="5" height="4.5" rx="1.5" fill="white"/>
+    <rect x="102" y="140" width="5" height="4.5" rx="1.5" fill="white"/>
+  </g>
+</g>
+<ellipse cx="70" cy="136" rx="13" ry="8" fill="rgba(255,140,170,.4)"/>
+<ellipse cx="130" cy="136" rx="13" ry="8" fill="rgba(255,140,170,.4)"/>
+<line x1="88" y1="130" x2="52" y2="124" stroke="rgba(180,80,130,.4)" stroke-width="1.5"/>
+<line x1="88" y1="136" x2="50" y2="136" stroke="rgba(180,80,130,.4)" stroke-width="1.5"/>
+<line x1="112" y1="130" x2="148" y2="124" stroke="rgba(180,80,130,.4)" stroke-width="1.5"/>
+<line x1="112" y1="136" x2="150" y2="136" stroke="rgba(180,80,130,.4)" stroke-width="1.5"/>
+<g id="paws">
+  <ellipse cx="72" cy="218" rx="21" ry="13" fill="url(#bg1)"/>
+  <ellipse cx="128" cy="218" rx="21" ry="13" fill="url(#bg1)"/>
+  <circle cx="65" cy="222" r="4" fill="#ffd6ee"/><circle cx="73" cy="225" r="4" fill="#ffd6ee"/><circle cx="81" cy="222" r="3.5" fill="#ffd6ee"/>
+  <circle cx="121" cy="222" r="4" fill="#ffd6ee"/><circle cx="129" cy="225" r="4" fill="#ffd6ee"/><circle cx="137" cy="222" r="3.5" fill="#ffd6ee"/>
+</g>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="82" cy="116" rx="13" ry="15" fill="#ff5090"/>
+  <text x="82" y="122" font-size="14" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="118" cy="116" rx="13" ry="15" fill="#ff5090"/>
+  <text x="118" y="122" font-size="14" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+function buildSparklox(c='#ffe066'){
+  return svg(220,250,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#fff8d0"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#cc9900"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#fff8e8"/><stop offset="100%" stop-color="#ffe8a0"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(160,120,0,.25)"/></filter>
+</defs>
+<ellipse cx="110" cy="244" rx="62" ry="9" fill="rgba(0,0,0,.13)"/>
+<g id="tail" style="transform-origin:52px 198px">
+  <ellipse cx="32" cy="208" rx="36" ry="26" fill="#cc9900" transform="rotate(-22,32,208)"/>
+  <ellipse cx="28" cy="204" rx="29" ry="21" fill="${c}" transform="rotate(-22,28,204)"/>
+  <ellipse cx="24" cy="200" rx="21" ry="15" fill="#fff8d0" transform="rotate(-22,24,200)"/>
+  <ellipse cx="16" cy="194" rx="16" ry="12" fill="white" transform="rotate(-25,16,194)"/>
+  <ellipse cx="12" cy="191" rx="10" ry="8" fill="#fffff8" transform="rotate(-25,12,191)"/>
+</g>
+<g id="bodyGroup" style="transform-origin:110px 190px">
+  <ellipse cx="110" cy="186" rx="65" ry="60" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="110" cy="198" rx="38" ry="32" fill="url(#bg2)"/>
+  <ellipse cx="88" cy="158" rx="16" ry="9" fill="rgba(255,255,255,.3)" transform="rotate(-25,88,158)"/>
+</g>
+<g id="earL" style="transform-origin:76px 88px">
+  <polygon points="60,112 76,52 92,112" fill="${c}" stroke="rgba(160,120,0,.3)" stroke-width="1.5"/>
+  <polygon points="66,106 76,60 87,106" fill="#ff8844"/>
+  <polygon points="70,104 76,68 82,104" fill="rgba(255,180,100,.6)"/>
+</g>
+<g id="earR" style="transform-origin:144px 88px">
+  <polygon points="128,112 144,52 160,112" fill="${c}" stroke="rgba(160,120,0,.3)" stroke-width="1.5"/>
+  <polygon points="133,106 144,60 154,106" fill="#ff8844"/>
+  <polygon points="137,104 144,68 150,104" fill="rgba(255,180,100,.6)"/>
+</g>
+<ellipse cx="110" cy="138" rx="58" ry="54" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="110" cy="152" rx="32" ry="24" fill="url(#bg2)"/>
+<ellipse cx="88" cy="115" rx="14" ry="8" fill="rgba(255,255,255,.3)" transform="rotate(-22,88,115)"/>
+<g id="eyeL" style="transform-origin:90px 130px">
+  <ellipse cx="90" cy="130" rx="12" ry="14" fill="white" stroke="rgba(100,70,0,.2)" stroke-width="1"/>
+  <ellipse cx="90" cy="132" rx="8" ry="10" fill="#3a2000"/>
+  <ellipse cx="90" cy="131" rx="5" ry="7" fill="#6a4000"/>
+  <circle cx="90" cy="132" r="3.5" fill="#111"/>
+  <circle cx="95" cy="126" r="3" fill="white"/>
+  <circle cx="87" cy="136" r="1.6" fill="rgba(255,255,255,.6)"/>
+  <ellipse id="lidL" cx="90" cy="118" rx="12" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 79 122 Q 90 117 101 122" fill="none" stroke="rgba(100,70,0,.45)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:130px 130px">
+  <ellipse cx="130" cy="130" rx="12" ry="14" fill="white" stroke="rgba(100,70,0,.2)" stroke-width="1"/>
+  <ellipse cx="130" cy="132" rx="8" ry="10" fill="#3a2000"/>
+  <ellipse cx="130" cy="131" rx="5" ry="7" fill="#6a4000"/>
+  <circle cx="130" cy="132" r="3.5" fill="#111"/>
+  <circle cx="135" cy="126" r="3" fill="white"/>
+  <circle cx="127" cy="136" r="1.6" fill="rgba(255,255,255,.6)"/>
+  <ellipse id="lidR" cx="130" cy="118" rx="12" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 119 122 Q 130 117 141 122" fill="none" stroke="rgba(100,70,0,.45)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<path d="M 102 152 L 118 152 L 110 161 Z" fill="#222" stroke="rgba(0,0,0,.4)" stroke-width="1"/>
+<circle cx="106" cy="153" r="2.5" fill="rgba(255,255,255,.4)"/>
+<g id="mouth">
+  <path id="mn" d="M 110 161 Q 103 168 98 165 M 110 161 Q 117 168 122 165" stroke="rgba(80,50,0,.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none">
+    <path d="M 96 160 Q 110 180 124 160 Q 118 174 110 176 Q 102 174 96 160 Z" fill="#cc6633"/>
+    <ellipse cx="110" cy="170" rx="10" ry="6" fill="#aa4422"/>
+  </g>
+</g>
+<ellipse cx="74" cy="148" rx="13" ry="8" fill="rgba(255,140,60,.35)"/>
+<ellipse cx="146" cy="148" rx="13" ry="8" fill="rgba(255,140,60,.35)"/>
+<line x1="100" y1="146" x2="64" y2="139" stroke="rgba(150,110,0,.4)" stroke-width="1.5"/>
+<line x1="100" y1="153" x2="62" y2="153" stroke="rgba(150,110,0,.4)" stroke-width="1.5"/>
+<line x1="120" y1="146" x2="156" y2="139" stroke="rgba(150,110,0,.4)" stroke-width="1.5"/>
+<line x1="120" y1="153" x2="158" y2="153" stroke="rgba(150,110,0,.4)" stroke-width="1.5"/>
+<ellipse cx="80" cy="232" rx="23" ry="14" fill="url(#bg1)"/>
+<ellipse cx="140" cy="232" rx="23" ry="14" fill="url(#bg1)"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="90" cy="130" rx="12" ry="14" fill="#ff9900"/>
+  <text x="90" y="136" font-size="13" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="130" cy="130" rx="12" ry="14" fill="#ff9900"/>
+  <text x="130" y="136" font-size="13" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+function buildPuddlum(c='#a0d8ff'){
+  return svg(260,190,`
+<defs>
+  <radialGradient id="bg1" cx="35%" cy="35%" r="65%"><stop offset="0%" stop-color="#dff5ff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#4a9acc"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="42%" r="52%"><stop offset="0%" stop-color="#f0faff"/><stop offset="100%" stop-color="#b8e8ff"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,80,180,.2)"/></filter>
+</defs>
+<ellipse cx="130" cy="184" rx="82" ry="10" fill="rgba(0,0,0,.13)"/>
+<!-- Tail flippers at back right -->
+<g id="tailFlip" style="transform-origin:220px 118px">
+  <path d="M 214 106 Q 238 90 248 104 Q 244 120 228 122 Z" fill="${c}" stroke="rgba(0,80,160,.18)" stroke-width="1.5"/>
+  <path d="M 214 130 Q 238 146 248 132 Q 244 116 228 118 Z" fill="${c}" stroke="rgba(0,80,160,.18)" stroke-width="1.5"/>
+  <path d="M 216 108 Q 236 96 244 106" fill="none" stroke="rgba(180,230,255,.45)" stroke-width="1.2"/>
+</g>
+<!-- Main body - long horizontal torpedo -->
+<g id="bodyGroup" style="transform-origin:120px 118px">
+  <path d="M 22 118 Q 22 78 68 65 Q 120 54 175 64 Q 212 72 218 118 Q 212 164 175 172 Q 120 182 68 171 Q 22 158 22 118 Z" fill="url(#bg1)" filter="url(#sh)"/>
+  <!-- Belly -->
+  <path d="M 28 118 Q 28 85 70 74 Q 120 64 172 74 Q 206 82 210 118 Q 206 154 172 162 Q 120 172 70 162 Q 28 151 28 118 Z" fill="url(#bg2)" opacity=".75"/>
+  <!-- Spots on belly -->
+  <circle cx="100" cy="120" r="9" fill="rgba(180,220,255,.35)"/>
+  <circle cx="128" cy="132" r="7" fill="rgba(180,220,255,.3)"/>
+  <circle cx="152" cy="118" r="8" fill="rgba(180,220,255,.32)"/>
+  <ellipse cx="75" cy="85" rx="22" ry="11" fill="rgba(255,255,255,.32)" transform="rotate(-18,75,85)"/>
+</g>
+<!-- Front flippers -->
+<g id="flipL" style="transform-origin:52px 130px">
+  <path d="M 52 118 Q 22 108 14 124 Q 10 138 24 144 Q 40 148 56 136 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 54 121 Q 28 112 20 125 Q 18 136 28 140" fill="none" stroke="rgba(180,230,255,.45)" stroke-width="1.2"/>
+</g>
+<g id="flipR" style="transform-origin:52px 108px">
+  <path d="M 54 108 Q 24 94 14 106 Q 8 118 22 122 Q 38 124 55 114 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+</g>
+<!-- Head - round seal head at left -->
+<ellipse cx="42" cy="102" rx="46" ry="42" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="28" cy="84" rx="16" ry="9" fill="rgba(255,255,255,.32)" transform="rotate(-18,28,84)"/>
+<!-- Big round cute seal eyes -->
+<g id="eyeL" style="transform-origin:44px 92px">
+  <ellipse cx="44" cy="92" rx="16" ry="18" fill="white" stroke="rgba(0,60,140,.14)" stroke-width="1"/>
+  <ellipse cx="44" cy="94" rx="11" ry="13" fill="#1a2a5a"/>
+  <ellipse cx="44" cy="93" rx="7" ry="9.5" fill="#2244aa"/>
+  <circle cx="44" cy="94" r="5" fill="#0a0a2a"/>
+  <circle cx="52" cy="86" r="5" fill="white"/>
+  <circle cx="40" cy="100" r="2.5" fill="rgba(255,255,255,.65)"/>
+  <circle cx="50" cy="100" r="1.8" fill="rgba(255,255,255,.45)"/>
+  <ellipse id="lidL" cx="44" cy="76" rx="16" ry="3.5" fill="${c}" style="display:none"/>
+  <path d="M 29 80 Q 44 74 59 80" fill="none" stroke="rgba(0,50,130,.38)" stroke-width="2.2" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="display:none"/>
+<!-- Nose -->
+<ellipse cx="12" cy="108" rx="10" ry="7" fill="#222" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
+<circle cx="9" cy="105" r="3.5" fill="rgba(255,255,255,.45)"/>
+<!-- Big happy seal mouth -->
+<g id="mouth">
+  <path id="mn" d="M 6 114 Q 14 124 22 120" stroke="rgba(0,50,140,.5)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none">
+    <path d="M 4 113 Q 14 128 26 113 Q 20 124 14 126 Q 8 124 4 113 Z" fill="#5590cc"/>
+  </g>
+</g>
+<!-- Whiskers -->
+<line x1="22" y1="105" x2="0" y2="99" stroke="rgba(0,60,150,.32)" stroke-width="1.5"/>
+<line x1="22" y1="111" x2="0" y2="111" stroke="rgba(0,60,150,.32)" stroke-width="1.5"/>
+<line x1="22" y1="117" x2="2" y2="122" stroke="rgba(0,60,150,.32)" stroke-width="1.5"/>
+<!-- Cheek -->
+<ellipse cx="26" cy="112" rx="14" ry="8" fill="rgba(100,180,255,.38)"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="44" cy="92" rx="16" ry="18" fill="#2288ff"/>
+  <text x="44" y="99" font-size="17" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+
+function buildDriftail(c='#b3e0ff'){
+  return svg(240,270,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#e0f4ff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#4488bb"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#fff8f0"/><stop offset="100%" stop-color="#ffd4a0"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(0,60,160,.22)"/></filter>
+  <filter id="fg"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="120" cy="264" rx="65" ry="9" fill="rgba(0,0,0,.14)"/>
+<g id="tail" style="transform-origin:120px 224px">
+  <path d="M 86 222 Q 62 242 54 264 Q 78 250 104 244 Q 112 242 120 238 Q 128 242 136 244 Q 162 250 186 264 Q 178 242 154 222 Q 138 212 120 210 Q 102 212 86 222 Z" fill="${c}" stroke="rgba(0,60,160,.2)" stroke-width="1.5"/>
+  <ellipse cx="58" cy="252" rx="16" ry="11" fill="#ff6600" transform="rotate(-20,58,252)" filter="url(#fg)"/>
+  <ellipse cx="62" cy="254" rx="10" ry="7" fill="#ffaa00" transform="rotate(-20,62,254)"/>
+  <ellipse cx="182" cy="252" rx="16" ry="11" fill="#ff6600" transform="rotate(20,182,252)" filter="url(#fg)"/>
+  <ellipse cx="178" cy="254" rx="10" ry="7" fill="#ffaa00" transform="rotate(20,178,254)"/>
+</g>
+<g id="wingL" style="transform-origin:42px 138px">
+  <path d="M 62 158 Q 18 128 10 92 Q 6 70 18 55 Q 32 44 46 58 Q 56 72 56 100 Q 44 76 52 64 Q 62 56 68 70 Q 76 90 68 130 Q 66 146 62 158 Z" fill="${c}" opacity=".9" stroke="rgba(0,60,160,.2)" stroke-width="1.5"/>
+  <path d="M 62 158 Q 22 124 16 90" fill="none" stroke="rgba(0,80,180,.25)" stroke-width="1.5"/>
+  <path d="M 62 150 Q 28 122 22 94" fill="none" stroke="rgba(0,80,180,.2)" stroke-width="1.2"/>
+</g>
+<g id="wingR" style="transform-origin:198px 138px">
+  <path d="M 178 158 Q 222 128 230 92 Q 234 70 222 55 Q 208 44 194 58 Q 184 72 184 100 Q 196 76 188 64 Q 178 56 172 70 Q 164 90 172 130 Q 174 146 178 158 Z" fill="${c}" opacity=".9" stroke="rgba(0,60,160,.2)" stroke-width="1.5"/>
+  <path d="M 178 158 Q 218 124 224 90" fill="none" stroke="rgba(0,80,180,.25)" stroke-width="1.5"/>
+  <path d="M 178 150 Q 212 122 218 94" fill="none" stroke="rgba(0,80,180,.2)" stroke-width="1.2"/>
+</g>
+<g id="bodyGroup" style="transform-origin:120px 185px">
+  <ellipse cx="120" cy="182" rx="66" ry="62" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="120" cy="194" rx="40" ry="37" fill="url(#bg2)"/>
+  <path d="M 96 174 Q 120 178 144 174" fill="none" stroke="rgba(180,100,40,.3)" stroke-width="1.5"/>
+  <path d="M 92 190 Q 120 195 148 190" fill="none" stroke="rgba(180,100,40,.25)" stroke-width="1.5"/>
+  <path d="M 95 207 Q 120 213 145 207" fill="none" stroke="rgba(180,100,40,.22)" stroke-width="1.5"/>
+  <ellipse cx="96" cy="152" rx="18" ry="10" fill="rgba(255,255,255,.28)" transform="rotate(-25,96,152)"/>
+</g>
+<g id="horns">
+  <polygon points="100,72 92,44 110,72" fill="#5a7a9a"/>
+  <polygon points="102,70 94,48 108,70" fill="rgba(255,255,255,.22)"/>
+  <polygon points="140,72 130,44 150,72" fill="#5a7a9a"/>
+  <polygon points="142,70 132,48 148,70" fill="rgba(255,255,255,.22)"/>
+</g>
+<ellipse cx="120" cy="118" rx="58" ry="54" fill="url(#bg1)" filter="url(#sh)"/>
+<circle cx="100" cy="106" r="14" fill="rgba(0,60,160,.08)"/>
+<circle cx="140" cy="106" r="14" fill="rgba(0,60,160,.08)"/>
+<ellipse cx="96" cy="90" rx="16" ry="9" fill="rgba(255,255,255,.28)" transform="rotate(-22,96,90)"/>
+<g id="eyeL" style="transform-origin:96px 112px">
+  <ellipse cx="96" cy="112" rx="14" ry="16" fill="white" stroke="rgba(0,40,120,.2)" stroke-width="1"/>
+  <ellipse cx="96" cy="114" rx="9.5" ry="12" fill="#2a0000"/>
+  <ellipse cx="96" cy="113" rx="6.5" ry="9" fill="#cc2200"/>
+  <ellipse cx="96" cy="113" rx="2.5" ry="7" fill="#111"/>
+  <circle cx="103" cy="106" r="3.8" fill="rgba(255,255,255,.85)"/>
+  <circle cx="91" cy="119" r="2" fill="rgba(255,255,255,.5)"/>
+  <ellipse id="lidL" cx="96" cy="98" rx="14" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 83 102 Q 96 96 109 102" fill="none" stroke="rgba(0,40,120,.45)" stroke-width="2" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:144px 112px">
+  <ellipse cx="144" cy="112" rx="14" ry="16" fill="white" stroke="rgba(0,40,120,.2)" stroke-width="1"/>
+  <ellipse cx="144" cy="114" rx="9.5" ry="12" fill="#2a0000"/>
+  <ellipse cx="144" cy="113" rx="6.5" ry="9" fill="#cc2200"/>
+  <ellipse cx="144" cy="113" rx="2.5" ry="7" fill="#111"/>
+  <circle cx="151" cy="106" r="3.8" fill="rgba(255,255,255,.85)"/>
+  <circle cx="139" cy="119" r="2" fill="rgba(255,255,255,.5)"/>
+  <ellipse id="lidR" cx="144" cy="98" rx="14" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 131 102 Q 144 96 157 102" fill="none" stroke="rgba(0,40,120,.45)" stroke-width="2" stroke-linecap="round"/>
+</g>
+<ellipse cx="114" cy="134" rx="5" ry="3.5" fill="rgba(0,0,0,.3)" transform="rotate(-15,114,134)"/>
+<ellipse cx="126" cy="134" rx="5" ry="3.5" fill="rgba(0,0,0,.3)" transform="rotate(15,126,134)"/>
+<g id="mouth">
+  <path id="mn" d="M 108 144 Q 120 153 132 144" stroke="rgba(0,40,120,.55)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none">
+    <path d="M 106 143 Q 120 162 134 143 Q 128 157 120 159 Q 112 157 106 143 Z" fill="#dd4400"/>
+    <ellipse cx="120" cy="153" rx="10" ry="6" fill="#aa2200"/>
+    <rect x="112" y="143" width="6" height="5.5" rx="1.5" fill="white"/>
+    <rect x="122" y="143" width="6" height="5.5" rx="1.5" fill="white"/>
+    <ellipse cx="120" cy="170" rx="7" ry="14" fill="#ff6600" opacity=".7" filter="url(#fg)"/>
+    <ellipse cx="120" cy="175" rx="4" ry="9" fill="#ffaa00" opacity=".8"/>
+  </g>
+</g>
+<ellipse cx="80" cy="128" rx="14" ry="9" fill="rgba(100,160,255,.3)"/>
+<ellipse cx="160" cy="128" rx="14" ry="9" fill="rgba(100,160,255,.3)"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="96" cy="112" rx="14" ry="16" fill="#ff4400"/>
+  <text x="96" y="118" font-size="15" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="144" cy="112" rx="14" ry="16" fill="#ff4400"/>
+  <text x="144" y="118" font-size="15" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+function buildLunabelle(c='#cdb3ff'){
+  return svg(220,250,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#eee0ff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#7744cc"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#fff8f0"/><stop offset="100%" stop-color="#ffeedd"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(80,40,160,.22)"/></filter>
+  <filter id="mg"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="110" cy="245" rx="62" ry="9" fill="rgba(0,0,0,.13)"/>
+<ellipse id="moonHalo" cx="110" cy="75" rx="78" ry="18" fill="none" stroke="rgba(255,220,80,.28)" stroke-width="4" filter="url(#mg)"/>
+<g id="wingL" style="transform-origin:34px 165px">
+  <path d="M 52 195 Q 16 172 12 138 Q 8 112 20 96 Q 34 80 48 94 Q 58 108 56 136 Q 44 112 52 100 Q 62 92 68 106 Q 76 126 68 162 Q 62 180 52 195 Z" fill="${c}" opacity=".9" stroke="rgba(80,40,160,.2)" stroke-width="1.5"/>
+  <path d="M 22 150 Q 40 145 56 152" fill="none" stroke="rgba(100,50,200,.25)" stroke-width="1.5"/>
+  <path d="M 18 165 Q 38 162 56 165" fill="none" stroke="rgba(100,50,200,.2)" stroke-width="1.2"/>
+</g>
+<g id="wingR" style="transform-origin:186px 165px">
+  <path d="M 168 195 Q 204 172 208 138 Q 212 112 200 96 Q 186 80 172 94 Q 162 108 164 136 Q 176 112 168 100 Q 158 92 152 106 Q 144 126 152 162 Q 158 180 168 195 Z" fill="${c}" opacity=".9" stroke="rgba(80,40,160,.2)" stroke-width="1.5"/>
+  <path d="M 198 150 Q 180 145 164 152" fill="none" stroke="rgba(100,50,200,.25)" stroke-width="1.5"/>
+  <path d="M 202 165 Q 182 162 164 165" fill="none" stroke="rgba(100,50,200,.2)" stroke-width="1.2"/>
+</g>
+<g id="bodyGroup" style="transform-origin:110px 195px">
+  <ellipse cx="110" cy="192" rx="62" ry="58" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="110" cy="204" rx="38" ry="38" fill="url(#bg2)"/>
+  <path d="M 84 182 Q 110 186 136 182" fill="none" stroke="rgba(150,100,255,.22)" stroke-width="2"/>
+  <path d="M 80 200 Q 110 205 140 200" fill="none" stroke="rgba(150,100,255,.18)" stroke-width="2"/>
+  <path d="M 83 218 Q 110 224 137 218" fill="none" stroke="rgba(150,100,255,.15)" stroke-width="2"/>
+  <ellipse cx="86" cy="162" rx="16" ry="9" fill="rgba(255,255,255,.28)" transform="rotate(-22,86,162)"/>
+</g>
+<g id="tuftL" style="transform-origin:72px 70px">
+  <path d="M 60 92 Q 56 68 66 46 Q 74 28 84 46 Q 90 62 84 86 Z" fill="${c}" stroke="rgba(80,40,160,.3)" stroke-width="1.5"/>
+  <path d="M 64 88 Q 62 68 70 50 Q 76 36 82 50 Q 86 66 82 84 Z" fill="rgba(200,160,255,.55)"/>
+</g>
+<g id="tuftR" style="transform-origin:148px 70px">
+  <path d="M 136 86 Q 130 62 136 46 Q 146 28 156 46 Q 164 62 160 86 Z" fill="${c}" stroke="rgba(80,40,160,.3)" stroke-width="1.5"/>
+  <path d="M 138 84 Q 134 68 138 50 Q 144 36 152 50 Q 158 66 156 82 Z" fill="rgba(200,160,255,.55)"/>
+</g>
+<ellipse cx="110" cy="110" rx="58" ry="54" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="110" cy="118" rx="50" ry="44" fill="rgba(255,248,240,.44)"/>
+<ellipse cx="86" cy="86" rx="16" ry="9" fill="rgba(255,255,255,.28)" transform="rotate(-22,86,86)"/>
+<g id="eyeL" style="transform-origin:88px 108px">
+  <circle cx="88" cy="108" r="22" fill="rgba(180,140,255,.3)"/>
+  <circle cx="88" cy="108" r="18" fill="white" stroke="rgba(60,20,140,.2)" stroke-width="1"/>
+  <circle cx="88" cy="108" r="13" fill="#2a0a6a"/>
+  <circle cx="88" cy="108" r="8.5" fill="#5522aa"/>
+  <circle cx="88" cy="108" r="5" fill="#0a0020"/>
+  <circle cx="96" cy="100" r="5" fill="white"/>
+  <circle cx="83" cy="115" r="2.8" fill="rgba(255,255,255,.6)"/>
+  <circle cx="94" cy="115" r="1.8" fill="rgba(255,255,255,.4)"/>
+  <ellipse id="lidL" cx="88" cy="90" rx="18" ry="3.5" fill="${c}" style="display:none"/>
+  <path d="M 70 96 Q 88 89 106 96" fill="none" stroke="rgba(60,20,140,.4)" stroke-width="2.2" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:132px 108px">
+  <circle cx="132" cy="108" r="22" fill="rgba(180,140,255,.3)"/>
+  <circle cx="132" cy="108" r="18" fill="white" stroke="rgba(60,20,140,.2)" stroke-width="1"/>
+  <circle cx="132" cy="108" r="13" fill="#2a0a6a"/>
+  <circle cx="132" cy="108" r="8.5" fill="#5522aa"/>
+  <circle cx="132" cy="108" r="5" fill="#0a0020"/>
+  <circle cx="140" cy="100" r="5" fill="white"/>
+  <circle cx="127" cy="115" r="2.8" fill="rgba(255,255,255,.6)"/>
+  <circle cx="138" cy="115" r="1.8" fill="rgba(255,255,255,.4)"/>
+  <ellipse id="lidR" cx="132" cy="90" rx="18" ry="3.5" fill="${c}" style="display:none"/>
+  <path d="M 114 96 Q 132 89 150 96" fill="none" stroke="rgba(60,20,140,.4)" stroke-width="2.2" stroke-linecap="round"/>
+</g>
+<polygon points="110,128 103,142 117,142" fill="#dd9922" stroke="rgba(120,70,0,.35)" stroke-width="1.5"/>
+<ellipse cx="107" cy="130" rx="2.8" ry="1.8" fill="rgba(255,255,255,.38)"/>
+<g id="talons">
+  <ellipse cx="80" cy="232" rx="19" ry="12" fill="${c}" transform="rotate(-5,80,232)"/>
+  <ellipse cx="140" cy="232" rx="19" ry="12" fill="${c}" transform="rotate(5,140,232)"/>
+  <line x1="73" y1="231" x2="69" y2="244" stroke="rgba(80,40,160,.38)" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="80" y1="230" x2="78" y2="244" stroke="rgba(80,40,160,.38)" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="87" y1="231" x2="87" y2="244" stroke="rgba(80,40,160,.38)" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="133" y1="231" x2="133" y2="244" stroke="rgba(80,40,160,.38)" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="140" y1="230" x2="142" y2="244" stroke="rgba(80,40,160,.38)" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="147" y1="231" x2="151" y2="244" stroke="rgba(80,40,160,.38)" stroke-width="2.2" stroke-linecap="round"/>
+</g>
+<g id="heartEyes" style="display:none">
+  <circle cx="88" cy="108" r="18" fill="#8833cc"/>
+  <text x="88" y="115" font-size="18" text-anchor="middle" fill="white">♥</text>
+  <circle cx="132" cy="108" r="18" fill="#8833cc"/>
+  <text x="132" y="115" font-size="18" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+function buildGlimcat(c='#e0b3ff'){
+  return svg(210,235,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#f5eaff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#8844cc"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="38%" r="52%"><stop offset="0%" stop-color="#fff0ff"/><stop offset="100%" stop-color="#ddb3ff"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(120,40,200,.25)"/></filter>
+  <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="105" cy="229" rx="55" ry="9" fill="rgba(0,0,0,.13)"/>
+<!-- Long curling tail - cat signature -->
+<g id="tail" style="transform-origin:148px 185px">
+  <path d="M 148 198 Q 172 192 182 175 Q 190 158 180 145 Q 170 134 158 140 Q 150 148 155 162 Q 160 175 150 188 Z" fill="${c}" stroke="rgba(100,30,180,.25)" stroke-width="1.5"/>
+  <path d="M 150 195 Q 170 190 178 175 Q 185 160 177 149 Q 170 142 162 146 Q 157 152 160 164 Q 164 176 156 188 Z" fill="#c880ff" opacity=".5"/>
+  <!-- Tail tip -->
+  <ellipse cx="157" cy="141" rx="10" ry="8" fill="#9933cc" opacity=".8"/>
+</g>
+<!-- Slimmer body than before -->
+<g id="bodyGroup" style="transform-origin:105px 178px">
+  <ellipse cx="105" cy="174" rx="58" ry="60" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="105" cy="184" rx="36" ry="40" fill="url(#bg2)"/>
+  <ellipse cx="84" cy="148" rx="14" ry="7" fill="rgba(255,255,255,.28)" transform="rotate(-22,84,148)"/>
+  <!-- Glowing spots -->
+  <circle cx="82" cy="165" r="4" fill="rgba(180,100,255,.45)" filter="url(#glow)"/>
+  <circle cx="128" cy="160" r="3.5" fill="rgba(180,100,255,.4)" filter="url(#glow)"/>
+</g>
+<!-- Triangle cat ears -->
+<g id="earL" style="transform-origin:64px 75px">
+  <polygon points="46,108 64,52 82,108" fill="${c}" stroke="rgba(100,30,180,.28)" stroke-width="1.5"/>
+  <polygon points="52,102 64,60 76,102" fill="#c880ff"/>
+  <polygon points="57,100 64,68 71,100" fill="rgba(255,220,255,.5)"/>
+</g>
+<g id="earR" style="transform-origin:146px 75px">
+  <polygon points="128,108 146,52 164,108" fill="${c}" stroke="rgba(100,30,180,.28)" stroke-width="1.5"/>
+  <polygon points="134,102 146,60 158,102" fill="#c880ff"/>
+  <polygon points="139,100 146,68 153,100" fill="rgba(255,220,255,.5)"/>
+</g>
+<!-- Head -->
+<ellipse cx="105" cy="118" rx="55" ry="50" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="84" cy="98" rx="14" ry="7" fill="rgba(255,255,255,.28)" transform="rotate(-22,84,98)"/>
+<!-- Glowing mystical eyes -->
+<g id="eyeL" style="transform-origin:82px 114px">
+  <ellipse cx="82" cy="114" rx="14" ry="16" fill="white" stroke="rgba(100,30,180,.18)" stroke-width="1"/>
+  <ellipse cx="82" cy="116" rx="9.5" ry="12" fill="#2a0050"/>
+  <ellipse cx="82" cy="115" rx="6.2" ry="8.5" fill="#8822ee"/>
+  <circle cx="82" cy="116" r="4.2" fill="#111"/>
+  <circle cx="87" cy="109" r="3.5" fill="white"/>
+  <circle cx="82" cy="106" r="2.2" fill="rgba(180,100,255,.6)" filter="url(#glow)"/>
+  <ellipse id="lidL" cx="82" cy="100" rx="14" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 69 106 Q 82 101 95 106" fill="none" stroke="rgba(100,30,180,.38)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:128px 114px">
+  <ellipse cx="128" cy="114" rx="14" ry="16" fill="white" stroke="rgba(100,30,180,.18)" stroke-width="1"/>
+  <ellipse cx="128" cy="116" rx="9.5" ry="12" fill="#2a0050"/>
+  <ellipse cx="128" cy="115" rx="6.2" ry="8.5" fill="#8822ee"/>
+  <circle cx="128" cy="116" r="4.2" fill="#111"/>
+  <circle cx="133" cy="109" r="3.5" fill="white"/>
+  <circle cx="128" cy="106" r="2.2" fill="rgba(180,100,255,.6)" filter="url(#glow)"/>
+  <ellipse id="lidR" cx="128" cy="100" rx="14" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 115 106 Q 128 101 141 106" fill="none" stroke="rgba(100,30,180,.38)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<!-- Small cat nose -->
+<path d="M 98 132 L 105 128 L 112 132 L 105 138 Z" fill="#cc55ee" stroke="rgba(120,0,180,.3)" stroke-width="1"/>
+<circle cx="102" cy="130" r="2" fill="rgba(255,255,255,.5)"/>
+<g id="mouth">
+  <path id="mn" d="M 96 138 Q 100 143 105 141 Q 110 143 114 138" stroke="rgba(130,30,180,.55)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 93 137 Q 105 154 117 137 Q 112 150 105 151 Q 98 150 93 137 Z" fill="#cc55ee"/></g>
+</g>
+<ellipse cx="70" cy="132" rx="13" ry="7" fill="rgba(180,100,255,.35)"/>
+<ellipse cx="140" cy="132" rx="13" ry="7" fill="rgba(180,100,255,.35)"/>
+<!-- Whiskers - cats need whiskers -->
+<line x1="88" y1="128" x2="52" y2="122" stroke="rgba(140,60,200,.42)" stroke-width="1.5"/>
+<line x1="88" y1="134" x2="50" y2="134" stroke="rgba(140,60,200,.42)" stroke-width="1.5"/>
+<line x1="88" y1="140" x2="54" y2="146" stroke="rgba(140,60,200,.42)" stroke-width="1.5"/>
+<line x1="122" y1="128" x2="158" y2="122" stroke="rgba(140,60,200,.42)" stroke-width="1.5"/>
+<line x1="122" y1="134" x2="160" y2="134" stroke="rgba(140,60,200,.42)" stroke-width="1.5"/>
+<line x1="122" y1="140" x2="156" y2="146" stroke="rgba(140,60,200,.42)" stroke-width="1.5"/>
+<!-- Slim paws -->
+<ellipse cx="76" cy="222" rx="18" ry="11" fill="url(#bg1)"/>
+<ellipse cx="134" cy="222" rx="18" ry="11" fill="url(#bg1)"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="82" cy="114" rx="14" ry="16" fill="#aa44ff"/>
+  <text x="82" y="121" font-size="14" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="128" cy="114" rx="14" ry="16" fill="#aa44ff"/>
+  <text x="128" y="121" font-size="14" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+
+function buildCoraluff(c='#ffb3b3'){
+  return svg(210,240,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#ffd8d8"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#cc6666"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#fff0f0"/><stop offset="100%" stop-color="#ffcccc"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(180,60,60,.25)"/></filter>
+</defs>
+<ellipse cx="105" cy="234" rx="62" ry="9" fill="rgba(0,0,0,.13)"/>
+<g id="bodyGroup" style="transform-origin:105px 188px">
+  <ellipse cx="105" cy="185" rx="74" ry="66" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="105" cy="198" rx="46" ry="38" fill="url(#bg2)"/>
+  <ellipse cx="82" cy="156" rx="17" ry="9" fill="rgba(255,255,255,.3)" transform="rotate(-25,82,156)"/>
+</g>
+<!-- Round bear ears -->
+<circle cx="62" cy="72" r="24" fill="${c}" stroke="rgba(160,50,50,.25)" stroke-width="1.5"/>
+<circle cx="62" cy="72" r="16" fill="#ffcccc"/>
+<circle cx="148" cy="72" r="24" fill="${c}" stroke="rgba(160,50,50,.25)" stroke-width="1.5"/>
+<circle cx="148" cy="72" r="16" fill="#ffcccc"/>
+<ellipse cx="105" cy="128" rx="58" ry="54" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="82" cy="105" rx="15" ry="8" fill="rgba(255,255,255,.28)" transform="rotate(-22,82,105)"/>
+<!-- Bear muzzle -->
+<ellipse cx="105" cy="148" rx="28" ry="20" fill="#ffcccc" stroke="rgba(160,50,50,.2)" stroke-width="1"/>
+<g id="eyeL" style="transform-origin:84px 118px">
+  <ellipse cx="84" cy="118" rx="13" ry="14" fill="white" stroke="rgba(100,30,30,.2)" stroke-width="1"/>
+  <ellipse cx="84" cy="120" rx="8.5" ry="10" fill="#2a0a0a"/>
+  <ellipse cx="84" cy="119" rx="5.5" ry="7" fill="#552222"/>
+  <circle cx="84" cy="120" r="4" fill="#111"/>
+  <circle cx="89" cy="114" r="3.2" fill="white"/>
+  <ellipse id="lidL" cx="84" cy="106" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 73 110 Q 84 105 95 110" fill="none" stroke="rgba(100,30,30,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:126px 118px">
+  <ellipse cx="126" cy="118" rx="13" ry="14" fill="white" stroke="rgba(100,30,30,.2)" stroke-width="1"/>
+  <ellipse cx="126" cy="120" rx="8.5" ry="10" fill="#2a0a0a"/>
+  <ellipse cx="126" cy="119" rx="5.5" ry="7" fill="#552222"/>
+  <circle cx="126" cy="120" r="4" fill="#111"/>
+  <circle cx="131" cy="114" r="3.2" fill="white"/>
+  <ellipse id="lidR" cx="126" cy="106" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 115 110 Q 126 105 137 110" fill="none" stroke="rgba(100,30,30,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<circle cx="105" cy="148" r="10" fill="#cc7777" stroke="rgba(140,40,40,.3)" stroke-width="1.5"/>
+<circle cx="102" cy="145" r="3.5" fill="rgba(255,255,255,.45)"/>
+<g id="mouth">
+  <path id="mn" d="M 94 158 Q 100 165 105 163 Q 110 165 116 158" stroke="rgba(140,40,40,.6)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 91 156 Q 105 174 119 156 Q 113 168 105 170 Q 97 168 91 156 Z" fill="#cc7777"/><ellipse cx="105" cy="165" rx="9" ry="6" fill="#aa4444"/></g>
+</g>
+<ellipse cx="72" cy="142" rx="13" ry="8" fill="rgba(255,140,140,.4)"/>
+<ellipse cx="138" cy="142" rx="13" ry="8" fill="rgba(255,140,140,.4)"/>
+<g id="paws"><ellipse cx="76" cy="226" rx="22" ry="14" fill="url(#bg1)"/><ellipse cx="134" cy="226" rx="22" ry="14" fill="url(#bg1)"/></g>
+<g id="heartEyes" style="display:none"><ellipse cx="84" cy="118" rx="13" ry="14" fill="#ff6666"/><text x="84" y="124" font-size="13" text-anchor="middle" fill="white">♥</text><ellipse cx="126" cy="118" rx="13" ry="14" fill="#ff6666"/><text x="126" y="124" font-size="13" text-anchor="middle" fill="white">♥</text></g>`);
+}
+
+function buildPeppin(c='#ffdfb3'){
+  return svg(190,210,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#fff3e0"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#cc9944"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="38%" r="52%"><stop offset="0%" stop-color="#fffbf0"/><stop offset="100%" stop-color="#ffe8b0"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(160,120,0,.22)"/></filter>
+</defs>
+<ellipse cx="95" cy="205" rx="52" ry="8" fill="rgba(0,0,0,.12)"/>
+<g id="bodyGroup" style="transform-origin:95px 165px">
+  <!-- Very round hamster body -->
+  <ellipse cx="95" cy="162" rx="68" ry="60" fill="url(#bg1)" filter="url(#sh)"/>
+  <!-- Chubby cheeks -->
+  <ellipse cx="56" cy="158" rx="22" ry="18" fill="#ffddaa"/>
+  <ellipse cx="134" cy="158" rx="22" ry="18" fill="#ffddaa"/>
+  <ellipse cx="95" cy="174" rx="42" ry="32" fill="url(#bg2)"/>
+  <ellipse cx="75" cy="138" rx="13" ry="7" fill="rgba(255,255,255,.28)" transform="rotate(-25,75,138)"/>
+</g>
+<!-- Small round ears -->
+<circle cx="60" cy="78" r="18" fill="${c}" stroke="rgba(140,90,0,.2)" stroke-width="1.5"/>
+<circle cx="60" cy="78" r="11" fill="#ffccaa"/>
+<circle cx="130" cy="78" r="18" fill="${c}" stroke="rgba(140,90,0,.2)" stroke-width="1.5"/>
+<circle cx="130" cy="78" r="11" fill="#ffccaa"/>
+<ellipse cx="95" cy="112" rx="50" ry="46" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="75" cy="93" rx="12" ry="6.5" fill="rgba(255,255,255,.28)" transform="rotate(-22,75,93)"/>
+<g id="eyeL" style="transform-origin:78px 108px">
+  <ellipse cx="78" cy="108" rx="11" ry="12" fill="white"/>
+  <ellipse cx="78" cy="110" rx="7" ry="8.5" fill="#1a1000"/>
+  <ellipse cx="78" cy="109" rx="4.5" ry="6" fill="#553300"/>
+  <circle cx="78" cy="110" r="3.2" fill="#111"/>
+  <circle cx="82" cy="105" r="2.8" fill="white"/>
+  <ellipse id="lidL" cx="78" cy="98" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+</g>
+<g id="eyeR" style="transform-origin:112px 108px">
+  <ellipse cx="112" cy="108" rx="11" ry="12" fill="white"/>
+  <ellipse cx="112" cy="110" rx="7" ry="8.5" fill="#1a1000"/>
+  <ellipse cx="112" cy="109" rx="4.5" ry="6" fill="#553300"/>
+  <circle cx="112" cy="110" r="3.2" fill="#111"/>
+  <circle cx="116" cy="105" r="2.8" fill="white"/>
+  <ellipse id="lidR" cx="112" cy="98" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+</g>
+<ellipse cx="95" cy="124" rx="7" ry="5.5" fill="#dd9955" stroke="rgba(140,80,0,.3)" stroke-width="1"/>
+<circle cx="93" cy="122" r="2" fill="rgba(255,255,255,.5)"/>
+<g id="mouth">
+  <path id="mn" d="M 87 132 Q 91 138 95 136 Q 99 138 103 132" stroke="rgba(140,80,0,.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 85 131 Q 95 148 105 131 Q 100 143 95 144 Q 90 143 85 131 Z" fill="#dd9955"/><ellipse cx="95" cy="140" rx="7" ry="4.5" fill="#aa6622"/></g>
+</g>
+<ellipse cx="66" cy="126" rx="11" ry="7" fill="rgba(255,160,80,.38)"/>
+<ellipse cx="124" cy="126" rx="11" ry="7" fill="rgba(255,160,80,.38)"/>
+<g id="paws"><ellipse cx="68" cy="198" rx="18" ry="11" fill="url(#bg1)"/><ellipse cx="122" cy="198" rx="18" ry="11" fill="url(#bg1)"/></g>
+<g id="heartEyes" style="display:none"><ellipse cx="78" cy="108" rx="11" ry="12" fill="#ffaa44"/><text x="78" y="114" font-size="12" text-anchor="middle" fill="white">♥</text><ellipse cx="112" cy="108" rx="11" ry="12" fill="#ffaa44"/><text x="112" y="114" font-size="12" text-anchor="middle" fill="white">♥</text></g>`);
+}
+
+function buildStarwhirl(c='#fff0a0'){
+  return svg(200,200,`
+<defs>
+  <radialGradient id="bg1" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="#fffde0"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#ddaa00"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(180,140,0,.25)"/></filter>
+  <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="100" cy="196" rx="50" ry="8" fill="rgba(0,0,0,.12)"/>
+<!-- Star body - 5 points -->
+<g id="bodyGroup" style="transform-origin:100px 100px">
+  <polygon points="100,10 122,72 188,72 135,110 155,172 100,134 45,172 65,110 12,72 78,72" fill="url(#bg1)" filter="url(#sh)" stroke="rgba(180,140,0,.3)" stroke-width="2"/>
+  <polygon points="100,28 116,70 156,70 124,94 136,136 100,112 64,136 76,94 44,70 84,70" fill="rgba(255,255,200,.4)"/>
+  <!-- Star glow -->
+  <ellipse cx="100" cy="100" rx="35" ry="35" fill="rgba(255,255,180,.25)" filter="url(#glow)"/>
+</g>
+<!-- Face in center of star -->
+<g id="eyeL" style="transform-origin:84px 95px">
+  <ellipse cx="84" cy="95" rx="11" ry="13" fill="white"/>
+  <ellipse cx="84" cy="97" rx="7.5" ry="9.5" fill="#1a1800"/>
+  <ellipse cx="84" cy="96" rx="5" ry="7" fill="#554400"/>
+  <circle cx="84" cy="97" r="3.5" fill="#111"/>
+  <circle cx="89" cy="91" r="3" fill="white"/>
+  <ellipse id="lidL" cx="84" cy="84" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+</g>
+<g id="eyeR" style="transform-origin:116px 95px">
+  <ellipse cx="116" cy="95" rx="11" ry="13" fill="white"/>
+  <ellipse cx="116" cy="97" rx="7.5" ry="9.5" fill="#1a1800"/>
+  <ellipse cx="116" cy="96" rx="5" ry="7" fill="#554400"/>
+  <circle cx="116" cy="97" r="3.5" fill="#111"/>
+  <circle cx="121" cy="91" r="3" fill="white"/>
+  <ellipse id="lidR" cx="116" cy="84" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+</g>
+<ellipse cx="100" cy="112" rx="6" ry="4.5" fill="#ddaa00" stroke="rgba(160,120,0,.3)" stroke-width="1"/>
+<g id="mouth">
+  <path id="mn" d="M 92 120 Q 97 126 100 124 Q 103 126 108 120" stroke="rgba(160,120,0,.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 90 119 Q 100 134 110 119 Q 106 130 100 131 Q 94 130 90 119 Z" fill="#ddaa00"/></g>
+</g>
+<ellipse cx="72" cy="108" rx="10" ry="6" fill="rgba(255,220,80,.4)"/>
+<ellipse cx="128" cy="108" rx="10" ry="6" fill="rgba(255,220,80,.4)"/>
+<!-- Sparkle trail effects -->
+<circle cx="34" cy="40" r="5" fill="rgba(255,240,100,.7)" filter="url(#glow)"/>
+<circle cx="165" cy="35" r="4" fill="rgba(255,240,100,.65)" filter="url(#glow)"/>
+<circle cx="170" cy="165" r="4.5" fill="rgba(255,240,100,.6)" filter="url(#glow)"/>
+<g id="heartEyes" style="display:none"><ellipse cx="84" cy="95" rx="11" ry="13" fill="#ffcc00"/><text x="84" y="101" font-size="12" text-anchor="middle" fill="white">♥</text><ellipse cx="116" cy="95" rx="11" ry="13" fill="#ffcc00"/><text x="116" y="101" font-size="12" text-anchor="middle" fill="white">♥</text></g>`);
+}
+
+function buildMossling(c='#c8ffb3'){
+  return svg(210,200,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#e8ffdc"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#5aaa30"/></radialGradient>
+  <radialGradient id="shellG" cx="45%" cy="35%" r="58%"><stop offset="0%" stop-color="#a87840"/><stop offset="100%" stop-color="#6a4a18"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(60,120,30,.22)"/></filter>
+</defs>
+<ellipse cx="105" cy="196" rx="60" ry="9" fill="rgba(0,0,0,.13)"/>
+<!-- Shell on back -->
+<g id="bodyGroup" style="transform-origin:105px 148px">
+  <ellipse cx="105" cy="145" rx="76" ry="58" fill="url(#shellG)" filter="url(#sh)"/>
+  <ellipse cx="105" cy="140" rx="66" ry="50" fill="url(#bg1)"/>
+  <!-- Shell hex pattern -->
+  <path d="M 60 128 Q 82 120 105 128 Q 128 120 150 128 Q 128 136 105 128 Q 82 136 60 128" stroke="rgba(80,50,10,.3)" stroke-width="1.5" fill="none"/>
+  <path d="M 55 148 Q 80 140 105 148 Q 130 140 155 148 Q 130 156 105 148 Q 80 156 55 148" stroke="rgba(80,50,10,.25)" stroke-width="1.5" fill="none"/>
+  <ellipse cx="82" cy="116" rx="14" ry="8" fill="rgba(255,255,255,.25)" transform="rotate(-22,82,116)"/>
+</g>
+<!-- Head peeking out -->
+<ellipse cx="105" cy="100" rx="44" ry="40" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="86" cy="83" rx="12" ry="6.5" fill="rgba(255,255,255,.28)" transform="rotate(-22,86,83)"/>
+<g id="eyeL" style="transform-origin:88px 96px">
+  <ellipse cx="88" cy="96" rx="11" ry="12" fill="white"/>
+  <ellipse cx="88" cy="98" rx="7" ry="8.5" fill="#0a2000"/>
+  <ellipse cx="88" cy="97" rx="4.5" ry="6" fill="#2a6010"/>
+  <circle cx="88" cy="98" r="3.2" fill="#111"/>
+  <circle cx="93" cy="92" r="2.8" fill="white"/>
+  <ellipse id="lidL" cx="88" cy="86" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+  <path d="M 78 88 Q 88 83 98 88" fill="none" stroke="rgba(30,80,10,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:122px 96px">
+  <ellipse cx="122" cy="96" rx="11" ry="12" fill="white"/>
+  <ellipse cx="122" cy="98" rx="7" ry="8.5" fill="#0a2000"/>
+  <ellipse cx="122" cy="97" rx="4.5" ry="6" fill="#2a6010"/>
+  <circle cx="122" cy="98" r="3.2" fill="#111"/>
+  <circle cx="127" cy="92" r="2.8" fill="white"/>
+  <ellipse id="lidR" cx="122" cy="86" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+  <path d="M 112 88 Q 122 83 132 88" fill="none" stroke="rgba(30,80,10,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<ellipse cx="105" cy="112" rx="7" ry="5" fill="#88cc44" stroke="rgba(40,100,10,.3)" stroke-width="1"/>
+<g id="mouth">
+  <path id="mn" d="M 97 120 Q 101 126 105 124 Q 109 126 113 120" stroke="rgba(40,100,10,.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 95 119 Q 105 134 115 119 Q 110 131 105 132 Q 100 131 95 119 Z" fill="#88cc44"/></g>
+</g>
+<!-- Tiny legs -->
+<ellipse cx="68" cy="178" rx="18" ry="12" fill="url(#bg1)" transform="rotate(-15,68,178)"/>
+<ellipse cx="142" cy="178" rx="18" ry="12" fill="url(#bg1)" transform="rotate(15,142,178)"/>
+<g id="heartEyes" style="display:none"><ellipse cx="88" cy="96" rx="11" ry="12" fill="#66cc22"/><text x="88" y="102" font-size="12" text-anchor="middle" fill="white">♥</text><ellipse cx="122" cy="96" rx="11" ry="12" fill="#66cc22"/><text x="122" y="102" font-size="12" text-anchor="middle" fill="white">♥</text></g>`);
+}
+
+function buildTwinkow(c='#ffd6f5'){
+  return svg(260,260,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#fff0ff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#cc66cc"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#ffccee"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(160,60,160,.22)"/></filter>
+  <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="145" cy="253" rx="75" ry="10" fill="rgba(0,0,0,.13)"/>
+<!-- Body - horse shaped, longer horizontal -->
+<g id="bodyGroup" style="transform-origin:145px 185px">
+  <ellipse cx="145" cy="182" rx="88" ry="58" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="135" cy="190" rx="62" ry="40" fill="url(#bg2)"/>
+  <ellipse cx="105" cy="155" rx="22" ry="11" fill="rgba(255,255,255,.3)" transform="rotate(-20,105,155)"/>
+</g>
+<!-- Tail - flowing -->
+<g id="tail" style="transform-origin:222px 185px">
+  <path d="M 225 170 Q 248 155 252 175 Q 255 196 240 205 Q 226 210 222 195 Z" fill="#ff88cc" opacity=".8"/>
+  <path d="M 228 172 Q 248 160 250 178 Q 252 196 238 204" fill="none" stroke="#ffaadd" stroke-width="2" opacity=".6"/>
+  <path d="M 224 168 Q 244 152 246 170 Q 248 188 235 198" fill="none" stroke="#ffccee" stroke-width="1.5" opacity=".5"/>
+</g>
+<!-- Back legs -->
+<g id="legBL" style="transform-origin:188px 225px">
+  <rect x="180" y="220" width="18" height="48" rx="9" fill="${c}" stroke="rgba(160,60,160,.2)" stroke-width="1.5"/>
+  <ellipse cx="189" cy="268" rx="14" ry="7" fill="${c}" stroke="rgba(160,60,160,.2)" stroke-width="1"/>
+</g>
+<g id="legBR" style="transform-origin:215px 225px">
+  <rect x="207" y="220" width="18" height="48" rx="9" fill="${c}" stroke="rgba(160,60,160,.2)" stroke-width="1.5"/>
+  <ellipse cx="216" cy="268" rx="14" ry="7" fill="${c}" stroke="rgba(160,60,160,.2)" stroke-width="1"/>
+</g>
+<!-- Front legs -->
+<g id="legFL" style="transform-origin:88px 225px">
+  <rect x="80" y="220" width="18" height="46" rx="9" fill="${c}" stroke="rgba(160,60,160,.2)" stroke-width="1.5"/>
+  <ellipse cx="89" cy="266" rx="14" ry="7" fill="${c}" stroke="rgba(160,60,160,.2)" stroke-width="1"/>
+</g>
+<g id="legFR" style="transform-origin:115px 225px">
+  <rect x="107" y="220" width="18" height="46" rx="9" fill="${c}" stroke="rgba(160,60,160,.2)" stroke-width="1.5"/>
+  <ellipse cx="116" cy="266" rx="14" ry="7" fill="${c}" stroke="rgba(160,60,160,.2)" stroke-width="1"/>
+</g>
+<!-- Neck -->
+<path d="M 68 148 Q 58 115 68 88 Q 78 72 92 76 Q 106 80 108 108 Q 110 135 98 155 Z" fill="url(#bg1)" stroke="rgba(160,60,160,.15)" stroke-width="1"/>
+<!-- Mane flowing down neck -->
+<path d="M 72 88 Q 62 105 65 128 Q 68 148 75 155" fill="none" stroke="#ff88cc" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+<path d="M 78 84 Q 68 102 70 125 Q 72 145 78 152" fill="none" stroke="#ffaaee" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+<path d="M 84 82 Q 76 100 77 122 Q 78 142 84 150" fill="none" stroke="#ffccf5" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+<!-- Head -->
+<ellipse cx="80" cy="74" rx="42" ry="38" fill="url(#bg1)" filter="url(#sh)"/>
+<!-- Snout / muzzle -->
+<ellipse cx="54" cy="82" rx="22" ry="16" fill="url(#bg2)" stroke="rgba(160,60,160,.15)" stroke-width="1"/>
+<ellipse cx="80" cy="60" rx="28" ry="10" fill="rgba(255,255,255,.28)" transform="rotate(-10,80,60)"/>
+<!-- Horn -->
+<polygon points="80,22 74,54 86,54" fill="#ffdd44" stroke="rgba(180,140,0,.4)" stroke-width="1.5"/>
+<polygon points="80,26 76,52 84,52" fill="rgba(255,255,200,.5)"/>
+<!-- Horn rings -->
+<line x1="75" y1="42" x2="85" y2="38" stroke="rgba(255,200,0,.5)" stroke-width="1.5"/>
+<line x1="74" y1="48" x2="86" y2="44" stroke="rgba(255,200,0,.4)" stroke-width="1.5"/>
+<!-- Ear -->
+<g id="earL" style="transform-origin:100px 56px">
+  <ellipse cx="100" cy="52" rx="12" ry="20" fill="${c}" stroke="rgba(160,60,160,.25)" stroke-width="1.5" transform="rotate(15,100,52)"/>
+  <ellipse cx="100" cy="54" rx="7" ry="13" fill="#ffaaee" transform="rotate(15,100,54)"/>
+</g>
+<!-- Eyes -->
+<g id="eyeL" style="transform-origin:74px 70px">
+  <ellipse cx="74" cy="70" rx="11" ry="13" fill="white" stroke="rgba(140,40,160,.2)" stroke-width="1"/>
+  <ellipse cx="74" cy="72" rx="7.5" ry="9.5" fill="#1a0030"/>
+  <ellipse cx="74" cy="71" rx="5" ry="7" fill="#aa44cc"/>
+  <circle cx="74" cy="72" r="3.8" fill="#111"/>
+  <circle cx="79" cy="66" r="3" fill="white"/>
+  <ellipse id="lidL" cx="74" cy="59" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+  <path d="M 64 62 Q 74 57 84 62" fill="none" stroke="rgba(140,40,160,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="display:none"/>
+<!-- Nostril -->
+<circle cx="44" cy="84" r="3.5" fill="rgba(160,60,160,.3)"/>
+<!-- Mouth -->
+<g id="mouth">
+  <path id="mn" d="M 40 90 Q 52 98 58 94" stroke="rgba(160,60,160,.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 38 89 Q 52 102 62 89 Q 56 99 52 100 Q 46 99 38 89 Z" fill="#ffaaee"/></g>
+</g>
+<!-- Cheek -->
+<ellipse cx="58" cy="82" rx="12" ry="7" fill="rgba(255,150,220,.38)"/>
+<!-- Rainbow sparkles near horn -->
+<circle cx="92" cy="30" r="4" fill="#ff5252" opacity=".7" filter="url(#glow)"/>
+<circle cx="98" cy="24" r="3" fill="#ffe040" opacity=".7" filter="url(#glow)"/>
+<circle cx="104" cy="30" r="3.5" fill="#4dcf8a" opacity=".7" filter="url(#glow)"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="74" cy="70" rx="11" ry="13" fill="#dd44cc"/>
+  <text x="74" y="76" font-size="12" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+
+function buildBoulbear(c='#d4e0ff'){
+  return svg(210,235,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#eef2ff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#6677aa"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#f8f8ff"/><stop offset="100%" stop-color="#c4d0ee"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(60,70,160,.22)"/></filter>
+</defs>
+<ellipse cx="105" cy="229" rx="62" ry="9" fill="rgba(0,0,0,.13)"/>
+<g id="bodyGroup" style="transform-origin:105px 182px">
+  <!-- Extra round panda body -->
+  <ellipse cx="105" cy="178" rx="74" ry="66" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="105" cy="190" rx="46" ry="38" fill="white"/>
+  <ellipse cx="82" cy="150" rx="16" ry="9" fill="rgba(255,255,255,.32)" transform="rotate(-25,82,150)"/>
+</g>
+<!-- Black panda ears -->
+<circle cx="62" cy="70" r="26" fill="#222" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
+<circle cx="62" cy="70" r="16" fill="#444"/>
+<circle cx="148" cy="70" r="26" fill="#222" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
+<circle cx="148" cy="70" r="16" fill="#444"/>
+<ellipse cx="105" cy="122" rx="58" ry="54" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="83" cy="100" rx="14" ry="8" fill="rgba(255,255,255,.28)" transform="rotate(-22,83,100)"/>
+<!-- Panda eye patches -->
+<ellipse cx="83" cy="116" rx="20" ry="17" fill="#222"/>
+<ellipse cx="127" cy="116" rx="20" ry="17" fill="#222"/>
+<g id="eyeL" style="transform-origin:83px 116px">
+  <ellipse cx="83" cy="116" rx="13" ry="14" fill="white"/>
+  <ellipse cx="83" cy="118" rx="8.5" ry="10" fill="#0a0a0a"/>
+  <ellipse cx="83" cy="117" rx="5.5" ry="7" fill="#223344"/>
+  <circle cx="83" cy="118" r="4" fill="#111"/>
+  <circle cx="88" cy="112" r="3.2" fill="white"/>
+  <ellipse id="lidL" cx="83" cy="104" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+</g>
+<g id="eyeR" style="transform-origin:127px 116px">
+  <ellipse cx="127" cy="116" rx="13" ry="14" fill="white"/>
+  <ellipse cx="127" cy="118" rx="8.5" ry="10" fill="#0a0a0a"/>
+  <ellipse cx="127" cy="117" rx="5.5" ry="7" fill="#223344"/>
+  <circle cx="127" cy="118" r="4" fill="#111"/>
+  <circle cx="132" cy="112" r="3.2" fill="white"/>
+  <ellipse id="lidR" cx="127" cy="104" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+</g>
+<ellipse cx="105" cy="136" rx="14" ry="10" fill="white"/>
+<ellipse cx="105" cy="136" rx="9" ry="7" fill="#cc8899" stroke="rgba(140,40,60,.3)" stroke-width="1"/>
+<circle cx="102" cy="134" r="2.5" fill="rgba(255,255,255,.45)"/>
+<g id="mouth">
+  <path id="mn" d="M 94 145 Q 100 152 105 150 Q 110 152 116 145" stroke="rgba(100,40,60,.6)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 91 144 Q 105 162 119 144 Q 113 156 105 158 Q 97 156 91 144 Z" fill="#cc8899"/></g>
+</g>
+<g id="paws"><ellipse cx="76" cy="222" rx="23" ry="14" fill="url(#bg1)"/><ellipse cx="134" cy="222" rx="23" ry="14" fill="url(#bg1)"/></g>
+<g id="heartEyes" style="display:none"><ellipse cx="83" cy="116" rx="13" ry="14" fill="#5566bb"/><text x="83" y="122" font-size="13" text-anchor="middle" fill="white">♥</text><ellipse cx="127" cy="116" rx="13" ry="14" fill="#5566bb"/><text x="127" y="122" font-size="13" text-anchor="middle" fill="white">♥</text></g>`);
+}
+
+function buildZipplet(c='#fffbb3'){
+  return svg(180,200,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#ffffe8"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#ccaa00"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(160,140,0,.22)"/></filter>
+</defs>
+<ellipse cx="90" cy="196" rx="48" ry="8" fill="rgba(0,0,0,.12)"/>
+<!-- Very fluffy round chick body -->
+<g id="bodyGroup" style="transform-origin:90px 160px">
+  <ellipse cx="90" cy="158" rx="62" ry="54" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="90" cy="170" rx="38" ry="30" fill="rgba(255,255,230,.6)"/>
+  <ellipse cx="70" cy="132" rx="13" ry="7" fill="rgba(255,255,255,.28)" transform="rotate(-25,70,132)"/>
+</g>
+<!-- Wing stubs -->
+<g id="wingL" style="transform-origin:30px 148px">
+  <ellipse cx="30" cy="150" rx="22" ry="14" fill="${c}" stroke="rgba(160,140,0,.2)" stroke-width="1.5" transform="rotate(20,30,150)"/>
+  <ellipse cx="28" cy="152" rx="14" ry="9" fill="rgba(255,255,200,.6)" transform="rotate(20,28,152)"/>
+</g>
+<g id="wingR" style="transform-origin:150px 148px">
+  <ellipse cx="150" cy="150" rx="22" ry="14" fill="${c}" stroke="rgba(160,140,0,.2)" stroke-width="1.5" transform="rotate(-20,150,150)"/>
+  <ellipse cx="152" cy="152" rx="14" ry="9" fill="rgba(255,255,200,.6)" transform="rotate(-20,152,152)"/>
+</g>
+<!-- Head -->
+<ellipse cx="90" cy="100" rx="50" ry="48" fill="url(#bg1)" filter="url(#sh)"/>
+<!-- Tiny feather tufts on top -->
+<g id="tuftL" style="transform-origin:76px 55px">
+  <path d="M 70 65 Q 74 45 80 58 Q 77 55 77 64 Z" fill="${c}"/>
+</g>
+<g id="tuftR" style="transform-origin:104px 55px">
+  <path d="M 100 64 Q 106 44 110 58 Q 107 55 107 63 Z" fill="${c}"/>
+</g>
+<ellipse cx="72" cy="82" rx="11" ry="7" fill="rgba(255,255,255,.26)" transform="rotate(-22,72,82)"/>
+<g id="eyeL" style="transform-origin:74px 96px">
+  <ellipse cx="74" cy="96" rx="11" ry="12" fill="white"/>
+  <ellipse cx="74" cy="98" rx="7" ry="8.5" fill="#1a1400"/>
+  <ellipse cx="74" cy="97" rx="4.5" ry="6" fill="#554400"/>
+  <circle cx="74" cy="98" r="3.2" fill="#111"/>
+  <circle cx="79" cy="92" r="2.8" fill="white"/>
+  <ellipse id="lidL" cx="74" cy="86" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+</g>
+<g id="eyeR" style="transform-origin:106px 96px">
+  <ellipse cx="106" cy="96" rx="11" ry="12" fill="white"/>
+  <ellipse cx="106" cy="98" rx="7" ry="8.5" fill="#1a1400"/>
+  <ellipse cx="106" cy="97" rx="4.5" ry="6" fill="#554400"/>
+  <circle cx="106" cy="98" r="3.2" fill="#111"/>
+  <circle cx="111" cy="92" r="2.8" fill="white"/>
+  <ellipse id="lidR" cx="106" cy="86" rx="11" ry="2.5" fill="${c}" style="display:none"/>
+</g>
+<!-- Beak -->
+<polygon points="90,108 83,118 97,118" fill="#ffaa22" stroke="rgba(160,100,0,.4)" stroke-width="1"/>
+<ellipse cx="87" cy="111" rx="2.5" ry="1.8" fill="rgba(255,255,255,.4)"/>
+<g id="paws">
+  <line x1="72" y1="190" x2="64" y2="200" stroke="#ffaa22" stroke-width="3" stroke-linecap="round"/>
+  <line x1="80" y1="192" x2="76" y2="200" stroke="#ffaa22" stroke-width="3" stroke-linecap="round"/>
+  <line x1="100" y1="192" x2="104" y2="200" stroke="#ffaa22" stroke-width="3" stroke-linecap="round"/>
+  <line x1="108" y1="190" x2="116" y2="200" stroke="#ffaa22" stroke-width="3" stroke-linecap="round"/>
+</g>
+<g id="heartEyes" style="display:none"><ellipse cx="74" cy="96" rx="11" ry="12" fill="#ffcc00"/><text x="74" y="102" font-size="12" text-anchor="middle" fill="white">♥</text><ellipse cx="106" cy="96" rx="11" ry="12" fill="#ffcc00"/><text x="106" y="102" font-size="12" text-anchor="middle" fill="white">♥</text></g>`);
+}
+
+function buildDazzlphin(c='#b3f0ff'){
+  return svg(280,180,`
+<defs>
+  <radialGradient id="bg1" cx="30%" cy="35%" r="65%"><stop offset="0%" stop-color="#e0faff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#2299cc"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="45%" r="52%"><stop offset="0%" stop-color="#f0fcff"/><stop offset="100%" stop-color="#99ddee"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,100,180,.2)"/></filter>
+</defs>
+<ellipse cx="140" cy="173" rx="88" ry="9" fill="rgba(0,0,0,.12)"/>
+<!-- Tail flukes - at the right end -->
+<g id="tailFlip" style="transform-origin:244px 96px">
+  <path d="M 238 88 Q 262 68 272 80 Q 268 95 252 96 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 238 104 Q 262 124 272 112 Q 268 97 252 96 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 240 90 Q 260 74 269 83" fill="none" stroke="rgba(180,240,255,.5)" stroke-width="1.5"/>
+</g>
+<!-- Main body - long horizontal torpedo shape -->
+<g id="bodyGroup" style="transform-origin:130px 96px">
+  <path d="M 28 96 Q 28 58 80 50 Q 140 44 200 56 Q 240 64 244 96 Q 240 128 200 136 Q 140 148 80 142 Q 28 134 28 96 Z" fill="url(#bg1)" filter="url(#sh)"/>
+  <!-- Belly lighter -->
+  <path d="M 35 96 Q 35 68 82 62 Q 140 56 196 66 Q 230 74 234 96 Q 230 118 196 126 Q 140 136 82 130 Q 35 124 35 96 Z" fill="url(#bg2)" opacity=".7"/>
+  <!-- Body highlight -->
+  <ellipse cx="100" cy="65" rx="35" ry="12" fill="rgba(255,255,255,.32)" transform="rotate(-8,100,65)"/>
+</g>
+<!-- Dorsal fin on top -->
+<g id="tuftL" style="transform-origin:140px 50px">
+  <path d="M 118 56 Q 132 22 152 36 Q 158 48 148 56 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 122 54 Q 134 28 150 40" fill="none" stroke="rgba(180,240,255,.45)" stroke-width="1.2"/>
+</g>
+<!-- Left pectoral fin -->
+<g id="flipL" style="transform-origin:90px 110px">
+  <path d="M 88 104 Q 58 118 52 138 Q 68 130 90 120 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+</g>
+<!-- Snout - pointed -->
+<path d="M 28 96 Q 12 88 4 96 Q 12 104 28 96 Z" fill="url(#bg1)" stroke="rgba(0,80,160,.15)" stroke-width="1"/>
+<!-- Head area -->
+<ellipse cx="58" cy="96" rx="40" ry="36" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="42" cy="80" rx="16" ry="9" fill="rgba(255,255,255,.3)" transform="rotate(-18,42,80)"/>
+<!-- Big round eye -->
+<g id="eyeL" style="transform-origin:60px 86px">
+  <circle cx="60" cy="86" r="16" fill="white" stroke="rgba(0,60,140,.15)" stroke-width="1"/>
+  <circle cx="60" cy="86" r="11" fill="#0a1a3a"/>
+  <circle cx="60" cy="86" r="7" fill="#1a4a8a"/>
+  <circle cx="60" cy="86" r="4.5" fill="#0a0a2a"/>
+  <circle cx="67" cy="79" r="4.5" fill="white"/>
+  <circle cx="55" cy="92" r="2.2" fill="rgba(255,255,255,.6)"/>
+  <ellipse id="lidL" cx="60" cy="71" rx="16" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 45 76 Q 60 70 75 76" fill="none" stroke="rgba(0,60,140,.4)" stroke-width="2" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="display:none"/>
+<!-- Blowhole -->
+<ellipse cx="78" cy="54" rx="6" ry="3.5" fill="rgba(0,80,160,.35)" transform="rotate(-10,78,54)"/>
+<!-- Smile - dolphin always smiling -->
+<g id="mouth">
+  <path id="mn" d="M 18 100 Q 28 110 38 106" stroke="rgba(0,60,140,.5)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none">
+    <path d="M 16 99 Q 28 114 40 99 Q 34 110 28 112 Q 22 110 16 99 Z" fill="#5599cc"/>
+  </g>
+</g>
+<!-- Cheek shine -->
+<ellipse cx="44" cy="98" rx="13" ry="8" fill="rgba(100,200,255,.38)"/>
+<!-- Speed lines / water splash effect -->
+<path d="M 8 82 Q 0 78 4 74" fill="none" stroke="rgba(180,240,255,.5)" stroke-width="2" stroke-linecap="round"/>
+<path d="M 6 96 Q 0 96 2 92" fill="none" stroke="rgba(180,240,255,.45)" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M 8 110 Q 0 114 4 118" fill="none" stroke="rgba(180,240,255,.4)" stroke-width="1.5" stroke-linecap="round"/>
+<g id="heartEyes" style="display:none">
+  <circle cx="60" cy="86" r="16" fill="#2288ff"/>
+  <text x="60" y="92" font-size="16" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+
+function buildFlameow(c='#ffcbb3'){
+  return svg(200,230,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#ffe8d8"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#cc6633"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="38%" r="52%"><stop offset="0%" stop-color="#fff5f0"/><stop offset="100%" stop-color="#ffc0a0"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(180,80,30,.25)"/></filter>
+  <filter id="fg"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="100" cy="225" rx="58" ry="9" fill="rgba(0,0,0,.13)"/>
+<g id="tail" style="transform-origin:40px 192px">
+  <path d="M 30 200 Q 12 185 14 165 Q 16 148 30 145 Q 42 142 48 156 Q 54 170 46 190 Q 40 204 30 200 Z" fill="${c}" stroke="rgba(160,60,20,.3)" stroke-width="1.5"/>
+  <!-- Flame tip on tail -->
+  <path d="M 14 168 Q 8 155 14 144 Q 22 136 28 150 Q 24 158 14 168 Z" fill="#ff6600" filter="url(#fg)"/>
+  <path d="M 16 165 Q 12 155 17 147 Q 23 141 27 152 Z" fill="#ffaa00"/>
+</g>
+<g id="bodyGroup" style="transform-origin:100px 180px">
+  <ellipse cx="100" cy="177" rx="66" ry="60" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="100" cy="188" rx="40" ry="34" fill="url(#bg2)"/>
+  <ellipse cx="78" cy="150" rx="15" ry="8" fill="rgba(255,255,255,.28)" transform="rotate(-25,78,150)"/>
+</g>
+<!-- Flame ears -->
+<g id="earL" style="transform-origin:62px 72px">
+  <polygon points="48,108 62,52 78,108" fill="${c}" stroke="rgba(160,60,20,.25)" stroke-width="1.5"/>
+  <polygon points="54,102 62,60 72,102" fill="#ff6622"/>
+  <polygon points="58,100 62,68 67,100" fill="#ffaa44" opacity=".7"/>
+</g>
+<g id="earR" style="transform-origin:138px 72px">
+  <polygon points="122,108 138,52 154,108" fill="${c}" stroke="rgba(160,60,20,.25)" stroke-width="1.5"/>
+  <polygon points="128,102 138,60 148,102" fill="#ff6622"/>
+  <polygon points="132,100 138,68 143,100" fill="#ffaa44" opacity=".7"/>
+</g>
+<!-- Flame crown on head -->
+<path d="M 88 75 Q 94 58 100 72 Q 106 55 112 72 Q 118 58 124 75" fill="none" stroke="#ff6622" stroke-width="3" stroke-linecap="round" filter="url(#fg)"/>
+<ellipse cx="100" cy="120" rx="55" ry="51" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="80" cy="100" rx="13" ry="7" fill="rgba(255,255,255,.28)" transform="rotate(-22,80,100)"/>
+<g id="eyeL" style="transform-origin:82px 116px">
+  <ellipse cx="82" cy="116" rx="13" ry="14" fill="white"/>
+  <ellipse cx="82" cy="118" rx="8.5" ry="10" fill="#1a0800"/>
+  <ellipse cx="82" cy="117" rx="5.5" ry="7" fill="#882200"/>
+  <circle cx="82" cy="118" r="3.8" fill="#111"/>
+  <circle cx="87" cy="112" r="3" fill="white"/>
+  <ellipse id="lidL" cx="82" cy="104" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 70 108 Q 82 103 94 108" fill="none" stroke="rgba(140,50,10,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:118px 116px">
+  <ellipse cx="118" cy="116" rx="13" ry="14" fill="white"/>
+  <ellipse cx="118" cy="118" rx="8.5" ry="10" fill="#1a0800"/>
+  <ellipse cx="118" cy="117" rx="5.5" ry="7" fill="#882200"/>
+  <circle cx="118" cy="118" r="3.8" fill="#111"/>
+  <circle cx="123" cy="112" r="3" fill="white"/>
+  <ellipse id="lidR" cx="118" cy="104" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 106 108 Q 118 103 130 108" fill="none" stroke="rgba(140,50,10,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<ellipse cx="100" cy="133" rx="8" ry="5.5" fill="#ff7744" stroke="rgba(160,60,20,.3)" stroke-width="1"/>
+<g id="mouth">
+  <path id="mn" d="M 91 141 Q 96 147 100 145 Q 104 147 109 141" stroke="rgba(140,50,10,.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 89 140 Q 100 157 111 140 Q 106 152 100 153 Q 94 152 89 140 Z" fill="#ff7744"/><ellipse cx="100" cy="149" rx="7" ry="4.5" fill="#cc4422"/></g>
+</g>
+<ellipse cx="70" cy="136" rx="12" ry="7" fill="rgba(255,120,60,.35)"/>
+<ellipse cx="130" cy="136" rx="12" ry="7" fill="rgba(255,120,60,.35)"/>
+<line x1="88" y1="130" x2="52" y2="124" stroke="rgba(160,80,30,.4)" stroke-width="1.5"/>
+<line x1="88" y1="136" x2="50" y2="136" stroke="rgba(160,80,30,.4)" stroke-width="1.5"/>
+<line x1="112" y1="130" x2="148" y2="124" stroke="rgba(160,80,30,.4)" stroke-width="1.5"/>
+<line x1="112" y1="136" x2="150" y2="136" stroke="rgba(160,80,30,.4)" stroke-width="1.5"/>
+<g id="paws"><ellipse cx="72" cy="218" rx="20" ry="12" fill="url(#bg1)"/><ellipse cx="128" cy="218" rx="20" ry="12" fill="url(#bg1)"/></g>
+<g id="heartEyes" style="display:none"><ellipse cx="82" cy="116" rx="13" ry="14" fill="#ff5500"/><text x="82" y="122" font-size="13" text-anchor="middle" fill="white">♥</text><ellipse cx="118" cy="116" rx="13" ry="14" fill="#ff5500"/><text x="118" y="122" font-size="13" text-anchor="middle" fill="white">♥</text></g>`);
+}
+
+function buildCrystaloo(c='#e8b3ff'){
+  return svg(210,240,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#f5e0ff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#9933bb"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="38%" r="52%"><stop offset="0%" stop-color="#faf0ff"/><stop offset="100%" stop-color="#ddaaff"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(120,30,180,.22)"/></filter>
+</defs>
+<ellipse cx="108" cy="234" rx="55" ry="9" fill="rgba(0,0,0,.13)"/>
+<!-- Ringed tail - distinctive raccoon feature -->
+<g id="tail" style="transform-origin:158px 175px">
+  <path d="M 152 190 Q 168 172 175 155 Q 180 140 174 128 Q 168 118 160 122 Q 154 128 156 144 Q 158 160 152 178 Z" fill="#444" stroke="rgba(0,0,0,.2)" stroke-width="1"/>
+  <path d="M 155 186 Q 168 172 173 158 Q 177 145 172 134 Q 168 127 163 130 Q 159 136 160 150 Q 162 163 157 178 Z" fill="${c}"/>
+  <path d="M 157 182 Q 168 170 171 158 Q 174 147 170 138" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+  <path d="M 158 172 Q 168 162 170 152" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" opacity=".4"/>
+  <path d="M 159 162 Q 167 154 169 146" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" opacity=".35"/>
+  <!-- Fluffy tail tip -->
+  <ellipse cx="164" cy="124" rx="12" ry="10" fill="white" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+</g>
+<!-- Slim body -->
+<g id="bodyGroup" style="transform-origin:105px 182px">
+  <ellipse cx="105" cy="178" rx="56" ry="62" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="105" cy="190" rx="36" ry="42" fill="url(#bg2)"/>
+  <ellipse cx="84" cy="152" rx="14" ry="7" fill="rgba(255,255,255,.26)" transform="rotate(-22,84,152)"/>
+</g>
+<!-- Round ears -->
+<g id="earL" style="transform-origin:70px 72px">
+  <circle cx="70" cy="68" r="22" fill="${c}" stroke="rgba(100,20,160,.22)" stroke-width="1.5"/>
+  <circle cx="70" cy="68" r="14" fill="#cc88ff"/>
+</g>
+<g id="earR" style="transform-origin:140px 72px">
+  <circle cx="140" cy="68" r="22" fill="${c}" stroke="rgba(100,20,160,.22)" stroke-width="1.5"/>
+  <circle cx="140" cy="68" r="14" fill="#cc88ff"/>
+</g>
+<!-- Head -->
+<ellipse cx="105" cy="116" rx="54" ry="50" fill="url(#bg1)" filter="url(#sh)"/>
+<!-- Raccoon face mask - dark patches around eyes -->
+<path d="M 60 108 Q 68 98 88 100 Q 100 102 102 112 Q 100 124 86 126 Q 68 124 60 114 Z" fill="rgba(50,20,60,.5)"/>
+<path d="M 108 112 Q 110 102 130 100 Q 150 98 152 108 Q 152 118 140 126 Q 120 128 110 122 Z" fill="rgba(50,20,60,.5)"/>
+<ellipse cx="82" cy="102" rx="14" ry="8" fill="rgba(255,255,255,.22)" transform="rotate(-22,82,102)"/>
+<!-- Eyes inside mask -->
+<g id="eyeL" style="transform-origin:82px 112px">
+  <ellipse cx="82" cy="112" rx="13" ry="14" fill="white"/>
+  <ellipse cx="82" cy="114" rx="8.5" ry="10" fill="#1a001a"/>
+  <ellipse cx="82" cy="113" rx="5.5" ry="7" fill="#662288"/>
+  <circle cx="82" cy="114" r="3.8" fill="#111"/>
+  <circle cx="87" cy="108" r="3" fill="white"/>
+  <ellipse id="lidL" cx="82" cy="100" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+</g>
+<g id="eyeR" style="transform-origin:128px 112px">
+  <ellipse cx="128" cy="112" rx="13" ry="14" fill="white"/>
+  <ellipse cx="128" cy="114" rx="8.5" ry="10" fill="#1a001a"/>
+  <ellipse cx="128" cy="113" rx="5.5" ry="7" fill="#662288"/>
+  <circle cx="128" cy="114" r="3.8" fill="#111"/>
+  <circle cx="133" cy="108" r="3" fill="white"/>
+  <ellipse id="lidR" cx="128" cy="100" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+</g>
+<!-- Nose -->
+<ellipse cx="105" cy="130" rx="9" ry="7" fill="#dda0ff" stroke="rgba(100,20,160,.3)" stroke-width="1"/>
+<circle cx="101" cy="128" r="2.5" fill="rgba(255,255,255,.5)"/>
+<!-- Mouth -->
+<g id="mouth">
+  <path id="mn" d="M 96 138 Q 105 145 114 138" stroke="rgba(100,20,160,.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 93 137 Q 105 152 117 137 Q 112 148 105 149 Q 98 148 93 137 Z" fill="#dda0ff"/></g>
+</g>
+<!-- Slim raccoon legs/feet -->
+<ellipse cx="80" cy="228" rx="18" ry="11" fill="url(#bg1)"/>
+<ellipse cx="130" cy="228" rx="18" ry="11" fill="url(#bg1)"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="82" cy="112" rx="13" ry="14" fill="#9933bb"/>
+  <text x="82" y="118" font-size="13" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="128" cy="112" rx="13" ry="14" fill="#9933bb"/>
+  <text x="128" y="118" font-size="13" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+
+function buildDewdrop(c='#b3f5e0'){
+  return svg(230,195,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#e0fff4"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#22aa77"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="42%" r="52%"><stop offset="0%" stop-color="#f0fff8"/><stop offset="100%" stop-color="#99eec8"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="rgba(20,120,80,.2)"/></filter>
+</defs>
+<ellipse cx="115" cy="189" rx="68" ry="9" fill="rgba(0,0,0,.12)"/>
+<!-- Tail -->
+<g id="tail" style="transform-origin:185px 118px">
+  <path d="M 182 105 Q 208 88 218 100 Q 215 118 200 122 Q 184 124 182 110 Z" fill="${c}" stroke="rgba(20,120,80,.2)" stroke-width="1.5"/>
+  <path d="M 184 108 Q 206 94 214 103" fill="none" stroke="rgba(180,255,220,.45)" stroke-width="1.2"/>
+</g>
+<!-- Body - wide flat axolotl shape -->
+<g id="bodyGroup" style="transform-origin:115px 130px">
+  <ellipse cx="115" cy="128" rx="85" ry="50" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="112" cy="135" rx="60" ry="34" fill="url(#bg2)"/>
+  <ellipse cx="82" cy="106" rx="20" ry="10" fill="rgba(255,255,255,.3)" transform="rotate(-18,82,106)"/>
+</g>
+<!-- 4 stubby legs -->
+<g id="legFL" style="transform-origin:55px 160px">
+  <ellipse cx="50" cy="160" rx="16" ry="10" fill="${c}" transform="rotate(-20,50,160)"/>
+  <circle cx="38" cy="163" r="4.5" fill="${c}"/><circle cx="46" cy="168" r="4.5" fill="${c}"/><circle cx="54" cy="168" r="4.5" fill="${c}"/>
+</g>
+<g id="legFR" style="transform-origin:80px 162px">
+  <ellipse cx="85" cy="162" rx="16" ry="10" fill="${c}" transform="rotate(15,85,162)"/>
+  <circle cx="92" cy="170" r="4.5" fill="${c}"/><circle cx="100" cy="168" r="4.5" fill="${c}"/><circle cx="98" cy="160" r="4.5" fill="${c}"/>
+</g>
+<g id="legBL" style="transform-origin:148px 162px">
+  <ellipse cx="143" cy="162" rx="16" ry="10" fill="${c}" transform="rotate(-15,143,162)"/>
+  <circle cx="132" cy="168" r="4.5" fill="${c}"/><circle cx="138" cy="170" r="4.5" fill="${c}"/><circle cx="146" cy="168" r="4.5" fill="${c}"/>
+</g>
+<g id="legBR" style="transform-origin:173px 160px">
+  <ellipse cx="178" cy="160" rx="16" ry="10" fill="${c}" transform="rotate(20,178,160)"/>
+  <circle cx="186" cy="165" r="4.5" fill="${c}"/><circle cx="192" cy="162" r="4.5" fill="${c}"/><circle cx="190" cy="155" r="4.5" fill="${c}"/>
+</g>
+<!-- Feathery external gills - the axolotl signature! -->
+<g id="flipL" style="transform-origin:32px 88px">
+  <!-- Three gill branches left -->
+  <path d="M 38 100 Q 20 78 16 60" stroke="#ff8888" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M 35 98 Q 18 82 22 62" stroke="#ffaaaa" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".7"/>
+  <path d="M 42 96 Q 26 76 28 58" stroke="#ff8888" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M 45 98 Q 32 80 36 64" stroke="#ffaaaa" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
+  <!-- Gill tips - feathery -->
+  <ellipse cx="16" cy="58" rx="5" ry="8" fill="#ff8888" transform="rotate(-20,16,58)"/>
+  <ellipse cx="22" cy="60" rx="4" ry="7" fill="#ffaaaa" transform="rotate(-15,22,60)"/>
+  <ellipse cx="28" cy="56" rx="5" ry="8" fill="#ff8888" transform="rotate(-25,28,56)"/>
+  <ellipse cx="36" cy="62" rx="4" ry="7" fill="#ffaaaa" transform="rotate(-10,36,62)"/>
+</g>
+<g id="flipR" style="transform-origin:198px 88px">
+  <path d="M 192 100 Q 210 78 214 60" stroke="#ff8888" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M 195 98 Q 212 82 208 62" stroke="#ffaaaa" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".7"/>
+  <path d="M 188 96 Q 204 76 202 58" stroke="#ff8888" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M 185 98 Q 198 80 194 64" stroke="#ffaaaa" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
+  <ellipse cx="214" cy="58" rx="5" ry="8" fill="#ff8888" transform="rotate(20,214,58)"/>
+  <ellipse cx="208" cy="60" rx="4" ry="7" fill="#ffaaaa" transform="rotate(15,208,60)"/>
+  <ellipse cx="202" cy="56" rx="5" ry="8" fill="#ff8888" transform="rotate(25,202,56)"/>
+  <ellipse cx="194" cy="62" rx="4" ry="7" fill="#ffaaaa" transform="rotate(10,194,62)"/>
+</g>
+<!-- Wide flat head -->
+<ellipse cx="115" cy="82" rx="62" ry="44" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="88" cy="62" rx="18" ry="9" fill="rgba(255,255,255,.3)" transform="rotate(-18,88,62)"/>
+<!-- Eyes - wide set on flat head -->
+<g id="eyeL" style="transform-origin:88px 76px">
+  <ellipse cx="88" cy="76" rx="14" ry="15" fill="white" stroke="rgba(20,120,80,.15)" stroke-width="1"/>
+  <ellipse cx="88" cy="78" rx="9.5" ry="11" fill="#0a1e10"/>
+  <ellipse cx="88" cy="77" rx="6.2" ry="8" fill="#1a6640"/>
+  <circle cx="88" cy="78" r="4.5" fill="#111"/>
+  <circle cx="94" cy="71" r="3.5" fill="white"/>
+  <circle cx="84" cy="84" r="2" fill="rgba(255,255,255,.6)"/>
+  <ellipse id="lidL" cx="88" cy="63" rx="14" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 75 67 Q 88 61 101 67" fill="none" stroke="rgba(20,100,60,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:142px 76px">
+  <ellipse cx="142" cy="76" rx="14" ry="15" fill="white" stroke="rgba(20,120,80,.15)" stroke-width="1"/>
+  <ellipse cx="142" cy="78" rx="9.5" ry="11" fill="#0a1e10"/>
+  <ellipse cx="142" cy="77" rx="6.2" ry="8" fill="#1a6640"/>
+  <circle cx="142" cy="78" r="4.5" fill="#111"/>
+  <circle cx="148" cy="71" r="3.5" fill="white"/>
+  <circle cx="138" cy="84" r="2" fill="rgba(255,255,255,.6)"/>
+  <ellipse id="lidR" cx="142" cy="63" rx="14" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 129 67 Q 142 61 155 67" fill="none" stroke="rgba(20,100,60,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<!-- Wide gentle smile -->
+<g id="mouth">
+  <path id="mn" d="M 96 100 Q 106 108 115 106 Q 124 108 134 100" stroke="rgba(20,100,60,.55)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 94 99 Q 115 118 136 99 Q 128 112 115 114 Q 102 112 94 99 Z" fill="#55ccaa"/></g>
+</g>
+<ellipse cx="76" cy="92" rx="14" ry="8" fill="rgba(80,220,160,.35)"/>
+<ellipse cx="154" cy="92" rx="14" ry="8" fill="rgba(80,220,160,.35)"/>
+<!-- Spots -->
+<circle cx="96" cy="130" r="7" fill="rgba(20,120,80,.15)"/>
+<circle cx="134" cy="128" r="6" fill="rgba(20,120,80,.12)"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="88" cy="76" rx="14" ry="15" fill="#22aa77"/>
+  <text x="88" y="82" font-size="14" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="142" cy="76" rx="14" ry="15" fill="#22aa77"/>
+  <text x="142" y="82" font-size="14" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+
+function buildPuffy(c='#ffb3cc'){
+  return svg(200,225,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#ffe8f0"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#cc4477"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="38%" r="52%"><stop offset="0%" stop-color="#fff2f6"/><stop offset="100%" stop-color="#ffa0c0"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(180,40,80,.2)"/></filter>
+</defs>
+<ellipse cx="100" cy="219" rx="60" ry="9" fill="rgba(0,0,0,.13)"/>
+<!-- Curly tail -->
+<g id="tail" style="transform-origin:158px 158px">
+  <path d="M 155 165 Q 168 158 172 166 Q 175 176 165 180 Q 156 182 153 174 Q 151 165 158 162 Z" fill="${c}" stroke="rgba(160,40,70,.3)" stroke-width="1.5"/>
+</g>
+<!-- Round pig body -->
+<g id="bodyGroup" style="transform-origin:100px 172px">
+  <ellipse cx="100" cy="168" rx="72" ry="62" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="100" cy="180" rx="50" ry="42" fill="url(#bg2)"/>
+  <ellipse cx="78" cy="142" rx="16" ry="8" fill="rgba(255,255,255,.28)" transform="rotate(-22,78,142)"/>
+</g>
+<!-- Floppy ears - pig ears droop down -->
+<g id="earL" style="transform-origin:64px 78px">
+  <path d="M 46 82 Q 44 58 58 50 Q 72 48 76 64 Q 78 80 68 90 Q 56 96 46 82 Z" fill="${c}" stroke="rgba(160,40,70,.22)" stroke-width="1.5"/>
+  <path d="M 50 80 Q 48 60 60 54 Q 70 52 72 66 Q 74 80 66 88 Q 56 92 50 80 Z" fill="#ff99bb"/>
+</g>
+<g id="earR" style="transform-origin:136px 78px">
+  <path d="M 124 90 Q 122 80 126 64 Q 130 48 142 50 Q 155 52 156 66 Q 156 80 154 82 Q 144 96 134 90 Q 128 86 124 90 Z" fill="${c}" stroke="rgba(160,40,70,.22)" stroke-width="1.5"/>
+  <path d="M 128 88 Q 128 78 130 66 Q 132 52 142 54 Q 151 56 151 68 Q 151 80 150 82 Q 142 92 134 88 Z" fill="#ff99bb"/>
+</g>
+<!-- Head -->
+<ellipse cx="100" cy="108" rx="58" ry="54" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="78" cy="86" rx="15" ry="8" fill="rgba(255,255,255,.28)" transform="rotate(-22,78,86)"/>
+<!-- Eyes -->
+<g id="eyeL" style="transform-origin:78px 100px">
+  <ellipse cx="78" cy="100" rx="13" ry="14" fill="white" stroke="rgba(160,40,70,.18)" stroke-width="1"/>
+  <ellipse cx="78" cy="102" rx="8.5" ry="10.5" fill="#1a0808"/>
+  <ellipse cx="78" cy="101" rx="5.5" ry="7" fill="#553333"/>
+  <circle cx="78" cy="102" r="3.8" fill="#111"/>
+  <circle cx="83" cy="96" r="3" fill="white"/>
+  <ellipse id="lidL" cx="78" cy="88" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 66 92 Q 78 87 90 92" fill="none" stroke="rgba(160,40,70,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:122px 100px">
+  <ellipse cx="122" cy="100" rx="13" ry="14" fill="white" stroke="rgba(160,40,70,.18)" stroke-width="1"/>
+  <ellipse cx="122" cy="102" rx="8.5" ry="10.5" fill="#1a0808"/>
+  <ellipse cx="122" cy="101" rx="5.5" ry="7" fill="#553333"/>
+  <circle cx="122" cy="102" r="3.8" fill="#111"/>
+  <circle cx="127" cy="96" r="3" fill="white"/>
+  <ellipse id="lidR" cx="122" cy="88" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 110 92 Q 122 87 134 92" fill="none" stroke="rgba(160,40,70,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<!-- Big prominent pig snout -->
+<ellipse cx="100" cy="128" rx="28" ry="22" fill="#ffaacc" stroke="rgba(180,40,80,.3)" stroke-width="2"/>
+<ellipse cx="100" cy="126" rx="20" ry="14" fill="#ff88bb" stroke="rgba(180,40,80,.2)" stroke-width="1"/>
+<!-- Nostrils - big pig nostrils -->
+<ellipse cx="91" cy="126" rx="6" ry="7" fill="rgba(140,30,60,.45)"/>
+<ellipse cx="109" cy="126" rx="6" ry="7" fill="rgba(140,30,60,.45)"/>
+<ellipse cx="91" cy="125" r="2.5" fill="rgba(0,0,0,.25)"/>
+<ellipse cx="109" cy="125" r="2.5" fill="rgba(0,0,0,.25)"/>
+<!-- Mouth -->
+<g id="mouth">
+  <path id="mn" d="M 86 138 Q 100 147 114 138" stroke="rgba(160,40,80,.55)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none">
+    <path d="M 83 137 Q 100 155 117 137 Q 110 150 100 152 Q 90 150 83 137 Z" fill="#ffaacc"/>
+    <ellipse cx="100" cy="146" rx="10" ry="6" fill="#cc6688"/>
+  </g>
+</g>
+<ellipse cx="66" cy="122" rx="13" ry="8" fill="rgba(255,130,160,.4)"/>
+<ellipse cx="134" cy="122" rx="13" ry="8" fill="rgba(255,130,160,.4)"/>
+<!-- Stubby trotters -->
+<ellipse cx="72" cy="212" rx="20" ry="12" fill="url(#bg1)"/>
+<ellipse cx="128" cy="212" rx="20" ry="12" fill="url(#bg1)"/>
+<line x1="64" y1="212" x2="62" y2="222" stroke="rgba(180,40,80,.3)" stroke-width="2" stroke-linecap="round"/>
+<line x1="72" y1="214" x2="72" y2="224" stroke="rgba(180,40,80,.3)" stroke-width="2" stroke-linecap="round"/>
+<line x1="80" y1="212" x2="82" y2="222" stroke="rgba(180,40,80,.3)" stroke-width="2" stroke-linecap="round"/>
+<line x1="120" y1="212" x2="118" y2="222" stroke="rgba(180,40,80,.3)" stroke-width="2" stroke-linecap="round"/>
+<line x1="128" y1="214" x2="128" y2="224" stroke="rgba(180,40,80,.3)" stroke-width="2" stroke-linecap="round"/>
+<line x1="136" y1="212" x2="138" y2="222" stroke="rgba(180,40,80,.3)" stroke-width="2" stroke-linecap="round"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="78" cy="100" rx="13" ry="14" fill="#ff4477"/>
+  <text x="78" y="106" font-size="13" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="122" cy="100" rx="13" ry="14" fill="#ff4477"/>
+  <text x="122" y="106" font-size="13" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+
+function buildShimmur(c='#ffedb3'){
+  return svg(260,255,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#fff8dc"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#cc9900"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#fffef0"/><stop offset="100%" stop-color="#ffe8a0"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(160,120,0,.22)"/></filter>
+  <filter id="mane"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="130" cy="248" rx="78" ry="10" fill="rgba(0,0,0,.13)"/>
+<!-- Tail with tuft -->
+<g id="tail" style="transform-origin:215px 165px">
+  <path d="M 210 155 Q 238 142 245 158 Q 248 172 234 178 Q 220 182 212 170 Z" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1.5"/>
+  <path d="M 233 175 Q 246 182 248 196 Q 242 202 234 196 Q 228 188 233 175 Z" fill="#cc9900" opacity=".8"/>
+  <ellipse cx="240" cy="195" r="10" fill="#ddaa44" opacity=".7"/>
+</g>
+<!-- Body -->
+<g id="bodyGroup" style="transform-origin:130px 175px">
+  <ellipse cx="130" cy="172" rx="90" ry="60" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="120" cy="182" rx="64" ry="42" fill="url(#bg2)"/>
+  <ellipse cx="96" cy="145" rx="22" ry="11" fill="rgba(255,255,255,.28)" transform="rotate(-20,96,145)"/>
+</g>
+<!-- Back legs -->
+<g id="legBL" style="transform-origin:180px 218px">
+  <rect x="172" y="215" width="20" height="44" rx="10" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1.5"/>
+  <ellipse cx="182" cy="259" rx="16" ry="7" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1"/>
+</g>
+<g id="legBR" style="transform-origin:210px 218px">
+  <rect x="202" y="215" width="20" height="44" rx="10" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1.5"/>
+  <ellipse cx="212" cy="259" rx="16" ry="7" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1"/>
+</g>
+<!-- Front legs -->
+<g id="legFL" style="transform-origin:65px 218px">
+  <rect x="57" y="215" width="20" height="42" rx="10" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1.5"/>
+  <ellipse cx="67" cy="257" rx="16" ry="7" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1"/>
+</g>
+<g id="legFR" style="transform-origin:96px 218px">
+  <rect x="88" y="215" width="20" height="42" rx="10" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1.5"/>
+  <ellipse cx="98" cy="257" rx="16" ry="7" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1"/>
+</g>
+<!-- Mane glow behind head -->
+<circle cx="102" cy="108" r="72" fill="#ddaa00" opacity=".28" filter="url(#mane)"/>
+<!-- Mane layers -->
+<circle cx="102" cy="108" r="62" fill="#cc8800" opacity=".35"/>
+<circle cx="102" cy="108" r="52" fill="#ddaa00" opacity=".3"/>
+<!-- Head -->
+<ellipse cx="102" cy="108" rx="54" ry="50" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="82" cy="88" rx="15" ry="8" fill="rgba(255,255,255,.28)" transform="rotate(-22,82,88)"/>
+<!-- Round ears above mane -->
+<circle cx="62" cy="64" r="18" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1.5"/>
+<circle cx="62" cy="64" r="11" fill="#ffdd88"/>
+<circle cx="142" cy="64" r="18" fill="${c}" stroke="rgba(160,120,0,.2)" stroke-width="1.5"/>
+<circle cx="142" cy="64" r="11" fill="#ffdd88"/>
+<!-- Eyes -->
+<g id="eyeL" style="transform-origin:82px 104px">
+  <ellipse cx="82" cy="104" rx="13" ry="14" fill="white" stroke="rgba(130,90,0,.2)" stroke-width="1"/>
+  <ellipse cx="82" cy="106" rx="8.5" ry="10.5" fill="#1a1000"/>
+  <ellipse cx="82" cy="105" rx="5.5" ry="7" fill="#664400"/>
+  <circle cx="82" cy="106" r="4" fill="#111"/>
+  <circle cx="87" cy="100" r="3.2" fill="white"/>
+  <ellipse id="lidL" cx="82" cy="92" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 70 96 Q 82 91 94 96" fill="none" stroke="rgba(130,90,0,.45)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:122px 104px">
+  <ellipse cx="122" cy="104" rx="13" ry="14" fill="white" stroke="rgba(130,90,0,.2)" stroke-width="1"/>
+  <ellipse cx="122" cy="106" rx="8.5" ry="10.5" fill="#1a1000"/>
+  <ellipse cx="122" cy="105" rx="5.5" ry="7" fill="#664400"/>
+  <circle cx="122" cy="106" r="4" fill="#111"/>
+  <circle cx="127" cy="100" r="3.2" fill="white"/>
+  <ellipse id="lidR" cx="122" cy="92" rx="13" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 110 96 Q 122 91 134 96" fill="none" stroke="rgba(130,90,0,.45)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<!-- Muzzle -->
+<ellipse cx="102" cy="122" rx="28" ry="20" fill="#ffdd88" stroke="rgba(160,120,0,.2)" stroke-width="1"/>
+<ellipse cx="102" cy="122" rx="18" ry="12" fill="#cc9944" stroke="rgba(140,90,0,.3)" stroke-width="1.5"/>
+<circle cx="99" cy="120" r="3" fill="rgba(255,255,255,.45)"/>
+<!-- Nose -->
+<ellipse cx="102" cy="118" rx="7" ry="5" fill="#222" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
+<!-- Mouth -->
+<g id="mouth">
+  <path id="mn" d="M 90 128 Q 102 136 114 128" stroke="rgba(130,80,0,.6)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 87 126 Q 102 144 117 126 Q 110 138 102 140 Q 94 138 87 126 Z" fill="#cc9944"/></g>
+</g>
+<ellipse cx="68" cy="120" rx="13" ry="8" fill="rgba(255,180,60,.32)"/>
+<ellipse cx="136" cy="120" rx="13" ry="8" fill="rgba(255,180,60,.32)"/>
+<line x1="90" y1="114" x2="52" y2="107" stroke="rgba(160,120,0,.38)" stroke-width="1.5"/>
+<line x1="90" y1="121" x2="50" y2="121" stroke="rgba(160,120,0,.38)" stroke-width="1.5"/>
+<line x1="114" y1="114" x2="152" y2="107" stroke="rgba(160,120,0,.38)" stroke-width="1.5"/>
+<line x1="114" y1="121" x2="154" y2="121" stroke="rgba(160,120,0,.38)" stroke-width="1.5"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="82" cy="104" rx="13" ry="14" fill="#ddaa00"/>
+  <text x="82" y="110" font-size="13" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="122" cy="104" rx="13" ry="14" fill="#ddaa00"/>
+  <text x="122" y="110" font-size="13" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
+
+function buildFernbit(c='#7acc88'){
+  return svg(220,210,`
+<defs>
+  <radialGradient id="bg1" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#aaffc0"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#2a8a44"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#e8fff0"/><stop offset="100%" stop-color="#b0ecc0"/></radialGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(30,120,60,.28)"/></filter>
+</defs>
+<ellipse cx="110" cy="204" rx="62" ry="9" fill="rgba(0,0,0,.13)"/>
+<!-- Big back legs tucked to sides -->
+<g id="legL" style="transform-origin:42px 165px">
+  <path d="M 55 168 Q 22 158 10 172 Q 6 185 18 190 Q 34 194 52 182 Z" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1.5"/>
+  <path d="M 18 190 Q 8 196 12 204 Q 22 206 32 198" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1.5"/>
+  <!-- Toe bumps -->
+  <circle cx="10" cy="204" r="5" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1"/>
+  <circle cx="20" cy="207" r="5" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1"/>
+  <circle cx="30" cy="204" r="5" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1"/>
+</g>
+<g id="legR" style="transform-origin:178px 165px">
+  <path d="M 165 168 Q 198 158 210 172 Q 214 185 202 190 Q 186 194 168 182 Z" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1.5"/>
+  <path d="M 202 190 Q 212 196 208 204 Q 198 206 188 198" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1.5"/>
+  <circle cx="210" cy="204" r="5" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1"/>
+  <circle cx="200" cy="207" r="5" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1"/>
+  <circle cx="190" cy="204" r="5" fill="${c}" stroke="rgba(30,120,60,.3)" stroke-width="1"/>
+</g>
+<!-- Body - wide and squat -->
+<g id="bodyGroup" style="transform-origin:110px 175px">
+  <ellipse cx="110" cy="172" rx="72" ry="50" fill="url(#bg1)" filter="url(#sh)"/>
+  <!-- Belly -->
+  <ellipse cx="110" cy="178" rx="50" ry="34" fill="url(#bg2)"/>
+  <ellipse cx="88" cy="150" rx="16" ry="8" fill="rgba(255,255,255,.28)" transform="rotate(-20,88,150)"/>
+</g>
+<!-- Small front arms -->
+<g id="armL" style="transform-origin:62px 168px">
+  <ellipse cx="52" cy="172" rx="18" ry="10" fill="${c}" transform="rotate(-20,52,172)"/>
+  <circle cx="38" cy="176" r="5" fill="${c}"/><circle cx="44" cy="180" r="5" fill="${c}"/><circle cx="52" cy="181" r="5" fill="${c}"/>
+</g>
+<g id="armR" style="transform-origin:158px 168px">
+  <ellipse cx="168" cy="172" rx="18" ry="10" fill="${c}" transform="rotate(20,168,172)"/>
+  <circle cx="182" cy="176" r="5" fill="${c}"/><circle cx="176" cy="180" r="5" fill="${c}"/><circle cx="168" cy="181" r="5" fill="${c}"/>
+</g>
+<!-- Head - wide frog head -->
+<ellipse cx="110" cy="120" rx="68" ry="52" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="88" cy="98" rx="14" ry="8" fill="rgba(255,255,255,.28)" transform="rotate(-22,88,98)"/>
+<!-- Eye bumps on TOP of head - frog style -->
+<g id="eyeL" style="transform-origin:76px 90px">
+  <ellipse cx="76" cy="96" rx="20" ry="18" fill="url(#bg1)"/>
+  <ellipse cx="76" cy="94" rx="15" ry="14" fill="white" stroke="rgba(30,120,60,.2)" stroke-width="1"/>
+  <ellipse cx="76" cy="95" rx="10" ry="11" fill="#1a3a00"/>
+  <ellipse cx="76" cy="95" rx="6.5" ry="8" fill="#2a6010"/>
+  <circle cx="76" cy="95" r="4.5" fill="#111"/>
+  <circle cx="81" cy="90" r="3.5" fill="white"/>
+  <circle cx="72" cy="100" r="1.8" fill="rgba(255,255,255,.6)"/>
+  <ellipse id="lidL" cx="76" cy="82" rx="15" ry="3" fill="${c}" style="display:none"/>
+</g>
+<g id="eyeR" style="transform-origin:144px 90px">
+  <ellipse cx="144" cy="96" rx="20" ry="18" fill="url(#bg1)"/>
+  <ellipse cx="144" cy="94" rx="15" ry="14" fill="white" stroke="rgba(30,120,60,.2)" stroke-width="1"/>
+  <ellipse cx="144" cy="95" rx="10" ry="11" fill="#1a3a00"/>
+  <ellipse cx="144" cy="95" rx="6.5" ry="8" fill="#2a6010"/>
+  <circle cx="144" cy="95" r="4.5" fill="#111"/>
+  <circle cx="149" cy="90" r="3.5" fill="white"/>
+  <circle cx="140" cy="100" r="1.8" fill="rgba(255,255,255,.6)"/>
+  <ellipse id="lidR" cx="144" cy="82" rx="15" ry="3" fill="${c}" style="display:none"/>
+</g>
+<!-- Wide happy frog smile -->
+<g id="mouth">
+  <path id="mn" d="M 70 138 Q 90 152 110 154 Q 130 152 150 138" stroke="rgba(30,100,50,.6)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none">
+    <path d="M 68 136 Q 110 162 152 136 Q 140 155 110 160 Q 80 155 68 136 Z" fill="#55aa66"/>
+    <ellipse cx="110" cy="150" rx="18" ry="10" fill="#2a7740"/>
+  </g>
+</g>
+<!-- Nostril dots -->
+<circle cx="102" cy="128" r="3.5" fill="rgba(30,100,50,.4)"/>
+<circle cx="118" cy="128" r="3.5" fill="rgba(30,100,50,.4)"/>
+<!-- Cheek blush -->
+<ellipse cx="72" cy="138" rx="14" ry="8" fill="rgba(100,220,120,.38)"/>
+<ellipse cx="148" cy="138" rx="14" ry="8" fill="rgba(100,220,120,.38)"/>
+<!-- Spots on body -->
+<circle cx="90" cy="168" r="8" fill="rgba(30,100,50,.18)"/>
+<circle cx="130" cy="165" r="7" fill="rgba(30,100,50,.15)"/>
+<circle cx="110" cy="175" r="6" fill="rgba(30,100,50,.12)"/>
+<g id="heartEyes" style="display:none">
+  <ellipse cx="76" cy="94" rx="15" ry="14" fill="#44cc66"/>
+  <text x="76" y="100" font-size="14" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="144" cy="94" rx="15" ry="14" fill="#44cc66"/>
+  <text x="144" y="100" font-size="14" text-anchor="middle" fill="white">♥</text>
+</g>`);
+}
+
 
 // ═══════════════════════════════════════════════════════════
 //  STATE
@@ -1143,7 +2635,7 @@ function initTitle(){
       animation:${anims[j%3]} ${2+j*.18}s ease-in-out infinite;
       animation-delay:${j*.22}s;
       filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));`;
-    d.innerHTML=c.fn(c.color);
+    d.innerHTML=uniquifyIds(c.fn(c.color));
     // Name label
     const lbl=document.createElement('div');
     lbl.style.cssText="font-family:'Nunito',sans-serif;font-size:.42rem;font-weight:800;color:rgba(170,196,255,.7);text-align:center";
@@ -1159,7 +2651,7 @@ function initTitle(){
       const c=CREATURES[i];
       const d=document.createElement('div');
       d.style.cssText=`width:60px;height:60px;animation:floatY ${2+j*.2}s ease-in-out infinite;animation-delay:${j*.3}s`;
-      d.innerHTML=c.fn(c.color);
+      d.innerHTML=uniquifyIds(c.fn(c.color));
       splash.appendChild(d);
     });
   }
@@ -1696,7 +3188,7 @@ function loadWord(){
   const cr=CREATURES[wordIdx%CREATURES.length];
 
   // Spell screen
-  document.getElementById('spellCreature').innerHTML=cr.fn(cr.color);
+  document.getElementById('spellCreature').innerHTML=uniquifyIds(cr.fn(cr.color));
   document.getElementById('spellCreatureName').textContent=cr.name;
   document.getElementById('encounterTag').textContent='⚡ A wild '+cr.name+' appeared!';
   document.getElementById('defCard').textContent=w.d;
@@ -1924,7 +3416,7 @@ function goToThrow(){
     el.style.transform  = '';
     el.style.opacity    = '1';
     el.style.display    = 'block';
-    el.innerHTML        = cr.fn(cr.color);
+    el.innerHTML        = uniquifyIds(cr.fn(cr.color));
   }, 400);
 
   // Reset ball
@@ -2287,7 +3779,7 @@ function showCatch(throwBonus=0){
   sfxCatch();
   confettiBurst(22);
 
-  document.getElementById('catchCreatureEl').innerHTML=`<div style="width:88px;height:88px;margin:auto">${cr.fn(cr.color)}</div>`;
+  document.getElementById('catchCreatureEl').innerHTML=`<div style="width:88px;height:88px;margin:auto">${uniquifyIds(cr.fn(cr.color))}</div>`;
   document.getElementById('catchWordEl').textContent=w.w.toUpperCase();
   document.getElementById('catchPtsEl').textContent='+'+pts+' points!';
   const CATCH_MSGS=[
@@ -2328,7 +3820,7 @@ function evolveCreature(baseName){
   // Save to Firebase
   _saveEvolvedCreatures();
   // Show evolution overlay
-  document.getElementById('evoCreatureEl').innerHTML=cr.fn(cr.color);
+  document.getElementById('evoCreatureEl').innerHTML=uniquifyIds(cr.fn(cr.color));
   document.getElementById('evoNameEl').textContent=evoName;
   document.getElementById('evoMsgEl').textContent=baseName+' evolved into '+evoName+'!';
   document.getElementById('evoCreatureEl').classList.remove('evolve-flash');
@@ -2385,7 +3877,7 @@ function endGame(){
   stopBGM();
   if(isPerfect&&caught.length===20){
     const row=document.getElementById('perfectRow');
-    row.innerHTML=caught.slice(0,10).map(c=>`<div style="width:46px;height:46px">${c.fn(c.color)}</div>`).join('');
+    row.innerHTML=caught.slice(0,10).map(c=>`<div style="width:46px;height:46px">${uniquifyIds(c.fn(c.color))}</div>`).join('');
     goTo('sPerfect');
     setTimeout(sfxVictory,400);
     confettiBurst(60);setTimeout(()=>confettiBurst(40),1200);setTimeout(()=>confettiBurst(40),2400);
@@ -2488,7 +3980,7 @@ function showWin(){
     }
     el.innerHTML=`
       <div style="position:relative;width:52px;height:52px">
-        ${c.fn(c.color)}
+        ${uniquifyIds(c.fn(c.color))}
         ${isEvolved?'':countBadge}
       </div>
       <div class="dex-word" style="${isEvolved?'color:#ffe040':''}">${displayName}</div>
@@ -2880,7 +4372,7 @@ function buildDexGrid(){
       card.innerHTML = `
         <div class="dcc-happy">${happyEmoji}</div>
         <div style="position:relative;width:64px;height:64px">
-          ${cr.fn(cr.color)}
+          ${uniquifyIds(cr.fn(cr.color))}
           ${isEvolvedCard?'':countBadge}
         </div>
         <div class="dcc-name" style="${isEvolvedCard?'color:#ffe040':''}">${displayCardName}</div>

@@ -4769,6 +4769,7 @@ function _restoreAccPositions(){
       child.setAttribute('transform',`translate(${dx.toFixed(1)},${dy.toFixed(1)})`);
       cSvg.appendChild(child);
       appState.accSet.add(accId);
+      _makePlacedAccDraggable(child, accId);
     }
   });
   buildAccPicker(); // Update equipped tab to show active accessories
@@ -5082,25 +5083,56 @@ function _doIdleAction(){
 let _dragAcc=null;
 let _dragGhost=null;
 let _dragStartY=0;
+let _dragOffsetX=35, _dragOffsetY=35;
 
 function startAccDrag(accDef, evt){
-  // Only drag owned accessories
   if(!getPurchasedForCreature().has(accDef.id)) return;
   _dragAcc=accDef;
   evt.preventDefault();
 
-  // Create ghost element following finger
+  const cSvg=document.getElementById('cSvg');
+  const stageEl=document.getElementById('stage');
+
+  // Measure the accessory's real bounding box in SVG coordinate space
+  let natBBox={x:60,y:60,width:100,height:80};
+  let vbW=220, vbH=240;
+  if(cSvg){
+    vbW=cSvg.viewBox.baseVal.width||220;
+    vbH=cSvg.viewBox.baseVal.height||240;
+    const ns='http://www.w3.org/2000/svg';
+    const tmp=document.createElementNS(ns,'g');
+    tmp.innerHTML=accDef.svg(appState.color||'#ffb3d9');
+    const ch=tmp.firstElementChild;
+    if(ch){
+      ch.style.visibility='hidden';
+      cSvg.appendChild(ch);
+      try{ natBBox=ch.getBBox(); }catch(e){}
+      ch.remove();
+    }
+  }
+
+  // Scale to match what it will look like when placed on the creature
+  const stageW=stageEl?stageEl.offsetWidth:260;
+  const stageH=stageEl?stageEl.offsetHeight:290;
+  const ghostW=Math.max(40, Math.round(natBBox.width*stageW/vbW));
+  const ghostH=Math.max(40, Math.round(natBBox.height*stageH/vbH));
+  _dragOffsetX=ghostW/2;
+  _dragOffsetY=ghostH/2;
+
   _dragGhost=document.createElement('div');
   _dragGhost.className='drag-ghost';
-  _dragGhost.innerHTML=`<svg viewBox="0 0 60 60" width="70" height="70" xmlns="http://www.w3.org/2000/svg">
-    <g>${accDef.preview}</g></svg>`;
+  _dragGhost.style.width=ghostW+'px';
+  _dragGhost.style.height=ghostH+'px';
+  _dragGhost.innerHTML=`<svg viewBox="${natBBox.x} ${natBBox.y} ${natBBox.width} ${natBBox.height}"
+    width="${ghostW}" height="${ghostH}" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+    ${accDef.svg(appState.color||'#ffb3d9')}
+  </svg>`;
   document.body.appendChild(_dragGhost);
 
   const pos=_getTouchPos(evt);
   _dragStartY=pos.y;
   _moveDragGhost(pos.x, pos.y);
 
-  // Listeners
   document.addEventListener('mousemove', _onDragMove);
   document.addEventListener('touchmove', _onDragMove, {passive:false});
   document.addEventListener('mouseup', _onDragEnd);
@@ -5114,8 +5146,8 @@ function _getTouchPos(evt){
 
 function _moveDragGhost(x,y){
   if(!_dragGhost) return;
-  _dragGhost.style.left=(x-35)+'px';
-  _dragGhost.style.top=(y-35)+'px';
+  _dragGhost.style.left=(x-_dragOffsetX)+'px';
+  _dragGhost.style.top=(y-_dragOffsetY)+'px';
 }
 
 function _onDragMove(evt){
@@ -5174,6 +5206,56 @@ function _cleanDrag(){
   _dragAcc=null;
 }
 
+// Make a placed accessory element draggable directly on the creature
+function _makePlacedAccDraggable(el, accId){
+  el.style.cursor='grab';
+  function onDown(evt){
+    if(_dragAcc) return; // tray drag in progress, ignore
+    evt.stopPropagation();
+    evt.preventDefault();
+    const cSvg=document.getElementById('cSvg');
+    if(!cSvg) return;
+    const startPos=_getTouchPos(evt);
+    const svgRect=cSvg.getBoundingClientRect();
+    const svgVB=cSvg.viewBox.baseVal;
+    const scaleX=(svgVB.width||220)/svgRect.width;
+    const scaleY=(svgVB.height||240)/svgRect.height;
+    const curT=el.getAttribute('transform')||'translate(0,0)';
+    const m=curT.match(/translate\(([^,]+),([^)]+)\)/);
+    let curDx=m?parseFloat(m[1]):0;
+    let curDy=m?parseFloat(m[2]):0;
+    el.style.cursor='grabbing';
+    function onMove(e){
+      e.preventDefault();
+      const pos=_getTouchPos(e);
+      const newDx=curDx+(pos.x-startPos.x)*scaleX;
+      const newDy=curDy+(pos.y-startPos.y)*scaleY;
+      el.setAttribute('transform',`translate(${newDx.toFixed(1)},${newDy.toFixed(1)})`);
+    }
+    function onUp(e){
+      el.style.cursor='grab';
+      document.removeEventListener('mousemove',onMove);
+      document.removeEventListener('touchmove',onMove);
+      document.removeEventListener('mouseup',onUp);
+      document.removeEventListener('touchend',onUp);
+      const finalT=el.getAttribute('transform');
+      const fm=finalT&&finalT.match(/translate\(([^,]+),([^)]+)\)/);
+      if(fm){
+        if(!appState.accPositions) appState.accPositions={};
+        appState.accPositions[accId]={dx:parseFloat(fm[1]),dy:parseFloat(fm[2])};
+        try{ window.parent.postMessage({type:'saveAccPositions',
+          accPositions:appState.accPositions,accSet:[...(appState.accSet||new Set())]},'*'); }catch(ex){}
+      }
+    }
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchend',onUp);
+  }
+  el.addEventListener('mousedown',onDown);
+  el.addEventListener('touchstart',onDown,{passive:false});
+}
+
 function _placeAccAtPosition(accDef, cx, cy){
   const cSvg=document.getElementById('cSvg');
   if(!cSvg) return;
@@ -5217,6 +5299,9 @@ function _placeAccAtPosition(accDef, cx, cy){
   // Apply transform and make visible
   child.setAttribute('transform', `translate(${dx.toFixed(1)},${dy.toFixed(1)})`);
   child.style.visibility='';
+
+  // Make the placed accessory draggable directly on the creature
+  _makePlacedAccDraggable(child, accDef.id);
 
   // Store position for persistence
   if(!appState.accPositions) appState.accPositions={};
