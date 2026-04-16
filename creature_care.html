@@ -5208,6 +5208,9 @@ function _cleanDrag(){
 
 // Make a placed accessory element draggable directly on the creature
 function _makePlacedAccDraggable(el, accId){
+  // Override the inherited pointer-events:none from #stage so this element
+  // can be clicked/tapped directly on the SVG canvas
+  el.style.pointerEvents='all';
   el.style.cursor='grab';
   function onDown(evt){
     if(_dragAcc) return; // tray drag in progress, ignore
