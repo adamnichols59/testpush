@@ -172,7 +172,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 
 .spell-body{
   flex:1;width:100%;max-width:480px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   padding:16px 18px 12px;gap:12px;overflow-y:auto;overflow-x:hidden;
   min-height:0;
 }
@@ -200,7 +200,7 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
 /* Definition */
 .def-card{
   width:100%;background:#0a1030;border:2px solid #2244aa;border-radius:14px;
-  padding:14px 18px;font-size:1.05rem;font-weight:700;color:#aac4ff;text-align:center;line-height:1.6;
+  padding:10px 14px;font-size:.78rem;font-weight:700;color:#aac4ff;text-align:center;line-height:1.5;
 }
 
 /* Blanks — interactive letter tiles */
@@ -424,6 +424,16 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
   opacity:0;pointer-events:none;transition:opacity .3s;
 }
 #oCatch.show{opacity:1;pointer-events:all}
+#oEvolve{
+  position:fixed;inset:0;z-index:101;
+  background:radial-gradient(ellipse at center,#1a0050 0%,#060018 100%);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .4s;
+}
+#oEvolve.show{opacity:1;pointer-events:all}
+.evolve-box{text-align:center;padding:28px 24px;max-width:320px;width:100%}
+.evolve-flash{animation:evoFlash .6s ease-out}
+@keyframes evoFlash{0%{filter:brightness(3) saturate(0)}100%{filter:brightness(1) saturate(1)}}
 .catch-box{
   background:var(--panel);border:4px solid var(--yellow);border-radius:24px;
   padding:28px 32px;text-align:center;
@@ -921,6 +931,18 @@ html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'
     </div>
     <div id="nicknameSaved" class="nickname-saved" style="display:none">✅ Saved!</div>
     <button class="btn-continue" onclick="afterCatch()">Continue ▶</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ EVOLVE OVERLAY ═══════════════════════ -->
+<div id="oEvolve">
+  <div class="evolve-box">
+    <div style="font-family:'Baloo 2',cursive;font-size:.75rem;font-weight:800;color:#aac4ff;letter-spacing:3px;margin-bottom:12px">✨ EVOLUTION ✨</div>
+    <div id="evoCreatureEl" style="width:110px;height:110px;margin:0 auto 10px" class="evolve-flash"></div>
+    <div id="evoNameEl" style="font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:#ffe040;text-shadow:0 0 20px #ffe040,0 0 40px #ffaa00;margin-bottom:6px"></div>
+    <div id="evoMsgEl" style="font-family:'Baloo 2',cursive;font-size:.75rem;color:#aac4ff;margin-bottom:6px"></div>
+    <div style="font-family:'Baloo 2',cursive;font-size:.65rem;color:#7799cc;margin-bottom:22px">Tap their card to visit them! 🐾</div>
+    <button onclick="closeEvolve()" style="font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;background:linear-gradient(135deg,#ffe040,#ffaa00);color:#1a0a2e;border:none;border-radius:999px;padding:14px 36px;cursor:pointer;box-shadow:0 0 24px #ffe04088">Amazing! ⚡</button>
   </div>
 </div>
 
@@ -2284,10 +2306,61 @@ function afterCatch(){
   _autoSave();
   stopRing();
   document.getElementById('oCatch').classList.remove('show');
-  wordIdx++;
-  if(wordIdx>=20||hearts<=0){endGame();return}
-  // Show map transition, then next word
-  showMapTransition(()=>loadWord());
+  // Check for evolution before advancing
+  const cr=CREATURES[wordIdx%CREATURES.length];
+  checkAndShowEvolve(cr, function(){
+    wordIdx++;
+    if(wordIdx>=20||hearts<=0){endGame();return;}
+    showMapTransition(()=>loadWord());
+  });
+}
+
+// ─── Evolution logic ───────────────────────────────────────
+var _evolveCallback=null;
+function checkAndShowEvolve(cr, callback){
+  var evoName=EVOLUTION_MAP[cr.name];
+  if(!evoName){callback();return;}
+  var allData=(_currentUser&&!_currentUser.isGuest&&_savedUserData&&_savedUserData.allCreatures)
+    ?_savedUserData.allCreatures:caught;
+  var count=allData.filter(function(c){return c.name===cr.name;}).length;
+  // Trigger exactly at 3 (and every additional 3 after)
+  if(count>0&&count%3===0){
+    document.getElementById('evoCreatureEl').innerHTML=cr.fn(cr.color);
+    document.getElementById('evoNameEl').textContent=evoName;
+    document.getElementById('evoMsgEl').textContent=cr.name+' evolved into '+evoName+'!';
+    document.getElementById('evoCreatureEl').classList.remove('evolve-flash');
+    void document.getElementById('evoCreatureEl').offsetWidth; // reflow
+    document.getElementById('evoCreatureEl').classList.add('evolve-flash');
+    _evolveCallback=callback;
+    document.getElementById('oEvolve').classList.add('show');
+    sfxEvolve();
+  } else {
+    callback();
+  }
+}
+function closeEvolve(){
+  document.getElementById('oEvolve').classList.remove('show');
+  if(_evolveCallback){var cb=_evolveCallback;_evolveCallback=null;cb();}
+}
+function sfxEvolve(){
+  if(!audioCtx)return;
+  var t=audioCtx.currentTime;
+  // Rising arpeggio
+  [262,330,392,523,659,784,1047,1319,1568].forEach(function(f,i){
+    var o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(.18,t+i*.09);
+    g.gain.exponentialRampToValueAtTime(.001,t+i*.09+.25);
+    o.connect(g);g.connect(sfxGain);o.start(t+i*.09);o.stop(t+i*.09+.3);
+  });
+  // Final sparkle burst
+  [2093,2637,3136].forEach(function(f,i){
+    var o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='triangle';o.frequency.value=f;
+    g.gain.setValueAtTime(.12,t+.9+i*.06);
+    g.gain.exponentialRampToValueAtTime(.001,t+.9+i*.06+.3);
+    o.connect(g);g.connect(sfxGain);o.start(t+.9+i*.06);o.stop(t+.9+i*.06+.35);
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2394,16 +2467,17 @@ function showWin(){
     </div>`;
     const evoName = EVOLUTION_MAP[c.name]||'???';
     const evolveLabel = evolveReady
-      ? `<div class="evolve-label">&#9889; Evolves to ${evoName}!</div>`
+      ? `<div class="evolve-label">&#9889; ${evoName}</div>`
       : `<div style="font-size:.42rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>`;
+    const displayName = evolveReady ? evoName : c.name;
     el.innerHTML=`
       <div style="position:relative;width:52px;height:52px">
         ${c.fn(c.color)}
         ${countBadge}
       </div>
-      <div class="dex-word">${c.word}</div>
+      <div class="dex-word" style="${evolveReady?'color:#ffe040':''}">${displayName}</div>
       ${nick}
-      ${progBar}
+      ${evolveReady?'':progBar}
       ${evolveLabel}
       <div style="font-size:.45rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
     el.onclick=()=>openCare(crIdx,c);
@@ -2585,27 +2659,32 @@ function openCreatureCare(crIdx, caughtEntry){
   const overlay = document.getElementById('careOverlay');
   const frame   = document.getElementById('careFrame');
 
+  // Determine if evolved (count >= 3 = evolved form)
+  var allData = (_currentUser && !_currentUser.isGuest && _savedUserData && _savedUserData.allCreatures)
+    ? _savedUserData.allCreatures : caught;
+  var crCount = allData.filter(function(c){ return c.name === cr.name; }).length;
+  var displayName = (crCount >= 3 && EVOLUTION_MAP[cr.name]) ? EVOLUTION_MAP[cr.name] : cr.name;
+
   // Load the care page
   frame.src = './creature_care.html';
-  frame.dataset.crName = cr.name;
+  frame.dataset.crName = displayName;
   overlay.classList.add('show');
 
   // Once loaded, send creature data including coins and purchases
   frame.onload = () => {
-    // Get purchased accessories and positions for this creature
     var purchased = _currentUser && !_currentUser.isGuest && _savedUserData
       ? (_savedUserData.purchasedAccs||{}) : {};
     var positions = _currentUser && !_currentUser.isGuest && _savedUserData
       ? (_savedUserData.accPositions||{}) : {};
     frame.contentWindow.postMessage({
       type:'initCare',
-      name:cr.name,
+      name:displayName,
       color:cr.color,
       word:caughtEntry ? caughtEntry.word : cr.name,
       happy:happiness,
       coins:shineCoins,
       purchasedAccs:purchased,
-      accPositions:positions[cr.name]||{}
+      accPositions:positions[displayName]||positions[cr.name]||{}
     }, '*');
   };
 }
@@ -2615,7 +2694,12 @@ window.addEventListener('message', function(e) {
   if(!e.data) return;
 
   if(e.data.type === 'closeCare'){
-    if(e.data.name) creatureHappiness[e.data.name] = e.data.happiness || 50;
+    if(e.data.name){
+      creatureHappiness[e.data.name] = e.data.happiness || 50;
+      // Also save under base name so dex happiness lookup works
+      const baseName = Object.keys(EVOLUTION_MAP).find(k=>EVOLUTION_MAP[k]===e.data.name);
+      if(baseName) creatureHappiness[baseName] = e.data.happiness || 50;
+    }
     const overlay = document.getElementById('careOverlay');
     const frame   = document.getElementById('careFrame');
     overlay.classList.remove('show');
@@ -2765,10 +2849,11 @@ function buildDexGrid(){
         ? `<div class="cr-count-badge ${evolveReady?'evolve-badge':''}" style="position:absolute;top:-4px;right:-4px">×${count}</div>`
         : '';
       const evolveLabel = evolveReady
-        ? `<div class="evolve-label" style="font-size:.42rem">⚡ Evolves to ${evoName}!</div>`
+        ? `<div class="evolve-label" style="font-size:.42rem">⚡ ${evoName}</div>`
         : `<div style="font-size:.38rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>`;
       const nick = caughtEntry.nickname
         ? `<div style="font-size:.42rem;color:#ffe040;font-weight:800">"${caughtEntry.nickname}"</div>` : '';
+      const displayCardName = evolveReady ? evoName : cr.name;
 
       card.className = 'dex-care-card' + (evolveReady ? ' evolve-ready' : '');
       card.innerHTML = `
@@ -2777,10 +2862,10 @@ function buildDexGrid(){
           ${cr.fn(cr.color)}
           ${countBadge}
         </div>
-        <div class="dcc-name">${cr.name}</div>
+        <div class="dcc-name" style="${evolveReady?'color:#ffe040':''}">${displayCardName}</div>
         <div class="dcc-word">${caughtEntry.word}</div>
         ${nick}
-        ${progBar}
+        ${evolveReady?'':progBar}
         ${evolveLabel}
         <div style="font-size:.38rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
       card.onclick = () => openCare(i, caughtEntry);
