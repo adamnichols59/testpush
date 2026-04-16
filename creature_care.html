@@ -2284,90 +2284,108 @@ ${[...Array(9)].map((_,i)=>{
 }
 
 function buildCoralswim(c='#44ddff'){
-  return svg(280,200,`
+  return svg(200,240,`
 <defs>
-  <radialGradient id="bg1" cx="30%" cy="35%" r="65%"><stop offset="0%" stop-color="#ccf8ff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#005888"/></radialGradient>
+  <radialGradient id="bg1" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#ccf8ff"/><stop offset="50%" stop-color="${c}"/><stop offset="100%" stop-color="#005888"/></radialGradient>
   <radialGradient id="bg2" cx="50%" cy="45%" r="52%"><stop offset="0%" stop-color="#eefcff"/><stop offset="100%" stop-color="#88eeff"/></radialGradient>
+  <radialGradient id="hd" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#ccf8ff"/><stop offset="70%" stop-color="${c}"/><stop offset="100%" stop-color="#005888"/></radialGradient>
   <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,100,180,.25)"/></filter>
   <filter id="bio"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
-<ellipse cx="140" cy="194" rx="90" ry="9" fill="rgba(0,0,0,.12)"/>
-<!-- Tail flukes - elegant -->
-<g id="tailFlip" style="transform-origin:245px 100px">
-  <path d="M 238 86 Q 266 62 278 78 Q 272 98 254 100 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
-  <path d="M 238 114 Q 266 138 278 122 Q 272 102 254 100 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
-  <!-- Bioluminescent veins on tail -->
-  <path d="M 240 90 Q 260 76 272 82" fill="none" stroke="#00ffcc" stroke-width="1.5" opacity=".7" filter="url(#bio)"/>
-  <path d="M 240 110 Q 260 124 272 118" fill="none" stroke="#00ffcc" stroke-width="1.5" opacity=".7" filter="url(#bio)"/>
+<ellipse cx="100" cy="234" rx="65" ry="8" fill="rgba(0,0,0,.12)"/>
+<!-- Tail flukes at bottom -->
+<g id="tailFlip" style="transform-origin:100px 210px">
+  <path d="M 68 202 Q 44 224 30 212 Q 34 192 60 188 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 132 202 Q 156 224 170 212 Q 166 192 140 188 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 70 200 Q 46 220 34 210" fill="none" stroke="#00ffcc" stroke-width="1.5" opacity=".7" filter="url(#bio)"/>
+  <path d="M 130 200 Q 154 220 166 210" fill="none" stroke="#00ffcc" stroke-width="1.5" opacity=".7" filter="url(#bio)"/>
 </g>
-<!-- Coral crown on head -->
-<g id="tuftL" style="transform-origin:58px 62px">
-  <path d="M 48 72 Q 44 48 52 36 Q 56 30 60 36 Q 62 44 58 58 Z" fill="#ff6688" stroke="rgba(180,30,60,.3)" stroke-width="1"/>
-  <path d="M 56 68 Q 52 46 58 34 Q 62 28 66 34 Q 68 44 64 60 Z" fill="#ff4466" stroke="rgba(180,30,60,.3)" stroke-width="1"/>
-  <path d="M 64 72 Q 62 50 68 38 Q 72 32 76 38 Q 77 48 72 64 Z" fill="#ff6688" stroke="rgba(180,30,60,.3)" stroke-width="1"/>
-  <!-- Coral glow tips -->
-  <circle cx="52" cy="34" r="5" fill="#ffaacc" filter="url(#bio)"/>
-  <circle cx="60" cy="30" r="4" fill="#ff88bb" filter="url(#bio)"/>
-  <circle cx="70" cy="36" r="4.5" fill="#ffaacc" filter="url(#bio)"/>
+<!-- Body -->
+<g id="bodyGroup" style="transform-origin:100px 162px">
+  <ellipse cx="100" cy="162" rx="68" ry="70" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="100" cy="170" rx="50" ry="52" fill="url(#bg2)" opacity=".75"/>
+  <circle cx="80" cy="155" r="7" fill="#00ffdd" opacity=".4" filter="url(#bio)"/>
+  <circle cx="100" cy="168" r="5" fill="#00ffcc" opacity=".35" filter="url(#bio)"/>
+  <circle cx="120" cy="152" r="6" fill="#00ffdd" opacity=".38" filter="url(#bio)"/>
+  <circle cx="88" cy="182" r="5" fill="#44ffee" opacity=".3" filter="url(#bio)"/>
+  <circle cx="112" cy="180" r="4" fill="#00ffcc" opacity=".32" filter="url(#bio)"/>
+  <ellipse cx="76" cy="138" rx="18" ry="9" fill="rgba(255,255,255,.28)" transform="rotate(-15,76,138)"/>
 </g>
-<!-- Main body -->
-<g id="bodyGroup" style="transform-origin:130px 115px">
-  <path d="M 22 115 Q 22 72 72 58 Q 130 46 188 58 Q 228 68 234 115 Q 228 162 188 172 Q 130 184 72 172 Q 22 158 22 115 Z" fill="url(#bg1)" filter="url(#sh)"/>
-  <path d="M 28 115 Q 28 80 74 68 Q 130 58 184 68 Q 218 76 222 115 Q 218 154 184 162 Q 130 172 74 162 Q 28 150 28 115 Z" fill="url(#bg2)" opacity=".75"/>
-  <!-- Bioluminescent spots pattern -->
-  <circle cx="100" cy="115" r="7" fill="#00ffdd" opacity=".4" filter="url(#bio)"/>
-  <circle cx="130" cy="128" r="5" fill="#00ffcc" opacity=".35" filter="url(#bio)"/>
-  <circle cx="158" cy="112" r="6" fill="#00ffdd" opacity=".38" filter="url(#bio)"/>
-  <circle cx="115" cy="140" r="5" fill="#44ffee" opacity=".3" filter="url(#bio)"/>
-  <circle cx="148" cy="138" r="4" fill="#00ffcc" opacity=".32" filter="url(#bio)"/>
-  <ellipse cx="78" cy="85" rx="22" ry="11" fill="rgba(255,255,255,.32)" transform="rotate(-18,78,85)"/>
+<!-- Flippers -->
+<g id="flipL" style="transform-origin:32px 158px">
+  <path d="M 36 148 Q 6 136 2 158 Q 0 178 20 182 Q 40 184 46 164 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 38 152 Q 10 142 6 160" fill="none" stroke="rgba(180,240,255,.45)" stroke-width="1.2"/>
 </g>
-<!-- Front flippers - more elegant -->
-<g id="flipL" style="transform-origin:54px 128px">
-  <path d="M 54 116 Q 20 104 12 122 Q 8 138 26 144 Q 44 148 58 134 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
-  <path d="M 56 119 Q 26 110 18 124" fill="none" stroke="rgba(180,240,255,.45)" stroke-width="1.2"/>
+<g id="flipR" style="transform-origin:168px 158px">
+  <path d="M 164 148 Q 194 136 198 158 Q 200 178 180 182 Q 160 184 154 164 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 162 152 Q 190 142 194 160" fill="none" stroke="rgba(180,240,255,.45)" stroke-width="1.2"/>
+</g>
+<!-- Coral crown -->
+<g id="tuftL" style="transform-origin:100px 54px">
+  <path d="M 78 74 Q 72 50 80 36 Q 84 28 90 36 Q 92 46 86 64 Z" fill="#ff6688" stroke="rgba(180,30,60,.3)" stroke-width="1"/>
+  <path d="M 92 70 Q 88 46 94 32 Q 98 24 104 32 Q 106 44 100 62 Z" fill="#ff4466" stroke="rgba(180,30,60,.3)" stroke-width="1"/>
+  <path d="M 108 74 Q 106 50 112 36 Q 116 28 122 36 Q 123 46 116 64 Z" fill="#ff6688" stroke="rgba(180,30,60,.3)" stroke-width="1"/>
+  <circle cx="80" cy="34" r="5" fill="#ffaacc" filter="url(#bio)"/>
+  <circle cx="98" cy="26" r="4" fill="#ff88bb" filter="url(#bio)"/>
+  <circle cx="116" cy="34" r="4.5" fill="#ffaacc" filter="url(#bio)"/>
 </g>
 <!-- Head -->
-<ellipse cx="46" cy="102" rx="48" ry="44" fill="url(#bg1)" filter="url(#sh)"/>
-<ellipse cx="32" cy="84" rx="16" ry="9" fill="rgba(255,255,255,.32)" transform="rotate(-18,32,84)"/>
-<!-- Big luminous eyes -->
-<g id="eyeL" style="transform-origin:48px 94px">
-  <circle cx="48" cy="94" r="18" fill="white" stroke="rgba(0,60,140,.14)" stroke-width="1"/>
-  <circle cx="48" cy="94" r="13" fill="#001a3a"/>
-  <circle cx="48" cy="94" r="9" fill="#0066aa"/>
-  <circle cx="48" cy="94" r="5.5" fill="#0a0a2a"/>
-  <!-- Bioluminescent iris ring -->
-  <circle cx="48" cy="94" r="13" fill="none" stroke="#00ffcc" stroke-width="1" opacity=".5" filter="url(#bio)"/>
-  <circle cx="56" cy="86" r="6" fill="white"/>
-  <circle cx="42" cy="102" r="2.8" fill="rgba(255,255,255,.65)"/>
-  <ellipse id="lidL" cx="48" cy="77" rx="18" ry="3.5" fill="${c}" style="display:none"/>
-  <path d="M 31 82 Q 48 76 65 82" fill="none" stroke="rgba(0,50,130,.38)" stroke-width="2.2" stroke-linecap="round"/>
+<ellipse cx="100" cy="98" rx="52" ry="48" fill="url(#hd)" filter="url(#sh)"/>
+<ellipse cx="80" cy="80" rx="16" ry="8" fill="rgba(255,255,255,.3)" transform="rotate(-18,80,80)"/>
+<!-- Eyes - both front-facing luminous -->
+<g id="eyeL" style="transform-origin:72px 92px">
+  <circle cx="72" cy="92" r="18" fill="white" stroke="rgba(0,60,140,.14)" stroke-width="1"/>
+  <circle cx="72" cy="92" r="13" fill="#001a3a"/>
+  <circle cx="72" cy="92" r="9" fill="#0066aa"/>
+  <circle cx="72" cy="92" r="5.5" fill="#0a0a2a"/>
+  <circle cx="72" cy="92" r="13" fill="none" stroke="#00ffcc" stroke-width="1" opacity=".5" filter="url(#bio)"/>
+  <circle cx="80" cy="84" r="6" fill="white"/>
+  <circle cx="65" cy="100" r="2.8" fill="rgba(255,255,255,.65)"/>
+  <ellipse id="lidL" cx="72" cy="76" rx="18" ry="3.5" fill="${c}" style="display:none"/>
+  <path d="M 55 80 Q 72 74 89 80" fill="none" stroke="rgba(0,50,130,.38)" stroke-width="2.2" stroke-linecap="round"/>
 </g>
-<g id="eyeR" style="display:none"/>
-<!-- Nose - glowing -->
-<ellipse cx="14" cy="108" rx="11" ry="8" fill="#001122" stroke="rgba(0,0,0,.3)" stroke-width="1" filter="url(#glow)"/>
-<circle cx="11" cy="105" r="4" fill="rgba(255,255,255,.45)"/>
-<!-- Pearl necklace detail on neck -->
-<path d="M 30 130 Q 58 142 80 136" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
-<circle cx="32" cy="131" r="4" fill="rgba(255,255,255,.7)"/>
-<circle cx="46" cy="136" r="4" fill="rgba(255,255,255,.7)"/>
-<circle cx="62" cy="137" r="4" fill="rgba(255,255,255,.7)"/>
-<circle cx="76" cy="135" r="3.5" fill="rgba(255,255,255,.7)"/>
+<g id="eyeR" style="transform-origin:128px 92px">
+  <circle cx="128" cy="92" r="18" fill="white" stroke="rgba(0,60,140,.14)" stroke-width="1"/>
+  <circle cx="128" cy="92" r="13" fill="#001a3a"/>
+  <circle cx="128" cy="92" r="9" fill="#0066aa"/>
+  <circle cx="128" cy="92" r="5.5" fill="#0a0a2a"/>
+  <circle cx="128" cy="92" r="13" fill="none" stroke="#00ffcc" stroke-width="1" opacity=".5" filter="url(#bio)"/>
+  <circle cx="136" cy="84" r="6" fill="white"/>
+  <circle cx="121" cy="100" r="2.8" fill="rgba(255,255,255,.65)"/>
+  <ellipse id="lidR" cx="128" cy="76" rx="18" ry="3.5" fill="${c}" style="display:none"/>
+  <path d="M 111 80 Q 128 74 145 80" fill="none" stroke="rgba(0,50,130,.38)" stroke-width="2.2" stroke-linecap="round"/>
+</g>
+<!-- Nose -->
+<ellipse cx="100" cy="114" rx="12" ry="8" fill="#001122" stroke="rgba(0,0,0,.3)" stroke-width="1" filter="url(#glow)"/>
+<circle cx="96" cy="111" r="4" fill="rgba(255,255,255,.45)"/>
+<!-- Pearl necklace -->
+<path d="M 58 128 Q 80 138 100 140 Q 120 138 142 128" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
+<circle cx="60" cy="129" r="4" fill="rgba(255,255,255,.7)"/>
+<circle cx="74" cy="135" r="4" fill="rgba(255,255,255,.7)"/>
+<circle cx="88" cy="139" r="4" fill="rgba(255,255,255,.7)"/>
+<circle cx="100" cy="140" r="4" fill="rgba(255,255,255,.7)"/>
+<circle cx="112" cy="139" r="4" fill="rgba(255,255,255,.7)"/>
+<circle cx="126" cy="135" r="4" fill="rgba(255,255,255,.7)"/>
+<circle cx="140" cy="129" r="4" fill="rgba(255,255,255,.7)"/>
 <!-- Smile -->
 <g id="mouth">
-  <path id="mn" d="M 6 116 Q 18 128 26 122" stroke="rgba(0,50,140,.5)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <g id="mc" style="display:none"><path d="M 4 115 Q 18 132 30 115 Q 24 126 16 128 Q 10 126 4 115 Z" fill="#44aacc"/></g>
+  <path id="mn" d="M 84 120 Q 100 132 116 120" stroke="rgba(0,50,140,.5)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 82 119 Q 100 136 118 119 Q 112 130 100 132 Q 88 130 82 119 Z" fill="#44aacc"/></g>
 </g>
-<!-- Whiskers - glowing -->
-<line x1="24" y1="105" x2="-2" y2="99" stroke="#00ffcc" stroke-width="1.5" opacity=".6" filter="url(#bio)"/>
-<line x1="24" y1="112" x2="-2" y2="112" stroke="#00ffcc" stroke-width="1.5" opacity=".6" filter="url(#bio)"/>
-<!-- Floating bio particles -->
-<circle cx="220" cy="60" r="4" fill="#00ffcc" opacity=".6" filter="url(#bio)"/>
-<circle cx="230" cy="155" r="3" fill="#44ffee" opacity=".5" filter="url(#bio)"/>
+<!-- Whiskers on both sides -->
+<line x1="70" y1="108" x2="42" y2="102" stroke="#00ffcc" stroke-width="1.5" opacity=".6" filter="url(#bio)"/>
+<line x1="70" y1="115" x2="42" y2="115" stroke="#00ffcc" stroke-width="1.5" opacity=".6" filter="url(#bio)"/>
+<line x1="130" y1="108" x2="158" y2="102" stroke="#00ffcc" stroke-width="1.5" opacity=".6" filter="url(#bio)"/>
+<line x1="130" y1="115" x2="158" y2="115" stroke="#00ffcc" stroke-width="1.5" opacity=".6" filter="url(#bio)"/>
+<!-- Bio particles -->
+<circle cx="22" cy="62" r="4" fill="#00ffcc" opacity=".6" filter="url(#bio)"/>
+<circle cx="178" cy="56" r="3" fill="#44ffee" opacity=".5" filter="url(#bio)"/>
 <g id="heartEyes" style="display:none">
-  <circle cx="48" cy="94" r="18" fill="#0088ff"/>
-  <text x="48" y="101" font-size="18" text-anchor="middle" fill="white">♥</text>
+  <circle cx="72" cy="92" r="18" fill="#0088ff"/>
+  <text x="72" y="99" font-size="18" text-anchor="middle" fill="white">♥</text>
+  <circle cx="128" cy="92" r="18" fill="#0088ff"/>
+  <text x="128" y="99" font-size="18" text-anchor="middle" fill="white">♥</text>
 </g>`);
 }
 
@@ -3071,113 +3089,118 @@ function buildAncienshell(c='#668844'){
 }
 
 function buildGalaxhorn(c='#ccaaff'){
-  return svg(270,265,`
+  return svg(220,270,`
 <defs>
-  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#eeddff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#330066"/></radialGradient>
-  <radialGradient id="bg2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#f8f0ff"/><stop offset="100%" stop-color="#ddaaff"/></radialGradient>
+  <radialGradient id="bg1" cx="50%" cy="38%" r="62%"><stop offset="0%" stop-color="#eeddff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#330066"/></radialGradient>
+  <radialGradient id="bg2" cx="50%" cy="42%" r="52%"><stop offset="0%" stop-color="#f8f0ff"/><stop offset="100%" stop-color="#ddaaff"/></radialGradient>
   <radialGradient id="nebula" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity=".3"/><stop offset="100%" stop-color="#8844ff" stop-opacity="0"/></radialGradient>
   <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="9" flood-color="rgba(100,0,200,.3)"/></filter>
   <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   <filter id="horn"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
-<ellipse cx="148" cy="259" rx="78" ry="10" fill="rgba(0,0,0,.14)"/>
-<!-- Galaxy nebula aura -->
-<ellipse cx="148" cy="175" rx="110" ry="95" fill="url(#nebula)" opacity=".3"/>
-<!-- Cosmic tail - galaxy swirl -->
-<g id="tail" style="transform-origin:228px 182px">
-  <path d="M 224 172 Q 252 155 260 170 Q 262 188 248 196 Q 234 202 226 190 Z" fill="${c}" stroke="rgba(100,0,200,.2)" stroke-width="1.5"/>
-  <!-- Nebula colors in tail -->
-  <path d="M 226 175 Q 248 162 256 172 Q 258 186 246 193" fill="none" stroke="#ff44aa" stroke-width="2.5" opacity=".5" filter="url(#glow)"/>
-  <path d="M 228 180 Q 248 168 254 178" fill="none" stroke="#44aaff" stroke-width="2" opacity=".45" filter="url(#glow)"/>
-  <!-- Stars in tail -->
-  <circle cx="244" cy="168" r="2.5" fill="white" opacity=".8"/>
-  <circle cx="252" cy="180" r="2" fill="white" opacity=".7"/>
-  <circle cx="240" cy="185" r="2" fill="#ffaaff" opacity=".7" filter="url(#glow)"/>
-</g>
-<!-- Body - horse shaped -->
-<g id="bodyGroup" style="transform-origin:148px 188px">
-  <ellipse cx="148" cy="185" rx="92" ry="60" fill="url(#bg1)" filter="url(#sh)"/>
-  <ellipse cx="142" cy="196" rx="65" ry="42" fill="url(#bg2)"/>
-  <!-- Constellation markings on body -->
-  <circle cx="120" cy="178" r="3" fill="white" opacity=".6"/>
-  <circle cx="132" cy="172" r="2.5" fill="white" opacity=".5"/>
-  <circle cx="144" cy="176" r="3" fill="white" opacity=".6"/>
-  <circle cx="156" cy="170" r="2.5" fill="white" opacity=".5"/>
-  <line x1="120" y1="178" x2="132" y2="172" stroke="white" stroke-width=".8" opacity=".35"/>
-  <line x1="132" y1="172" x2="144" y2="176" stroke="white" stroke-width=".8" opacity=".35"/>
-  <line x1="144" y1="176" x2="156" y2="170" stroke="white" stroke-width=".8" opacity=".35"/>
-  <ellipse cx="108" cy="158" rx="20" ry="10" fill="rgba(255,255,255,.25)" transform="rotate(-18,108,158)"/>
+<ellipse cx="110" cy="263" rx="76" ry="9" fill="rgba(0,0,0,.14)"/>
+<!-- Nebula aura -->
+<ellipse cx="110" cy="135" rx="105" ry="100" fill="url(#nebula)" opacity=".28"/>
+<!-- Body -->
+<g id="bodyGroup" style="transform-origin:110px 175px">
+  <ellipse cx="110" cy="175" rx="72" ry="58" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="110" cy="183" rx="52" ry="42" fill="url(#bg2)"/>
+  <circle cx="92" cy="166" r="3" fill="white" opacity=".6"/>
+  <circle cx="105" cy="160" r="2.5" fill="white" opacity=".5"/>
+  <circle cx="118" cy="166" r="3" fill="white" opacity=".6"/>
+  <circle cx="130" cy="162" r="2.5" fill="white" opacity=".5"/>
+  <line x1="92" y1="166" x2="105" y2="160" stroke="white" stroke-width=".8" opacity=".35"/>
+  <line x1="105" y1="160" x2="118" y2="166" stroke="white" stroke-width=".8" opacity=".35"/>
+  <line x1="118" y1="166" x2="130" y2="162" stroke="white" stroke-width=".8" opacity=".35"/>
+  <ellipse cx="86" cy="152" rx="18" ry="9" fill="rgba(255,255,255,.22)" transform="rotate(-15,86,152)"/>
 </g>
 <!-- 4 legs -->
-<g id="legBL"><rect x="188" y="228" width="21" height="46" rx="10" fill="${c}" stroke="rgba(100,0,200,.18)" stroke-width="1.5"/><ellipse cx="198" cy="274" rx="17" ry="8" fill="${c}"/></g>
-<g id="legBR"><rect x="216" y="228" width="21" height="46" rx="10" fill="${c}" stroke="rgba(100,0,200,.18)" stroke-width="1.5"/><ellipse cx="226" cy="274" rx="17" ry="8" fill="${c}"/></g>
-<g id="legFL"><rect x="82" y="224" width="21" height="44" rx="10" fill="${c}" stroke="rgba(100,0,200,.18)" stroke-width="1.5"/><ellipse cx="92" cy="268" rx="17" ry="8" fill="${c}"/></g>
-<g id="legFR"><rect x="112" y="224" width="21" height="44" rx="10" fill="${c}" stroke="rgba(100,0,200,.18)" stroke-width="1.5"/><ellipse cx="122" cy="268" rx="17" ry="8" fill="${c}"/></g>
-<!-- Galaxy mane -->
-<path d="M 72 152 Q 60 118 70 90 Q 74 75 82 80" fill="none" stroke="#ff44aa" stroke-width="7" stroke-linecap="round" opacity=".65" filter="url(#glow)"/>
-<path d="M 76 150 Q 65 118 74 92 Q 78 78 84 82" fill="none" stroke="#44aaff" stroke-width="5" stroke-linecap="round" opacity=".55" filter="url(#glow)"/>
-<path d="M 80 148 Q 70 118 78 94 Q 82 80 88 84" fill="none" stroke="#aaff44" stroke-width="4" stroke-linecap="round" opacity=".5" filter="url(#glow)"/>
-<path d="M 82 148 Q 74 120 80 96 Q 84 82 90 86" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity=".45"/>
+<g id="legBL"><rect x="76" y="224" width="20" height="42" rx="10" fill="${c}" stroke="rgba(100,0,200,.18)" stroke-width="1.5"/><ellipse cx="86" cy="266" rx="16" ry="7" fill="${c}"/></g>
+<g id="legBR"><rect x="100" y="224" width="20" height="42" rx="10" fill="${c}" stroke="rgba(100,0,200,.18)" stroke-width="1.5"/><ellipse cx="110" cy="266" rx="16" ry="7" fill="${c}"/></g>
+<g id="legFL"><rect x="124" y="222" width="20" height="44" rx="10" fill="${c}" stroke="rgba(100,0,200,.18)" stroke-width="1.5"/><ellipse cx="134" cy="266" rx="16" ry="7" fill="${c}"/></g>
+<g id="legFR"><rect x="148" y="222" width="20" height="44" rx="10" fill="${c}" stroke="rgba(100,0,200,.18)" stroke-width="1.5"/><ellipse cx="158" cy="266" rx="16" ry="7" fill="${c}"/></g>
+<!-- Galaxy mane - flowing to both sides -->
+<path d="M 58 124 Q 30 100 26 72 Q 32 48 48 56 Q 60 62 64 82" fill="none" stroke="#ff44aa" stroke-width="7" stroke-linecap="round" opacity=".6" filter="url(#glow)"/>
+<path d="M 60 122 Q 34 100 30 74 Q 36 52 50 58" fill="none" stroke="#44aaff" stroke-width="5" stroke-linecap="round" opacity=".5" filter="url(#glow)"/>
+<path d="M 62 120 Q 38 100 34 76 Q 40 56 52 62" fill="none" stroke="#aaff44" stroke-width="3.5" stroke-linecap="round" opacity=".45" filter="url(#glow)"/>
+<path d="M 162 124 Q 190 100 194 72 Q 188 48 172 56 Q 160 62 156 82" fill="none" stroke="#ff44aa" stroke-width="7" stroke-linecap="round" opacity=".6" filter="url(#glow)"/>
+<path d="M 160 122 Q 186 100 190 74 Q 184 52 170 58" fill="none" stroke="#44aaff" stroke-width="5" stroke-linecap="round" opacity=".5" filter="url(#glow)"/>
+<path d="M 158 120 Q 182 100 186 76 Q 180 56 168 62" fill="none" stroke="#aaff44" stroke-width="3.5" stroke-linecap="round" opacity=".45" filter="url(#glow)"/>
 <!-- Stars in mane -->
-<circle cx="66" cy="110" r="2.5" fill="white" opacity=".8"/>
-<circle cx="72" cy="95" r="2" fill="white" opacity=".7"/>
-<circle cx="78" cy="105" r="2" fill="#ffaaff" opacity=".8" filter="url(#glow)"/>
+<circle cx="32" cy="80" r="2.5" fill="white" opacity=".8"/>
+<circle cx="38" cy="62" r="2" fill="white" opacity=".7"/>
+<circle cx="186" cy="80" r="2.5" fill="white" opacity=".8"/>
+<circle cx="180" cy="62" r="2" fill="#ffaaff" opacity=".8" filter="url(#glow)"/>
 <!-- Neck -->
-<path d="M 72 156 Q 62 120 72 92 Q 82 74 98 78 Q 114 82 112 112 Q 110 138 98 158 Z" fill="url(#bg1)" stroke="rgba(100,0,200,.15)" stroke-width="1"/>
+<path d="M 76 140 Q 70 116 76 98 Q 86 82 110 80 Q 134 82 144 98 Q 150 116 144 140 Z" fill="url(#bg1)" stroke="rgba(100,0,200,.15)" stroke-width="1"/>
 <!-- Head -->
-<ellipse cx="86" cy="80" rx="50" ry="46" fill="url(#bg1)" filter="url(#sh)"/>
-<!-- Galaxy horn - spectacular -->
+<ellipse cx="110" cy="102" rx="52" ry="50" fill="url(#bg1)" filter="url(#sh)"/>
+<!-- Galaxy horn centered -->
 <g id="tuftL">
-  <!-- Horn base to tip -->
-  <polygon points="86,26 78,62 94,62" fill="#ffcc00" stroke="rgba(200,150,0,.4)" stroke-width="1.5"/>
-  <polygon points="86,30 80,60 92,60" fill="rgba(255,255,255,.6)"/>
-  <!-- Rainbow spiral on horn -->
-  <path d="M 84 56 Q 80 48 82 40 Q 84 32 86 28" fill="none" stroke="#ff4466" stroke-width="1.5" opacity=".7"/>
-  <path d="M 88 56 Q 92 48 90 40 Q 88 32 86 28" fill="none" stroke="#44ffaa" stroke-width="1.5" opacity=".7"/>
-  <!-- Horn tip glow -->
-  <circle cx="86" cy="24" r="8" fill="#ffe040" filter="url(#horn)" opacity=".9"/>
-  <circle cx="86" cy="24" r="4" fill="white"/>
-  <!-- Shooting star from horn -->
-  <line x1="86" y1="22" x2="120" y2="5" stroke="rgba(255,224,64,.7)" stroke-width="2" filter="url(#glow)"/>
-  <circle cx="122" cy="4" r="3" fill="#ffe040" filter="url(#glow)"/>
+  <polygon points="110,32 102,76 118,76" fill="#ffcc00" stroke="rgba(200,150,0,.4)" stroke-width="1.5"/>
+  <polygon points="110,36 104,74 116,74" fill="rgba(255,255,255,.6)"/>
+  <path d="M 107 70 Q 103 58 105 46 Q 107 36 110 32" fill="none" stroke="#ff4466" stroke-width="1.5" opacity=".7"/>
+  <path d="M 113 70 Q 117 58 115 46 Q 113 36 110 32" fill="none" stroke="#44ffaa" stroke-width="1.5" opacity=".7"/>
+  <circle cx="110" cy="28" r="9" fill="#ffe040" filter="url(#horn)" opacity=".9"/>
+  <circle cx="110" cy="28" r="4" fill="white"/>
+  <line x1="110" y1="26" x2="150" y2="10" stroke="rgba(255,224,64,.7)" stroke-width="2" filter="url(#glow)"/>
+  <circle cx="152" cy="9" r="3" fill="#ffe040" filter="url(#glow)"/>
 </g>
-<!-- Ear -->
-<g id="earL" style="transform-origin:110px 60px">
-  <ellipse cx="110" cy="56" rx="13" ry="22" fill="${c}" stroke="rgba(100,0,200,.25)" stroke-width="1.5" transform="rotate(15,110,56)"/>
-  <ellipse cx="110" cy="58" rx="8" ry="14" fill="#ddaaff" transform="rotate(15,110,58)"/>
+<!-- Ears - both sides -->
+<g id="earL" style="transform-origin:82px 78px">
+  <ellipse cx="82" cy="74" rx="13" ry="22" fill="${c}" stroke="rgba(100,0,200,.25)" stroke-width="1.5" transform="rotate(-12,82,74)"/>
+  <ellipse cx="82" cy="76" rx="8" ry="14" fill="#ddaaff" transform="rotate(-12,82,76)"/>
 </g>
-<!-- Eyes - cosmic with nebula iris -->
-<g id="eyeL" style="transform-origin:76px 76px">
-  <ellipse cx="76" cy="76" rx="12" ry="14" fill="white" stroke="rgba(100,0,200,.2)" stroke-width="1"/>
-  <ellipse cx="76" cy="78" rx="8.5" ry="10.5" fill="#110033"/>
-  <ellipse cx="76" cy="77" rx="5.5" ry="7.5" fill="#8844cc"/>
-  <circle cx="76" cy="78" r="4" fill="#111"/>
-  <!-- Nebula swirl in eye -->
-  <circle cx="76" cy="78" r="5.5" fill="none" stroke="#ff44aa" stroke-width=".8" opacity=".5"/>
-  <circle cx="82" cy="70" r="3.5" fill="rgba(255,255,255,.85)"/>
-  <ellipse id="lidL" cx="76" cy="64" rx="12" ry="2.8" fill="${c}" style="display:none"/>
-  <path d="M 65 67 Q 76 61 87 67" fill="none" stroke="rgba(100,0,200,.4)" stroke-width="1.8" stroke-linecap="round"/>
+<g id="earR" style="transform-origin:138px 78px">
+  <ellipse cx="138" cy="74" rx="13" ry="22" fill="${c}" stroke="rgba(100,0,200,.25)" stroke-width="1.5" transform="rotate(12,138,74)"/>
+  <ellipse cx="138" cy="76" rx="8" ry="14" fill="#ddaaff" transform="rotate(12,138,76)"/>
 </g>
-<g id="eyeR" style="display:none"/>
+<!-- Eyes - both visible, cosmic nebula -->
+<g id="eyeL" style="transform-origin:86px 100px">
+  <ellipse cx="86" cy="100" rx="12" ry="14" fill="white" stroke="rgba(100,0,200,.2)" stroke-width="1"/>
+  <ellipse cx="86" cy="102" rx="8.5" ry="10.5" fill="#110033"/>
+  <ellipse cx="86" cy="101" rx="5.5" ry="7.5" fill="#8844cc"/>
+  <circle cx="86" cy="102" r="4" fill="#111"/>
+  <circle cx="86" cy="102" r="5.5" fill="none" stroke="#ff44aa" stroke-width=".8" opacity=".5"/>
+  <circle cx="92" cy="93" r="3.5" fill="rgba(255,255,255,.85)"/>
+  <ellipse id="lidL" cx="86" cy="88" rx="12" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 75 90 Q 86 84 97 90" fill="none" stroke="rgba(100,0,200,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:134px 100px">
+  <ellipse cx="134" cy="100" rx="12" ry="14" fill="white" stroke="rgba(100,0,200,.2)" stroke-width="1"/>
+  <ellipse cx="134" cy="102" rx="8.5" ry="10.5" fill="#110033"/>
+  <ellipse cx="134" cy="101" rx="5.5" ry="7.5" fill="#8844cc"/>
+  <circle cx="134" cy="102" r="4" fill="#111"/>
+  <circle cx="134" cy="102" r="5.5" fill="none" stroke="#ff44aa" stroke-width=".8" opacity=".5"/>
+  <circle cx="140" cy="93" r="3.5" fill="rgba(255,255,255,.85)"/>
+  <ellipse id="lidR" cx="134" cy="88" rx="12" ry="2.8" fill="${c}" style="display:none"/>
+  <path d="M 123 90 Q 134 84 145 90" fill="none" stroke="rgba(100,0,200,.4)" stroke-width="1.8" stroke-linecap="round"/>
+</g>
 <!-- Snout -->
-<ellipse cx="55" cy="87" rx="23" ry="17" fill="#ddbbff" stroke="rgba(100,0,200,.15)" stroke-width="1"/>
-<circle cx="46" cy="88" r="3.5" fill="#553377" stroke="rgba(80,0,150,.3)" stroke-width="1"/>
+<ellipse cx="110" cy="118" rx="22" ry="16" fill="#ddbbff" stroke="rgba(100,0,200,.15)" stroke-width="1"/>
+<circle cx="102" cy="118" r="3.5" fill="#553377" stroke="rgba(80,0,150,.3)" stroke-width="1"/>
+<circle cx="118" cy="118" r="3.5" fill="#553377" stroke="rgba(80,0,150,.3)" stroke-width="1"/>
 <!-- Mouth -->
 <g id="mouth">
-  <path id="mn" d="M 40 94 Q 52 102 60 98" stroke="rgba(100,0,200,.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <g id="mc" style="display:none"><path d="M 38 93 Q 52 108 64 93 Q 58 104 52 106 Q 46 104 38 93 Z" fill="#ddaaff"/></g>
+  <path id="mn" d="M 96 126 Q 110 136 124 126" stroke="rgba(100,0,200,.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 94 125 Q 110 140 126 125 Q 120 136 110 138 Q 100 136 94 125 Z" fill="#ddaaff"/></g>
 </g>
-<!-- Cheek constellation -->
-<circle cx="60" cy="87" r="10" fill="rgba(170,100,255,.35)"/>
-<circle cx="56" cy="83" r="2" fill="white" opacity=".6"/>
-<circle cx="62" cy="80" r="1.5" fill="white" opacity=".5"/>
-<!-- Floating stars around -->
-<circle cx="28" cy="58" r="3.5" fill="#ffe040" opacity=".7" filter="url(#glow)"/>
-<circle cx="148" cy="45" r="3" fill="#ff44aa" opacity=".6" filter="url(#glow)"/>
-<circle cx="22" cy="120" r="2.5" fill="#44ffaa" opacity=".6" filter="url(#glow)"/>
+<!-- Cheek constellations -->
+<circle cx="70" cy="110" r="9" fill="rgba(170,100,255,.3)"/>
+<circle cx="67" cy="106" r="2" fill="white" opacity=".6"/>
+<circle cx="74" cy="104" r="1.5" fill="white" opacity=".5"/>
+<circle cx="150" cy="110" r="9" fill="rgba(170,100,255,.3)"/>
+<circle cx="147" cy="106" r="2" fill="white" opacity=".6"/>
+<circle cx="154" cy="104" r="1.5" fill="white" opacity=".5"/>
+<!-- Floating stars -->
+<circle cx="18" cy="76" r="3.5" fill="#ffe040" opacity=".7" filter="url(#glow)"/>
+<circle cx="200" cy="72" r="3" fill="#ff44aa" opacity=".6" filter="url(#glow)"/>
+<circle cx="14" cy="148" r="2.5" fill="#44ffaa" opacity=".6" filter="url(#glow)"/>
 <g id="heartEyes" style="display:none">
-  <ellipse cx="76" cy="76" rx="12" ry="14" fill="#8844cc"/>
-  <text x="76" y="83" font-size="13" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="86" cy="100" rx="12" ry="14" fill="#8844cc"/>
+  <text x="86" y="107" font-size="13" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="134" cy="100" rx="12" ry="14" fill="#8844cc"/>
+  <text x="134" y="107" font-size="13" text-anchor="middle" fill="white">♥</text>
 </g>`);
 }
 
@@ -3277,194 +3300,201 @@ function buildJadepaw(c='#aaddaa'){
 }
 
 function buildThunderwing(c='#ff6600'){
-  return svg(200,200,`
+  return svg(240,210,`
 <defs>
-  <radialGradient id="bg1" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#ffeecc"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#aa2200"/></radialGradient>
+  <radialGradient id="bg1" cx="50%" cy="38%" r="62%"><stop offset="0%" stop-color="#ffeecc"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#aa2200"/></radialGradient>
   <radialGradient id="bg2" cx="50%" cy="42%" r="52%"><stop offset="0%" stop-color="#fff8ee"/><stop offset="100%" stop-color="#ffcc88"/></radialGradient>
   <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(200,60,0,.35)"/></filter>
   <filter id="fire"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   <filter id="lightning"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
-<ellipse cx="100" cy="194" rx="54" ry="8" fill="rgba(0,0,0,.13)"/>
-<!-- Massive storm wings spread wide -->
-<g id="wingL" style="transform-origin:52px 110px">
-  <path d="M 52 118 Q -5 80 -15 44 Q -8 22 12 36 Q 32 50 42 84 Q 48 100 52 118 Z" fill="#cc3300" stroke="rgba(200,80,0,.3)" stroke-width="1.5" opacity=".9"/>
-  <!-- Wing feather layers -->
-  <path d="M 52 118 Q 5 88 0 60 Q 5 42 18 52" fill="none" stroke="rgba(255,150,50,.35)" stroke-width="1.5"/>
-  <path d="M 52 118 Q 10 92 8 68 Q 12 52 24 58" fill="none" stroke="rgba(255,150,50,.3)" stroke-width="1.2"/>
-  <!-- Lightning in wing -->
-  <path d="M 52 118 Q 28 95 14 68 Q 8 50 4 38" fill="none" stroke="#ffe040" stroke-width="2" opacity=".65" filter="url(#lightning)"/>
-  <!-- Flame at wing tips -->
-  <path d="M -14 40 Q -18 28 -12 18 Q -6 28 -4 40 Z" fill="#ff6600" filter="url(#fire)" opacity=".8"/>
-  <path d="M -10 44 Q -16 32 -8 22 Q -2 30 0 44" fill="#ffaa00" filter="url(#fire)" opacity=".7"/>
+<!-- Shadow -->
+<ellipse cx="120" cy="204" rx="60" ry="8" fill="rgba(0,0,0,.13)"/>
+<!-- Left wing - fully within viewBox -->
+<g id="wingL" style="transform-origin:72px 118px">
+  <path d="M 72 126 Q 20 90 8 54 Q 14 30 34 44 Q 54 58 64 92 Q 69 108 72 126 Z" fill="#cc3300" stroke="rgba(200,80,0,.3)" stroke-width="1.5" opacity=".9"/>
+  <path d="M 72 126 Q 24 96 18 68 Q 24 50 38 60" fill="none" stroke="rgba(255,150,50,.35)" stroke-width="1.5"/>
+  <path d="M 72 126 Q 30 100 26 76 Q 30 60 44 66" fill="none" stroke="rgba(255,150,50,.3)" stroke-width="1.2"/>
+  <path d="M 72 126 Q 46 103 32 76 Q 26 58 22 46" fill="none" stroke="#ffe040" stroke-width="2" opacity=".65" filter="url(#lightning)"/>
+  <path d="M 8 52 Q 4 38 10 26 Q 16 36 18 50 Z" fill="#ff6600" filter="url(#fire)" opacity=".8"/>
+  <path d="M 12 56 Q 6 42 14 30 Q 20 38 22 54" fill="#ffaa00" filter="url(#fire)" opacity=".7"/>
 </g>
-<g id="wingR" style="transform-origin:148px 110px">
-  <path d="M 148 118 Q 205 80 215 44 Q 208 22 188 36 Q 168 50 158 84 Q 152 100 148 118 Z" fill="#cc3300" stroke="rgba(200,80,0,.3)" stroke-width="1.5" opacity=".9"/>
-  <path d="M 148 118 Q 195 88 200 60 Q 195 42 182 52" fill="none" stroke="rgba(255,150,50,.35)" stroke-width="1.5"/>
-  <path d="M 148 118 Q 192 95 216 68 Q 208 50 204 38" fill="none" stroke="#ffe040" stroke-width="2" opacity=".65" filter="url(#lightning)"/>
-  <path d="M 214 40 Q 218 28 212 18 Q 206 28 204 40 Z" fill="#ff6600" filter="url(#fire)" opacity=".8"/>
+<!-- Right wing - symmetric -->
+<g id="wingR" style="transform-origin:168px 118px">
+  <path d="M 168 126 Q 220 90 232 54 Q 226 30 206 44 Q 186 58 176 92 Q 171 108 168 126 Z" fill="#cc3300" stroke="rgba(200,80,0,.3)" stroke-width="1.5" opacity=".9"/>
+  <path d="M 168 126 Q 216 96 222 68 Q 216 50 202 60" fill="none" stroke="rgba(255,150,50,.35)" stroke-width="1.5"/>
+  <path d="M 168 126 Q 212 103 214 76 Q 208 58 196 66" fill="none" stroke="#ffe040" stroke-width="2" opacity=".65" filter="url(#lightning)"/>
+  <path d="M 232 52 Q 236 38 230 26 Q 224 36 222 50 Z" fill="#ff6600" filter="url(#fire)" opacity=".8"/>
 </g>
-<!-- Body - fiercer phoenix chick -->
-<g id="bodyGroup" style="transform-origin:100px 138px">
-  <ellipse cx="100" cy="138" rx="58" ry="52" fill="url(#bg1)" filter="url(#sh)"/>
-  <ellipse cx="100" cy="150" rx="38" ry="34" fill="url(#bg2)"/>
-  <!-- Feather pattern -->
-  ${[...Array(5)].map((_,i)=>`<path d="M ${78+i*10} ${118+i*3} Q ${83+i*10} ${108+i*3} ${88+i*10} ${118+i*3} Q ${83+i*10} ${126+i*3} ${78+i*10} ${118+i*3} Z" fill="rgba(255,100,0,.3)" stroke="rgba(200,60,0,.35)" stroke-width="1"/>`).join('')}
-  <ellipse cx="80" cy="118" rx="14" ry="7" fill="rgba(255,255,255,.28)" transform="rotate(-20,80,118)"/>
+<!-- Body -->
+<g id="bodyGroup" style="transform-origin:120px 146px">
+  <ellipse cx="120" cy="146" rx="58" ry="52" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="120" cy="158" rx="38" ry="34" fill="url(#bg2)"/>
+  ${[...Array(5)].map((_,i)=>`<path d="M ${98+i*10} ${126+i*3} Q ${103+i*10} ${116+i*3} ${108+i*10} ${126+i*3} Q ${103+i*10} ${134+i*3} ${98+i*10} ${126+i*3} Z" fill="rgba(255,100,0,.3)" stroke="rgba(200,60,0,.35)" stroke-width="1"/>`).join('')}
+  <ellipse cx="100" cy="126" rx="14" ry="7" fill="rgba(255,255,255,.28)" transform="rotate(-20,100,126)"/>
 </g>
-<!-- Fierce crown crest of flames -->
+<!-- Flame crown crest -->
 <g id="tuftL">
-  <path d="M 82 88 Q 72 62 80 42 Q 86 30 92 42 Q 96 56 90 78 Z" fill="#ff4400" filter="url(#fire)"/>
-  <path d="M 92 85 Q 84 58 90 38 Q 96 25 102 38 Q 106 52 100 75 Z" fill="#ff6600" filter="url(#fire)"/>
-  <path d="M 100 86 Q 95 60 100 42 Q 106 30 112 42 Q 115 56 108 78 Z" fill="#ffaa00" filter="url(#fire)"/>
-  <path d="M 110 87 Q 108 62 114 44 Q 120 32 126 44 Q 128 58 120 80 Z" fill="#ff4400" filter="url(#fire)"/>
-  <!-- Flame tips glow white hot -->
-  <circle cx="86" cy="40" r="6" fill="white" opacity=".7" filter="url(#fire)"/>
-  <circle cx="100" cy="35" r="6" fill="white" opacity=".8" filter="url(#fire)"/>
-  <circle cx="114" cy="42" r="5" fill="white" opacity=".7" filter="url(#fire)"/>
+  <path d="M 102 96 Q 92 70 100 50 Q 106 38 112 50 Q 116 64 110 86 Z" fill="#ff4400" filter="url(#fire)"/>
+  <path d="M 112 93 Q 104 66 110 46 Q 116 33 122 46 Q 126 60 120 83 Z" fill="#ff6600" filter="url(#fire)"/>
+  <path d="M 120 94 Q 115 68 120 50 Q 126 38 132 50 Q 135 64 128 86 Z" fill="#ffaa00" filter="url(#fire)"/>
+  <path d="M 130 95 Q 128 70 134 52 Q 140 40 146 52 Q 148 66 140 88 Z" fill="#ff4400" filter="url(#fire)"/>
+  <circle cx="106" cy="48" r="6" fill="white" opacity=".7" filter="url(#fire)"/>
+  <circle cx="120" cy="43" r="6" fill="white" opacity=".8" filter="url(#fire)"/>
+  <circle cx="134" cy="50" r="5" fill="white" opacity=".7" filter="url(#fire)"/>
 </g>
 <!-- Head -->
-<ellipse cx="100" cy="110" rx="48" ry="44" fill="url(#bg1)" filter="url(#sh)"/>
-<!-- Eyes - intense phoenix eyes -->
-<g id="eyeL" style="transform-origin:80px 108px">
-  <ellipse cx="80" cy="108" rx="14" ry="15" fill="#ffcc00" stroke="rgba(200,80,0,.2)" stroke-width="1"/>
-  <ellipse cx="80" cy="110" rx="9.5" ry="11.5" fill="#330800"/>
-  <ellipse cx="80" cy="109" rx="6" ry="8" fill="#cc3300"/>
-  <circle cx="80" cy="110" r="4.5" fill="#111"/>
-  <circle cx="86" cy="103" r="3.8" fill="rgba(255,255,255,.85)"/>
-  <!-- Inner fire glow -->
-  <circle cx="80" cy="110" r="3" fill="#ff6600" opacity=".35" filter="url(#fire)"/>
-  <ellipse id="lidL" cx="80" cy="95" rx="14" ry="3" fill="${c}" style="display:none"/>
-  <path d="M 67 98 Q 80 92 93 98" fill="none" stroke="rgba(200,80,0,.45)" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="120" cy="118" rx="48" ry="44" fill="url(#bg1)" filter="url(#sh)"/>
+<!-- Eyes - intense phoenix, both visible -->
+<g id="eyeL" style="transform-origin:100px 116px">
+  <ellipse cx="100" cy="116" rx="14" ry="15" fill="#ffcc00" stroke="rgba(200,80,0,.2)" stroke-width="1"/>
+  <ellipse cx="100" cy="118" rx="9.5" ry="11.5" fill="#330800"/>
+  <ellipse cx="100" cy="117" rx="6" ry="8" fill="#cc3300"/>
+  <circle cx="100" cy="118" r="4.5" fill="#111"/>
+  <circle cx="106" cy="111" r="3.8" fill="rgba(255,255,255,.85)"/>
+  <circle cx="100" cy="118" r="3" fill="#ff6600" opacity=".35" filter="url(#fire)"/>
+  <ellipse id="lidL" cx="100" cy="103" rx="14" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 87 106 Q 100 100 113 106" fill="none" stroke="rgba(200,80,0,.45)" stroke-width="2" stroke-linecap="round"/>
 </g>
-<g id="eyeR" style="transform-origin:120px 108px">
-  <ellipse cx="120" cy="108" rx="14" ry="15" fill="#ffcc00" stroke="rgba(200,80,0,.2)" stroke-width="1"/>
-  <ellipse cx="120" cy="110" rx="9.5" ry="11.5" fill="#330800"/>
-  <ellipse cx="120" cy="109" rx="6" ry="8" fill="#cc3300"/>
-  <circle cx="120" cy="110" r="4.5" fill="#111"/>
-  <circle cx="126" cy="103" r="3.8" fill="rgba(255,255,255,.85)"/>
-  <circle cx="120" cy="110" r="3" fill="#ff6600" opacity=".35" filter="url(#fire)"/>
-  <ellipse id="lidR" cx="120" cy="95" rx="14" ry="3" fill="${c}" style="display:none"/>
-  <path d="M 107 98 Q 120 92 133 98" fill="none" stroke="rgba(200,80,0,.45)" stroke-width="2" stroke-linecap="round"/>
+<g id="eyeR" style="transform-origin:140px 116px">
+  <ellipse cx="140" cy="116" rx="14" ry="15" fill="#ffcc00" stroke="rgba(200,80,0,.2)" stroke-width="1"/>
+  <ellipse cx="140" cy="118" rx="9.5" ry="11.5" fill="#330800"/>
+  <ellipse cx="140" cy="117" rx="6" ry="8" fill="#cc3300"/>
+  <circle cx="140" cy="118" r="4.5" fill="#111"/>
+  <circle cx="146" cy="111" r="3.8" fill="rgba(255,255,255,.85)"/>
+  <circle cx="140" cy="118" r="3" fill="#ff6600" opacity=".35" filter="url(#fire)"/>
+  <ellipse id="lidR" cx="140" cy="103" rx="14" ry="3" fill="${c}" style="display:none"/>
+  <path d="M 127 106 Q 140 100 153 106" fill="none" stroke="rgba(200,80,0,.45)" stroke-width="2" stroke-linecap="round"/>
 </g>
 <!-- Fierce beak -->
-<path d="M 88 124 Q 100 132 112 124 Q 108 138 100 140 Q 92 138 88 124 Z" fill="#ffaa00" stroke="rgba(180,100,0,.4)" stroke-width="1.5"/>
-<path d="M 90 128 Q 100 134 110 128" fill="none" stroke="rgba(150,80,0,.5)" stroke-width="1.5"/>
+<path d="M 108 132 Q 120 140 132 132 Q 128 146 120 148 Q 112 146 108 132 Z" fill="#ffaa00" stroke="rgba(180,100,0,.4)" stroke-width="1.5"/>
 <g id="mouth">
-  <path id="mn" d="M 90 128 Q 100 134 110 128" stroke="rgba(150,80,0,.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <g id="mc" style="display:none"><path d="M 88 126 Q 100 140 112 126 Q 108 137 100 139 Q 92 137 88 126 Z" fill="#ff8800"/></g>
+  <path id="mn" d="M 110 136 Q 120 142 130 136" stroke="rgba(150,80,0,.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 108 134 Q 120 148 132 134 Q 128 145 120 147 Q 112 145 108 134 Z" fill="#ff8800"/></g>
 </g>
 <!-- Cheek flame blush -->
-<ellipse cx="66" cy="118" rx="12" ry="8" fill="rgba(255,100,0,.3)" filter="url(#fire)"/>
-<ellipse cx="134" cy="118" rx="12" ry="8" fill="rgba(255,100,0,.3)" filter="url(#fire)"/>
-<!-- Twig feet - spindly but fierce -->
-<line x1="80" y1="186" x2="68" y2="198" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
-<line x1="68" y1="198" x2="56" y2="192" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-<line x1="68" y1="198" x2="60" y2="202" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-<line x1="68" y1="198" x2="72" y2="205" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-<line x1="120" y1="186" x2="132" y2="198" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
-<line x1="132" y1="198" x2="144" y2="192" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-<line x1="132" y1="198" x2="140" y2="202" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-<line x1="132" y1="198" x2="128" y2="205" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-<!-- Ember sparks around -->
-<circle cx="18" cy="65" r="4" fill="#ff6600" opacity=".7" filter="url(#fire)"/>
-<circle cx="185" cy="60" r="3.5" fill="#ffaa00" opacity=".7" filter="url(#fire)"/>
+<ellipse cx="86" cy="126" rx="12" ry="8" fill="rgba(255,100,0,.3)" filter="url(#fire)"/>
+<ellipse cx="154" cy="126" rx="12" ry="8" fill="rgba(255,100,0,.3)" filter="url(#fire)"/>
+<!-- Taloned feet -->
+<line x1="100" y1="194" x2="88" y2="206" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+<line x1="88" y1="206" x2="76" y2="200" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+<line x1="88" y1="206" x2="80" y2="210" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+<line x1="88" y1="206" x2="92" y2="210" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+<line x1="140" y1="194" x2="152" y2="206" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+<line x1="152" y1="206" x2="164" y2="200" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+<line x1="152" y1="206" x2="160" y2="210" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+<line x1="152" y1="206" x2="148" y2="210" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+<!-- Ember sparks -->
+<circle cx="36" cy="72" r="4" fill="#ff6600" opacity=".7" filter="url(#fire)"/>
+<circle cx="206" cy="68" r="3.5" fill="#ffaa00" opacity=".7" filter="url(#fire)"/>
 <g id="heartEyes" style="display:none">
-  <ellipse cx="80" cy="108" rx="14" ry="15" fill="#cc3300"/>
-  <text x="80" y="115" font-size="14" text-anchor="middle" fill="white">♥</text>
-  <ellipse cx="120" cy="108" rx="14" ry="15" fill="#cc3300"/>
-  <text x="120" y="115" font-size="14" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="100" cy="116" rx="14" ry="15" fill="#cc3300"/>
+  <text x="100" y="123" font-size="14" text-anchor="middle" fill="white">♥</text>
+  <ellipse cx="140" cy="116" rx="14" ry="15" fill="#cc3300"/>
+  <text x="140" y="123" font-size="14" text-anchor="middle" fill="white">♥</text>
 </g>`);
 }
 
 function buildTidalcrest(c='#44bbff'){
-  return svg(290,195,`
+  return svg(210,245,`
 <defs>
-  <radialGradient id="bg1" cx="30%" cy="35%" r="65%"><stop offset="0%" stop-color="#ccf0ff"/><stop offset="60%" stop-color="${c}"/><stop offset="100%" stop-color="#003366"/></radialGradient>
+  <radialGradient id="bg1" cx="50%" cy="40%" r="62%"><stop offset="0%" stop-color="#ccf0ff"/><stop offset="55%" stop-color="${c}"/><stop offset="100%" stop-color="#003366"/></radialGradient>
   <radialGradient id="bg2" cx="50%" cy="45%" r="52%"><stop offset="0%" stop-color="#eef8ff"/><stop offset="100%" stop-color="#88ddff"/></radialGradient>
   <radialGradient id="deep" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity=".3"/><stop offset="100%" stop-color="#004488" stop-opacity="0"/></radialGradient>
   <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="9" flood-color="rgba(0,80,200,.25)"/></filter>
   <filter id="wave"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   <filter id="bio"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
-<ellipse cx="148" cy="189" rx="95" ry="9" fill="rgba(0,0,0,.12)"/>
+<!-- Shadow -->
+<ellipse cx="105" cy="239" rx="70" ry="8" fill="rgba(0,0,0,.12)"/>
 <!-- Deep sea aura -->
-<ellipse cx="148" cy="112" rx="130" ry="88" fill="url(#deep)" opacity=".25"/>
-<!-- Legendary tail flukes - massive -->
-<g id="tailFlip" style="transform-origin:252px 98px">
-  <path d="M 244 80 Q 276 52 292 70 Q 286 96 264 100 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="2"/>
-  <path d="M 244 116 Q 276 144 292 126 Q 286 100 264 100 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="2"/>
-  <!-- Bioluminescent tail veins -->
-  <path d="M 246 84 Q 272 60 288 74" fill="none" stroke="#00ffee" stroke-width="2" opacity=".7" filter="url(#bio)"/>
-  <path d="M 246 112 Q 272 136 288 122" fill="none" stroke="#00ffee" stroke-width="2" opacity=".7" filter="url(#bio)"/>
+<ellipse cx="105" cy="130" rx="100" ry="92" fill="url(#deep)" opacity=".22"/>
+<!-- Legendary tail flukes at bottom -->
+<g id="tailFlip" style="transform-origin:105px 215px">
+  <path d="M 72 208 Q 46 232 30 218 Q 34 196 62 192 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="2"/>
+  <path d="M 138 208 Q 164 232 180 218 Q 176 196 148 192 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="2"/>
+  <path d="M 74 206 Q 50 228 34 216" fill="none" stroke="#00ffee" stroke-width="2" opacity=".7" filter="url(#bio)"/>
+  <path d="M 136 206 Q 160 228 176 216" fill="none" stroke="#00ffee" stroke-width="2" opacity=".7" filter="url(#bio)"/>
 </g>
-<!-- Wave crown on head -->
-<g id="tuftL" style="transform-origin:62px 60px">
-  <path d="M 38 68 Q 42 44 52 36 Q 58 30 62 38 Q 65 48 58 62 Z" fill="${c}" stroke="rgba(0,80,160,.25)" stroke-width="1.5"/>
-  <path d="M 48 66 Q 52 45 60 38 Q 65 33 68 40 Q 70 50 64 64 Z" fill="#88ddff"/>
-  <path d="M 58 68 Q 62 48 70 42 Q 75 37 78 44 Q 79 54 72 66 Z" fill="${c}" stroke="rgba(0,80,160,.25)" stroke-width="1.5"/>
-  <!-- Crown gems -->
-  <circle cx="52" cy="34" r="7" fill="#44ffee" stroke="rgba(0,100,150,.4)" stroke-width="1.5" filter="url(#bio)"/>
-  <circle cx="62" cy="30" r="5.5" fill="#ffe040" stroke="rgba(180,150,0,.4)" stroke-width="1.5" filter="url(#bio)"/>
-  <circle cx="72" cy="36" r="6" fill="#ff44aa" stroke="rgba(180,20,80,.4)" stroke-width="1.5" filter="url(#bio)"/>
+<!-- Body -->
+<g id="bodyGroup" style="transform-origin:105px 166px">
+  <ellipse cx="105" cy="166" rx="72" ry="70" fill="url(#bg1)" filter="url(#sh)"/>
+  <ellipse cx="105" cy="174" rx="54" ry="52" fill="url(#bg2)" opacity=".75"/>
+  ${[...Array(7)].map((_,i)=>`<circle cx="${72+i*18}" cy="${i%2===0?158:174}" r="${4+i*.4}" fill="#00ffdd" opacity="${.25+i*.02}" filter="url(#bio)"/>`).join('')}
+  ${[...Array(3)].map((_,i)=>`<path d="M ${88+i*22} ${134+i*4} Q ${99+i*22} ${124+i*4} ${110+i*22} ${134+i*4} Q ${99+i*22} ${142+i*4} ${88+i*22} ${134+i*4} Z" fill="rgba(100,200,255,.2)" stroke="rgba(50,150,220,.3)" stroke-width="1"/>`).join('')}
+  <ellipse cx="78" cy="140" rx="20" ry="10" fill="rgba(255,255,255,.3)" transform="rotate(-18,78,140)"/>
 </g>
-<!-- Main body - sleeker legendary -->
-<g id="bodyGroup" style="transform-origin:132px 112px">
-  <path d="M 22 112 Q 22 68 76 54 Q 136 42 196 54 Q 240 64 248 112 Q 240 160 196 170 Q 136 182 76 170 Q 22 156 22 112 Z" fill="url(#bg1)" filter="url(#sh)"/>
-  <path d="M 28 112 Q 28 76 78 64 Q 136 54 192 64 Q 228 72 232 112 Q 228 152 192 160 Q 136 170 78 160 Q 28 148 28 112 Z" fill="url(#bg2)" opacity=".75"/>
-  <!-- Deep sea bioluminescent pattern -->
-  ${[...Array(8)].map((_,i)=>`<circle cx="${90+i*18}" cy="${i%2===0?105:120}" r="${4+i*.5}" fill="#00ffdd" opacity="${.25+i*.02}" filter="url(#bio)"/>`).join('')}
-  <!-- Scale pattern -->
-  ${[...Array(4)].map((_,i)=>`<path d="M ${110+i*20} ${78+i*4} Q ${120+i*20} ${68+i*4} ${130+i*20} ${78+i*4} Q ${120+i*20} ${86+i*4} ${110+i*20} ${78+i*4} Z" fill="rgba(100,200,255,.2)" stroke="rgba(50,150,220,.3)" stroke-width="1"/>`).join('')}
-  <ellipse cx="82" cy="82" rx="22" ry="11" fill="rgba(255,255,255,.32)" transform="rotate(-18,82,82)"/>
+<!-- Pectoral fins on both sides -->
+<g id="flipL" style="transform-origin:36px 162px">
+  <path d="M 40 152 Q 8 140 4 160 Q 2 180 22 184 Q 44 186 50 168 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 42 156 Q 12 146 8 162" fill="none" stroke="rgba(180,240,255,.4)" stroke-width="1.2"/>
+  <path d="M 44 162 Q 16 154 12 168" fill="none" stroke="rgba(180,240,255,.35)" stroke-width="1"/>
 </g>
-<!-- Pectoral fins - elegant -->
-<g id="flipL">
-  <path d="M 56 118 Q 20 104 12 124 Q 8 142 28 148 Q 48 152 62 136 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
-  <path d="M 58 121 Q 26 110 18 126" fill="none" stroke="rgba(180,240,255,.4)" stroke-width="1.2"/>
-  <path d="M 60 126 Q 30 118 22 132" fill="none" stroke="rgba(180,240,255,.35)" stroke-width="1"/>
+<g id="flipR" style="transform-origin:174px 162px">
+  <path d="M 170 152 Q 202 140 206 160 Q 208 180 188 184 Q 166 186 160 168 Z" fill="${c}" stroke="rgba(0,80,160,.2)" stroke-width="1.5"/>
+  <path d="M 168 156 Q 198 146 202 162" fill="none" stroke="rgba(180,240,255,.4)" stroke-width="1.2"/>
 </g>
-<!-- Head - more defined features -->
-<ellipse cx="46" cy="100" rx="50" ry="46" fill="url(#bg1)" filter="url(#sh)"/>
-<ellipse cx="30" cy="82" rx="17" ry="9" fill="rgba(255,255,255,.32)" transform="rotate(-18,30,82)"/>
-<!-- Grand eyes with deep sea glow -->
-<g id="eyeL" style="transform-origin:50px 92px">
-  <circle cx="50" cy="92" r="20" fill="white" stroke="rgba(0,60,140,.14)" stroke-width="1"/>
-  <circle cx="50" cy="92" r="15" fill="#00112a"/>
-  <circle cx="50" cy="92" r="10.5" fill="#0055aa"/>
-  <circle cx="50" cy="92" r="6.5" fill="#0a0a2a"/>
-  <!-- Deep sea iris rings -->
-  <circle cx="50" cy="92" r="15" fill="none" stroke="#00ffdd" stroke-width="1.2" opacity=".55" filter="url(#bio)"/>
-  <circle cx="50" cy="92" r="10" fill="none" stroke="#00aaff" stroke-width=".8" opacity=".4"/>
-  <circle cx="59" cy="83" r="7" fill="white"/>
-  <circle cx="43" cy="100" r="3" fill="rgba(255,255,255,.65)"/>
-  <circle cx="55" cy="100" r="2" fill="rgba(255,255,255,.45)"/>
-  <ellipse id="lidL" cx="50" cy="74" rx="20" ry="4" fill="${c}" style="display:none"/>
-  <path d="M 32 80 Q 50 74 68 80" fill="none" stroke="rgba(0,50,130,.38)" stroke-width="2.5" stroke-linecap="round"/>
+<!-- Wave crown centered on head -->
+<g id="tuftL" style="transform-origin:105px 60px">
+  <path d="M 80 72 Q 84 50 94 42 Q 100 36 104 44 Q 107 54 100 68 Z" fill="${c}" stroke="rgba(0,80,160,.25)" stroke-width="1.5"/>
+  <path d="M 92 70 Q 96 49 104 42 Q 109 37 112 44 Q 114 54 108 68 Z" fill="#88ddff"/>
+  <path d="M 106 72 Q 110 52 118 46 Q 123 41 126 48 Q 127 58 120 70 Z" fill="${c}" stroke="rgba(0,80,160,.25)" stroke-width="1.5"/>
+  <circle cx="94" cy="40" r="7" fill="#44ffee" stroke="rgba(0,100,150,.4)" stroke-width="1.5" filter="url(#bio)"/>
+  <circle cx="106" cy="35" r="5.5" fill="#ffe040" stroke="rgba(180,150,0,.4)" stroke-width="1.5" filter="url(#bio)"/>
+  <circle cx="118" cy="42" r="6" fill="#ff44aa" stroke="rgba(180,20,80,.4)" stroke-width="1.5" filter="url(#bio)"/>
 </g>
-<g id="eyeR" style="display:none"/>
-<!-- Streamlined snout -->
-<path d="M 22 112 Q 6 104 0 112 Q 6 120 22 112 Z" fill="url(#bg1)"/>
-<!-- Blowhole glowing -->
-<ellipse cx="82" cy="52" rx="8" ry="5" fill="#00ffee" opacity=".6" transform="rotate(-10,82,52)" filter="url(#bio)"/>
-<!-- Legendary smile -->
+<!-- Head -->
+<ellipse cx="105" cy="100" rx="54" ry="50" fill="url(#bg1)" filter="url(#sh)"/>
+<ellipse cx="84" cy="82" rx="18" ry="9" fill="rgba(255,255,255,.3)" transform="rotate(-18,84,82)"/>
+<!-- Grand eyes - both visible, deep sea glow -->
+<g id="eyeL" style="transform-origin:78px 94px">
+  <circle cx="78" cy="94" r="20" fill="white" stroke="rgba(0,60,140,.14)" stroke-width="1"/>
+  <circle cx="78" cy="94" r="15" fill="#00112a"/>
+  <circle cx="78" cy="94" r="10.5" fill="#0055aa"/>
+  <circle cx="78" cy="94" r="6.5" fill="#0a0a2a"/>
+  <circle cx="78" cy="94" r="15" fill="none" stroke="#00ffdd" stroke-width="1.2" opacity=".55" filter="url(#bio)"/>
+  <circle cx="78" cy="94" r="10" fill="none" stroke="#00aaff" stroke-width=".8" opacity=".4"/>
+  <circle cx="87" cy="85" r="7" fill="white"/>
+  <circle cx="71" cy="102" r="3" fill="rgba(255,255,255,.65)"/>
+  <ellipse id="lidL" cx="78" cy="76" rx="20" ry="4" fill="${c}" style="display:none"/>
+  <path d="M 60 82 Q 78 76 96 82" fill="none" stroke="rgba(0,50,130,.38)" stroke-width="2.5" stroke-linecap="round"/>
+</g>
+<g id="eyeR" style="transform-origin:132px 94px">
+  <circle cx="132" cy="94" r="20" fill="white" stroke="rgba(0,60,140,.14)" stroke-width="1"/>
+  <circle cx="132" cy="94" r="15" fill="#00112a"/>
+  <circle cx="132" cy="94" r="10.5" fill="#0055aa"/>
+  <circle cx="132" cy="94" r="6.5" fill="#0a0a2a"/>
+  <circle cx="132" cy="94" r="15" fill="none" stroke="#00ffdd" stroke-width="1.2" opacity=".55" filter="url(#bio)"/>
+  <circle cx="132" cy="94" r="10" fill="none" stroke="#00aaff" stroke-width=".8" opacity=".4"/>
+  <circle cx="141" cy="85" r="7" fill="white"/>
+  <circle cx="125" cy="102" r="3" fill="rgba(255,255,255,.65)"/>
+  <ellipse id="lidR" cx="132" cy="76" rx="20" ry="4" fill="${c}" style="display:none"/>
+  <path d="M 114 82 Q 132 76 150 82" fill="none" stroke="rgba(0,50,130,.38)" stroke-width="2.5" stroke-linecap="round"/>
+</g>
+<!-- Snout / rostrum -->
+<ellipse cx="105" cy="118" rx="26" ry="14" fill="#88ddff" stroke="rgba(0,60,140,.18)" stroke-width="1"/>
+<ellipse cx="105" cy="56" rx="7" ry="5" fill="#00ffee" opacity=".65" filter="url(#bio)"/>
+<!-- Smile -->
 <g id="mouth">
-  <path id="mn" d="M 8 118 Q 22 132 32 126" stroke="rgba(0,50,140,.5)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-  <g id="mc" style="display:none"><path d="M 6 117 Q 22 135 36 117 Q 30 128 22 130 Q 14 128 6 117 Z" fill="#44aacc"/></g>
+  <path id="mn" d="M 84 124 Q 105 138 126 124" stroke="rgba(0,50,140,.5)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <g id="mc" style="display:none"><path d="M 82 123 Q 105 142 128 123 Q 120 134 105 136 Q 90 134 82 123 Z" fill="#44aacc"/></g>
 </g>
-<!-- Glowing whiskers -->
-<line x1="26" y1="103" x2="0" y2="97" stroke="#00ffdd" stroke-width="2" opacity=".65" filter="url(#bio)"/>
-<line x1="26" y1="110" x2="0" y2="110" stroke="#00ffdd" stroke-width="2" opacity=".6" filter="url(#bio)"/>
-<line x1="26" y1="117" x2="2" y2="123" stroke="#00ffdd" stroke-width="2" opacity=".55" filter="url(#bio)"/>
-<!-- Bio particles in water -->
-<circle cx="230" cy="56" r="5" fill="#00ffdd" opacity=".5" filter="url(#bio)"/>
-<circle cx="240" cy="165" r="4" fill="#44ffee" opacity=".45" filter="url(#bio)"/>
-<circle cx="14" cy="142" r="3.5" fill="#00ffcc" opacity=".5" filter="url(#bio)"/>
+<!-- Glowing whiskers both sides -->
+<line x1="80" y1="110" x2="52" y2="104" stroke="#00ffdd" stroke-width="2" opacity=".65" filter="url(#bio)"/>
+<line x1="80" y1="117" x2="52" y2="117" stroke="#00ffdd" stroke-width="2" opacity=".6" filter="url(#bio)"/>
+<line x1="130" y1="110" x2="158" y2="104" stroke="#00ffdd" stroke-width="2" opacity=".65" filter="url(#bio)"/>
+<line x1="130" y1="117" x2="158" y2="117" stroke="#00ffdd" stroke-width="2" opacity=".6" filter="url(#bio)"/>
 <!-- Cheek glow -->
-<ellipse cx="30" cy="108" rx="16" ry="9" fill="rgba(0,200,255,.4)"/>
+<ellipse cx="62" cy="108" rx="16" ry="9" fill="rgba(0,200,255,.35)"/>
+<ellipse cx="148" cy="108" rx="16" ry="9" fill="rgba(0,200,255,.35)"/>
+<!-- Bio particles -->
+<circle cx="22" cy="68" r="5" fill="#00ffdd" opacity=".5" filter="url(#bio)"/>
+<circle cx="186" cy="64" r="4" fill="#44ffee" opacity=".45" filter="url(#bio)"/>
 <g id="heartEyes" style="display:none">
-  <circle cx="50" cy="92" r="20" fill="#0066cc"/>
-  <text x="50" y="99" font-size="20" text-anchor="middle" fill="white">♥</text>
+  <circle cx="78" cy="94" r="20" fill="#0066cc"/>
+  <text x="78" y="101" font-size="20" text-anchor="middle" fill="white">♥</text>
+  <circle cx="132" cy="94" r="20" fill="#0066cc"/>
+  <text x="132" y="101" font-size="20" text-anchor="middle" fill="white">♥</text>
 </g>`);
 }
 
