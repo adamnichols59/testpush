@@ -1398,6 +1398,9 @@ function _visitCreatures(){
   if(_savedUserData&&_savedUserData.shineCoins){
     shineCoins=_savedUserData.shineCoins;updateCoinHUD();
   }
+  if(_savedUserData&&_savedUserData.evolvedCreatures){
+    _evolvedCreatures=_savedUserData.evolvedCreatures;
+  }
   showWin();
 }
 
@@ -1408,6 +1411,7 @@ function _resumeGame(){
   // Restore persistent stats
   if(_savedUserData&&_savedUserData.bestStreak) bestStreak=_savedUserData.bestStreak;
   if(_savedUserData&&_savedUserData.shineCoins) { shineCoins=_savedUserData.shineCoins; updateCoinHUD(); }
+  if(_savedUserData&&_savedUserData.evolvedCreatures) _evolvedCreatures=_savedUserData.evolvedCreatures;
   // Restore game state
   wordOrder=shuffle([...WORDS]);
   score=_savedWeekData.score||0;
@@ -1496,6 +1500,7 @@ function _autoSave(){
       allCreatures:allCreatures,
       creatureCounts:counts,
       shineCoins:shineCoins,
+      evolvedCreatures:_evolvedCreatures,
       lastSession:Date.now()
     };
     // Merge wordAnalytics with existing — keep best attempts per word
@@ -2306,46 +2311,48 @@ function afterCatch(){
   _autoSave();
   stopRing();
   document.getElementById('oCatch').classList.remove('show');
-  // Check for evolution before advancing
-  const cr=CREATURES[wordIdx%CREATURES.length];
-  checkAndShowEvolve(cr, function(){
-    wordIdx++;
-    if(wordIdx>=20||hearts<=0){endGame();return;}
-    showMapTransition(()=>loadWord());
-  });
+  wordIdx++;
+  if(wordIdx>=20||hearts<=0){endGame();return}
+  showMapTransition(()=>loadWord());
 }
 
 // ─── Evolution logic ───────────────────────────────────────
-var _evolveCallback=null;
-function checkAndShowEvolve(cr, callback){
-  var evoName=EVOLUTION_MAP[cr.name];
-  if(!evoName){callback();return;}
-  var allData=(_currentUser&&!_currentUser.isGuest&&_savedUserData&&_savedUserData.allCreatures)
-    ?_savedUserData.allCreatures:caught;
-  var count=allData.filter(function(c){return c.name===cr.name;}).length;
-  // Trigger exactly at 3 (and every additional 3 after)
-  if(count>0&&count%3===0){
-    document.getElementById('evoCreatureEl').innerHTML=cr.fn(cr.color);
-    document.getElementById('evoNameEl').textContent=evoName;
-    document.getElementById('evoMsgEl').textContent=cr.name+' evolved into '+evoName+'!';
-    document.getElementById('evoCreatureEl').classList.remove('evolve-flash');
-    void document.getElementById('evoCreatureEl').offsetWidth; // reflow
-    document.getElementById('evoCreatureEl').classList.add('evolve-flash');
-    _evolveCallback=callback;
-    document.getElementById('oEvolve').classList.add('show');
-    sfxEvolve();
-  } else {
-    callback();
-  }
+var _evolvedCreatures={};  // {baseName: true} – persisted to Firebase
+
+function evolveCreature(baseName){
+  var cr=CREATURES.find(function(c){return c.name===baseName;});
+  if(!cr)return;
+  var evoName=EVOLUTION_MAP[baseName];
+  if(!evoName)return;
+  _evolvedCreatures[baseName]=true;
+  // Save to Firebase
+  _saveEvolvedCreatures();
+  // Show evolution overlay
+  document.getElementById('evoCreatureEl').innerHTML=cr.fn(cr.color);
+  document.getElementById('evoNameEl').textContent=evoName;
+  document.getElementById('evoMsgEl').textContent=baseName+' evolved into '+evoName+'!';
+  document.getElementById('evoCreatureEl').classList.remove('evolve-flash');
+  void document.getElementById('evoCreatureEl').offsetWidth;
+  document.getElementById('evoCreatureEl').classList.add('evolve-flash');
+  document.getElementById('oEvolve').classList.add('show');
+  sfxEvolve();
+  confettiBurst(30);
 }
 function closeEvolve(){
   document.getElementById('oEvolve').classList.remove('show');
-  if(_evolveCallback){var cb=_evolveCallback;_evolveCallback=null;cb();}
+  // Rebuild whichever screen is visible so dex card updates immediately
+  if(currentScreen==='sWin') showWin();
+  else if(currentScreen==='sDex') buildDexGrid();
+}
+function _saveEvolvedCreatures(){
+  if(!_currentUser||_currentUser.isGuest||!window._fb||!window._fb.ready)return;
+  var uid=_currentUser.username.toLowerCase();
+  window._fb.updateDoc(window._fb.doc(window._fb.db,'students',uid),
+    {evolvedCreatures:_evolvedCreatures}).catch(function(e){console.error('saveEvolved:',e);});
 }
 function sfxEvolve(){
   if(!audioCtx)return;
   var t=audioCtx.currentTime;
-  // Rising arpeggio
   [262,330,392,523,659,784,1047,1319,1568].forEach(function(f,i){
     var o=audioCtx.createOscillator(),g=audioCtx.createGain();
     o.type='sine';o.frequency.value=f;
@@ -2353,7 +2360,6 @@ function sfxEvolve(){
     g.gain.exponentialRampToValueAtTime(.001,t+i*.09+.25);
     o.connect(g);g.connect(sfxGain);o.start(t+i*.09);o.stop(t+i*.09+.3);
   });
-  // Final sparkle burst
   [2093,2637,3136].forEach(function(f,i){
     var o=audioCtx.createOscillator(),g=audioCtx.createGain();
     o.type='triangle';o.frequency.value=f;
@@ -2466,19 +2472,28 @@ function showWin(){
       <div class="evo-bar-fill" style="width:${prog/3*100}%;background:${evolveReady?'#ffe040':'#9b5fd4'}"></div>
     </div>`;
     const evoName = EVOLUTION_MAP[c.name]||'???';
-    const evolveLabel = evolveReady
-      ? `<div class="evolve-label">&#9889; ${evoName}</div>`
-      : `<div style="font-size:.42rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>`;
-    const displayName = evolveReady ? evoName : c.name;
+    const isEvolved = !!_evolvedCreatures[c.name];
+    const displayName = isEvolved ? evoName : c.name;
+    let evolveSection;
+    if(isEvolved){
+      evolveSection=`<div class="evolve-label" style="font-size:.42rem">⚡ ${evoName}</div>`;
+    } else if(evolveReady){
+      evolveSection=`<button onclick="event.stopPropagation();evolveCreature('${c.name}')"
+        style="font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:800;background:linear-gradient(135deg,#ffe040,#ffaa00);
+        color:#1a0a2e;border:none;border-radius:999px;padding:3px 8px;cursor:pointer;margin-top:2px">
+        ⚡ EVOLVE!</button>`;
+    } else {
+      evolveSection=`<div style="font-size:.42rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>
+        ${progBar}`;
+    }
     el.innerHTML=`
       <div style="position:relative;width:52px;height:52px">
         ${c.fn(c.color)}
-        ${countBadge}
+        ${isEvolved?'':countBadge}
       </div>
-      <div class="dex-word" style="${evolveReady?'color:#ffe040':''}">${displayName}</div>
+      <div class="dex-word" style="${isEvolved?'color:#ffe040':''}">${displayName}</div>
       ${nick}
-      ${evolveReady?'':progBar}
-      ${evolveLabel}
+      ${evolveSection}
       <div style="font-size:.45rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
     el.onclick=()=>openCare(crIdx,c);
     dex.appendChild(el);
@@ -2659,11 +2674,8 @@ function openCreatureCare(crIdx, caughtEntry){
   const overlay = document.getElementById('careOverlay');
   const frame   = document.getElementById('careFrame');
 
-  // Determine if evolved (count >= 3 = evolved form)
-  var allData = (_currentUser && !_currentUser.isGuest && _savedUserData && _savedUserData.allCreatures)
-    ? _savedUserData.allCreatures : caught;
-  var crCount = allData.filter(function(c){ return c.name === cr.name; }).length;
-  var displayName = (crCount >= 3 && EVOLUTION_MAP[cr.name]) ? EVOLUTION_MAP[cr.name] : cr.name;
+  // Use evolved form if player has evolved this creature
+  var displayName = (_evolvedCreatures[cr.name] && EVOLUTION_MAP[cr.name]) ? EVOLUTION_MAP[cr.name] : cr.name;
 
   // Load the care page
   frame.src = './creature_care.html';
@@ -2848,25 +2860,33 @@ function buildDexGrid(){
       const countBadge = count > 1
         ? `<div class="cr-count-badge ${evolveReady?'evolve-badge':''}" style="position:absolute;top:-4px;right:-4px">×${count}</div>`
         : '';
-      const evolveLabel = evolveReady
-        ? `<div class="evolve-label" style="font-size:.42rem">⚡ ${evoName}</div>`
-        : `<div style="font-size:.38rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>`;
       const nick = caughtEntry.nickname
         ? `<div style="font-size:.42rem;color:#ffe040;font-weight:800">"${caughtEntry.nickname}"</div>` : '';
-      const displayCardName = evolveReady ? evoName : cr.name;
+      const isEvolvedCard = !!_evolvedCreatures[cr.name];
+      const displayCardName = isEvolvedCard ? evoName : cr.name;
+      let evolveCardSection;
+      if(isEvolvedCard){
+        evolveCardSection=`<div class="evolve-label" style="font-size:.38rem">⚡ ${evoName}</div>`;
+      } else if(evolveReady){
+        evolveCardSection=`<button onclick="event.stopPropagation();evolveCreature('${cr.name}')"
+          style="font-family:'Baloo 2',cursive;font-size:.5rem;font-weight:800;background:linear-gradient(135deg,#ffe040,#ffaa00);
+          color:#1a0a2e;border:none;border-radius:999px;padding:3px 8px;cursor:pointer;margin-top:2px">
+          ⚡ EVOLVE!</button>`;
+      } else {
+        evolveCardSection=`<div style="font-size:.38rem;color:#666;margin-top:1px">${count}/3 → ${evoName}</div>${progBar}`;
+      }
 
       card.className = 'dex-care-card' + (evolveReady ? ' evolve-ready' : '');
       card.innerHTML = `
         <div class="dcc-happy">${happyEmoji}</div>
         <div style="position:relative;width:64px;height:64px">
           ${cr.fn(cr.color)}
-          ${countBadge}
+          ${isEvolvedCard?'':countBadge}
         </div>
-        <div class="dcc-name" style="${evolveReady?'color:#ffe040':''}">${displayCardName}</div>
+        <div class="dcc-name" style="${isEvolvedCard?'color:#ffe040':''}">${displayCardName}</div>
         <div class="dcc-word">${caughtEntry.word}</div>
         ${nick}
-        ${evolveReady?'':progBar}
-        ${evolveLabel}
+        ${evolveCardSection}
         <div style="font-size:.38rem;color:#aac4ff;margin-top:2px">🤚 Care</div>`;
       card.onclick = () => openCare(i, caughtEntry);
     } else {
